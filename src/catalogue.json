@@ -10,7 +10,7 @@
     ],
     "pattern": "Rayures",
     "accent": "#aaa0c7",
-    "price": null,
+    "price": 12000,
     "unit": "",
     "composition": "",
     "dimensions": "",
@@ -58,7 +58,7 @@
     ],
     "pattern": "Rayures",
     "accent": "#24437b",
-    "price": null,
+    "price": 12000,
     "unit": "",
     "composition": "",
     "dimensions": "",
@@ -90,6 +90,456 @@
       {
         "src": "pagnes/pagne2-5.webp",
         "thumbnail": "pagnes/apercus/pagne2-5.webp",
+        "view": 5,
+        "label": "Autre vue"
+      }
+    ]
+  },
+  {
+    "id": "pagne3",
+    "number": 3,
+    "name": "Pagne 03",
+    "description": "Découvrez ce pagne en cinq vues et zoomez sur les détails.",
+    "colors": [],
+    "pattern": "",
+    "accent": "#9c7e8c",
+    "price": 12000,
+    "unit": "",
+    "composition": "",
+    "dimensions": "",
+    "photos": [
+      {
+        "src": "pagnes/pagne3-1.webp",
+        "thumbnail": "pagnes/apercus/pagne3-1.webp",
+        "view": 1,
+        "label": "Vue d’ensemble"
+      },
+      {
+        "src": "pagnes/pagne3-2.webp",
+        "thumbnail": "pagnes/apercus/pagne3-2.webp",
+        "view": 2,
+        "label": "Pagne plié"
+      },
+      {
+        "src": "pagnes/pagne3-3.webp",
+        "thumbnail": "pagnes/apercus/pagne3-3.webp",
+        "view": 3,
+        "label": "Tissu drapé"
+      },
+      {
+        "src": "pagnes/pagne3-4.webp",
+        "thumbnail": "pagnes/apercus/pagne3-4.webp",
+        "view": 4,
+        "label": "Détail du motif"
+      },
+      {
+        "src": "pagnes/pagne3-5.webp",
+        "thumbnail": "pagnes/apercus/pagne3-5.webp",
+        "view": 5,
+        "label": "Autre vue"
+      }
+    ]
+  },
+  {
+    "id": "pagne4",
+    "number": 4,
+    "name": "Pagne 04",
+    "description": "Découvrez ce pagne en cinq vues et zoomez sur les détails.",
+    "colors": [],
+    "pattern": "",
+    "accent": "#9c7e8c",
+    "price": 12000,
+    "unit": "",
+    "composition": "",
+    "dimensions": "",
+    "photos": [
+      {
+        "src": "pagnes/pagne4-1.webp",
+        "thumbnail": "pagnes/apercus/pagne4-1.webp",
+        "view": 1,
+        "label": "Vue d’ensemble"
+      },
+      {
+        "src": "pagnes/pagne4-2.webp",
+        "thumbnail": "pagnes/apercus/pagne4-2.webp",
+        "view": 2,
+        "label": "Pagne plié"
+      },
+      {
+        "src": "pagnes/pagne4-3.webp",
+        "thumbnail": "pagnes/apercus/pagne4-3.webp",
+        "view": 3,
+        "label": "Tissu drapé"
+      },
+      {
+        "src": "pagnes/pagne4-4.webp",
+        "thumbnail": "pagnes/apercus/pagne4-4.webp",
+        "view": 4,
+        "label": "Détail du motif"
+      },
+      {
+        "src": "pagnes/pagne4-5.webp",
+        "thumbnail": "pagnes/apercus/pagne4-5.webp",
+        "view": 5,
+        "label": "Autre vue"
+      }
+    ]
+  },
+  {
+    "id": "pagne5",
+    "number": 5,
+    "name": "Pagne 05",
+    "description": "Découvrez ce pagne en cinq vues et zoomez sur les détails.",
+    "colors": [],
+    "pattern": "",
+    "accent": "#9c7e8c",
+    "price": 12000,
+    "unit": "",
+    "composition": "",
+    "dimensions": "",
+    "photos": [
+      {
+        "src": "pagnes/pagne5-1.webp",
+        "thumbnail": "pagnes/apercus/pagne5-1.webp",
+        "view": 1,
+        "label": "Vue d’ensemble"
+      },
+      {
+        "src": "pagnes/pagne5-2.webp",
+        "thumbnail": "pagnes/apercus/pagne5-2.webp",
+        "view": 2,
+        "label": "Pagne plié"
+      },
+      {
+        "src": "pagnes/pagne5-3.webp",
+        "thumbnail": "pagnes/apercus/pagne5-3.webp",
+        "view": 3,
+        "label": "Tissu drapé"
+      },
+      {
+        "src": "pagnes/pagne5-4.webp",
+        "thumbnail": "pagnes/apercus/pagne5-4.webp",
+        "view": 4,
+        "label": "Détail du motif"
+      },
+      {
+        "src": "pagnes/pagne5-5.webp",
+        "thumbnail": "pagnes/apercus/pagne5-5.webp",
+        "view": 5,
+        "label": "Autre vue"
+      }
+    ]
+  },
+  {
+    "id": "pagne6",
+    "number": 6,
+    "name": "Pagne 06",
+    "description": "Découvrez ce pagne en cinq vues et zoomez sur les détails.",
+    "colors": [],
+    "pattern": "",
+    "accent": "#9c7e8c",
+    "price": 12000,
+    "unit": "",
+    "composition": "",
+    "dimensions": "",
+    "photos": [
+      {
+        "src": "pagnes/pagne6-1.webp",
+        "thumbnail": "pagnes/apercus/pagne6-1.webp",
+        "view": 1,
+        "label": "Vue d’ensemble"
+      },
+      {
+        "src": "pagnes/pagne6-2.webp",
+        "thumbnail": "pagnes/apercus/pagne6-2.webp",
+        "view": 2,
+        "label": "Pagne plié"
+      },
+      {
+        "src": "pagnes/pagne6-3.webp",
+        "thumbnail": "pagnes/apercus/pagne6-3.webp",
+        "view": 3,
+        "label": "Tissu drapé"
+      },
+      {
+        "src": "pagnes/pagne6-4.webp",
+        "thumbnail": "pagnes/apercus/pagne6-4.webp",
+        "view": 4,
+        "label": "Détail du motif"
+      },
+      {
+        "src": "pagnes/pagne6-5.webp",
+        "thumbnail": "pagnes/apercus/pagne6-5.webp",
+        "view": 5,
+        "label": "Autre vue"
+      }
+    ]
+  },
+  {
+    "id": "pagne7",
+    "number": 7,
+    "name": "Pagne 07",
+    "description": "Découvrez ce pagne en cinq vues et zoomez sur les détails.",
+    "colors": [],
+    "pattern": "",
+    "accent": "#9c7e8c",
+    "price": 12000,
+    "unit": "",
+    "composition": "",
+    "dimensions": "",
+    "photos": [
+      {
+        "src": "pagnes/pagne7-1.webp",
+        "thumbnail": "pagnes/apercus/pagne7-1.webp",
+        "view": 1,
+        "label": "Vue d’ensemble"
+      },
+      {
+        "src": "pagnes/pagne7-2.webp",
+        "thumbnail": "pagnes/apercus/pagne7-2.webp",
+        "view": 2,
+        "label": "Pagne plié"
+      },
+      {
+        "src": "pagnes/pagne7-3.webp",
+        "thumbnail": "pagnes/apercus/pagne7-3.webp",
+        "view": 3,
+        "label": "Tissu drapé"
+      },
+      {
+        "src": "pagnes/pagne7-4.webp",
+        "thumbnail": "pagnes/apercus/pagne7-4.webp",
+        "view": 4,
+        "label": "Détail du motif"
+      },
+      {
+        "src": "pagnes/pagne7-5.webp",
+        "thumbnail": "pagnes/apercus/pagne7-5.webp",
+        "view": 5,
+        "label": "Autre vue"
+      }
+    ]
+  },
+  {
+    "id": "pagne8",
+    "number": 8,
+    "name": "Pagne 08",
+    "description": "Découvrez ce pagne en cinq vues et zoomez sur les détails.",
+    "colors": [],
+    "pattern": "",
+    "accent": "#9c7e8c",
+    "price": 12000,
+    "unit": "",
+    "composition": "",
+    "dimensions": "",
+    "photos": [
+      {
+        "src": "pagnes/pagne8-1.webp",
+        "thumbnail": "pagnes/apercus/pagne8-1.webp",
+        "view": 1,
+        "label": "Vue d’ensemble"
+      },
+      {
+        "src": "pagnes/pagne8-2.webp",
+        "thumbnail": "pagnes/apercus/pagne8-2.webp",
+        "view": 2,
+        "label": "Pagne plié"
+      },
+      {
+        "src": "pagnes/pagne8-3.webp",
+        "thumbnail": "pagnes/apercus/pagne8-3.webp",
+        "view": 3,
+        "label": "Tissu drapé"
+      },
+      {
+        "src": "pagnes/pagne8-4.webp",
+        "thumbnail": "pagnes/apercus/pagne8-4.webp",
+        "view": 4,
+        "label": "Détail du motif"
+      },
+      {
+        "src": "pagnes/pagne8-5.webp",
+        "thumbnail": "pagnes/apercus/pagne8-5.webp",
+        "view": 5,
+        "label": "Autre vue"
+      }
+    ]
+  },
+  {
+    "id": "pagne9",
+    "number": 9,
+    "name": "Pagne 09",
+    "description": "Découvrez ce pagne en cinq vues et zoomez sur les détails.",
+    "colors": [],
+    "pattern": "",
+    "accent": "#9c7e8c",
+    "price": 12000,
+    "unit": "",
+    "composition": "",
+    "dimensions": "",
+    "photos": [
+      {
+        "src": "pagnes/pagne9-1.webp",
+        "thumbnail": "pagnes/apercus/pagne9-1.webp",
+        "view": 1,
+        "label": "Vue d’ensemble"
+      },
+      {
+        "src": "pagnes/pagne9-2.webp",
+        "thumbnail": "pagnes/apercus/pagne9-2.webp",
+        "view": 2,
+        "label": "Pagne plié"
+      },
+      {
+        "src": "pagnes/pagne9-3.webp",
+        "thumbnail": "pagnes/apercus/pagne9-3.webp",
+        "view": 3,
+        "label": "Tissu drapé"
+      },
+      {
+        "src": "pagnes/pagne9-4.webp",
+        "thumbnail": "pagnes/apercus/pagne9-4.webp",
+        "view": 4,
+        "label": "Détail du motif"
+      },
+      {
+        "src": "pagnes/pagne9-5.webp",
+        "thumbnail": "pagnes/apercus/pagne9-5.webp",
+        "view": 5,
+        "label": "Autre vue"
+      }
+    ]
+  },
+  {
+    "id": "pagne10",
+    "number": 10,
+    "name": "Pagne 10",
+    "description": "Découvrez ce pagne en cinq vues et zoomez sur les détails.",
+    "colors": [],
+    "pattern": "",
+    "accent": "#9c7e8c",
+    "price": 12000,
+    "unit": "",
+    "composition": "",
+    "dimensions": "",
+    "photos": [
+      {
+        "src": "pagnes/pagne10-1.webp",
+        "thumbnail": "pagnes/apercus/pagne10-1.webp",
+        "view": 1,
+        "label": "Vue d’ensemble"
+      },
+      {
+        "src": "pagnes/pagne10-2.webp",
+        "thumbnail": "pagnes/apercus/pagne10-2.webp",
+        "view": 2,
+        "label": "Pagne plié"
+      },
+      {
+        "src": "pagnes/pagne10-3.webp",
+        "thumbnail": "pagnes/apercus/pagne10-3.webp",
+        "view": 3,
+        "label": "Tissu drapé"
+      },
+      {
+        "src": "pagnes/pagne10-4.webp",
+        "thumbnail": "pagnes/apercus/pagne10-4.webp",
+        "view": 4,
+        "label": "Détail du motif"
+      },
+      {
+        "src": "pagnes/pagne10-5.webp",
+        "thumbnail": "pagnes/apercus/pagne10-5.webp",
+        "view": 5,
+        "label": "Autre vue"
+      }
+    ]
+  },
+  {
+    "id": "pagne11",
+    "number": 11,
+    "name": "Pagne 11",
+    "description": "Découvrez ce pagne en cinq vues et zoomez sur les détails.",
+    "colors": [],
+    "pattern": "",
+    "accent": "#9c7e8c",
+    "price": 12000,
+    "unit": "",
+    "composition": "",
+    "dimensions": "",
+    "photos": [
+      {
+        "src": "pagnes/pagne11-1.webp",
+        "thumbnail": "pagnes/apercus/pagne11-1.webp",
+        "view": 1,
+        "label": "Vue d’ensemble"
+      },
+      {
+        "src": "pagnes/pagne11-2.webp",
+        "thumbnail": "pagnes/apercus/pagne11-2.webp",
+        "view": 2,
+        "label": "Pagne plié"
+      },
+      {
+        "src": "pagnes/pagne11-3.webp",
+        "thumbnail": "pagnes/apercus/pagne11-3.webp",
+        "view": 3,
+        "label": "Tissu drapé"
+      },
+      {
+        "src": "pagnes/pagne11-4.webp",
+        "thumbnail": "pagnes/apercus/pagne11-4.webp",
+        "view": 4,
+        "label": "Détail du motif"
+      },
+      {
+        "src": "pagnes/pagne11-5.webp",
+        "thumbnail": "pagnes/apercus/pagne11-5.webp",
+        "view": 5,
+        "label": "Autre vue"
+      }
+    ]
+  },
+  {
+    "id": "pagne12",
+    "number": 12,
+    "name": "Pagne 12",
+    "description": "Découvrez ce pagne en cinq vues et zoomez sur les détails.",
+    "colors": [],
+    "pattern": "",
+    "accent": "#9c7e8c",
+    "price": 12000,
+    "unit": "",
+    "composition": "",
+    "dimensions": "",
+    "photos": [
+      {
+        "src": "pagnes/pagne12-1.webp",
+        "thumbnail": "pagnes/apercus/pagne12-1.webp",
+        "view": 1,
+        "label": "Vue d’ensemble"
+      },
+      {
+        "src": "pagnes/pagne12-2.webp",
+        "thumbnail": "pagnes/apercus/pagne12-2.webp",
+        "view": 2,
+        "label": "Pagne plié"
+      },
+      {
+        "src": "pagnes/pagne12-3.webp",
+        "thumbnail": "pagnes/apercus/pagne12-3.webp",
+        "view": 3,
+        "label": "Tissu drapé"
+      },
+      {
+        "src": "pagnes/pagne12-4.webp",
+        "thumbnail": "pagnes/apercus/pagne12-4.webp",
+        "view": 4,
+        "label": "Détail du motif"
+      },
+      {
+        "src": "pagnes/pagne12-5.webp",
+        "thumbnail": "pagnes/apercus/pagne12-5.webp",
         "view": 5,
         "label": "Autre vue"
       }

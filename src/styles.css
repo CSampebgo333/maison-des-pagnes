@@ -417,3 +417,5 @@ em { font-weight: 400; }
 .favorite-option { display: flex; align-items: center; gap: 12px; padding: 8px; border-radius: 5px; color: #674956; font-size: 12px; cursor: pointer; outline: none; }
 .favorite-option[data-highlighted] { background: #f0e5ea; }
 .favorite-option[data-state="checked"] { background: #f4eaf0; }
+
+.detail-story-photo-selected img { object-fit: cover; object-position: center; }

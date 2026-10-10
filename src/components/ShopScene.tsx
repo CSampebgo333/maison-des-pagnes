@@ -129,7 +129,7 @@ const ShopScene = forwardRef<SceneHandle,Props>(function ShopScene(props,ref) {
         if(old){textures.delete(old);old.dispose();}
         if(f.texture){textures.delete(f.texture);f.texture.dispose();f.texture=undefined;}
         f.photo.visible=false;
-        if(article?.photos[0]) loader.load(asset((article.photos.find(p=>p.view===3)??article.photos[0]).thumbnail),texture=> {
+        if(article?.photos[0]) loader.load(asset(article.photos[0].thumbnail),texture=> {
           if(disposed||generation!==version){texture.dispose();return;}
           texture.colorSpace=THREE.SRGBColorSpace;texture.anisotropy=renderer.capabilities.getMaxAnisotropy();
           f.texture=texture;textures.add(texture);

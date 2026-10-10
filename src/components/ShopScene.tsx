@@ -13,7 +13,7 @@ export type SceneHandle = {
   focus: (id: string) => void;
 };
 type Props = {products: Product[]; touring: boolean; active: boolean; onSelect: (id:string)=>void; onHover: (id:string|null)=>void; onReady:()=>void; onError:()=>void; onInterrupt:()=>void};
-type Fixture = {group: THREE.Group; photo: THREE.Mesh; label: THREE.Mesh; slot: number; texture?: THREE.Texture};
+type Fixture = {group: THREE.Group; photo: THREE.Mesh; label: THREE.Mesh; slot: number; photoWidth: number; photoHeight: number; texture?: THREE.Texture};
 
 const ShopScene = forwardRef<SceneHandle,Props>(function ShopScene(props,ref) {
   const host = useRef<HTMLDivElement>(null);
@@ -108,14 +108,14 @@ const ShopScene = forwardRef<SceneHandle,Props>(function ShopScene(props,ref) {
       const glowMat=new THREE.MeshBasicMaterial({color:"#9d8b60",transparent:true,opacity:.08}); materials.push(glowMat);
       box(group,w-.1,h-.12,.01,0,0,-.36,glowMat);
       const photoMat = new THREE.MeshBasicMaterial({color:"#ffffff",transparent:true,toneMapped:false}); materials.push(photoMat);
-      const photo = new THREE.Mesh(new THREE.PlaneGeometry(1,1),photoMat); photo.position.set(0,.07,.06); photo.visible=false; group.add(photo);
+      const photo = new THREE.Mesh(new THREE.PlaneGeometry(1,1),photoMat); photo.position.set(0,.23,.06); photo.visible=false; group.add(photo);
       const labelMat = new THREE.MeshBasicMaterial({transparent:true,depthWrite:false,toneMapped:false});materials.push(labelMat);
-      const label = new THREE.Mesh(new THREE.PlaneGeometry(1.5,.36),labelMat);label.position.set(0,-h/2+.23,.48);group.add(label);
+      const label = new THREE.Mesh(new THREE.PlaneGeometry(Math.min(1.5,w-.12),.36),labelMat);label.position.set(0,-h/2+.23,.48);group.add(label);
       const hit=new THREE.Mesh(new THREE.PlaneGeometry(w-.1,h-.1),new THREE.MeshBasicMaterial({transparent:true,opacity:0,depthWrite:false}));materials.push(hit.material);hit.position.z=.49; hit.userData.slot=slot;group.add(hit);hitTargets.push(hit);
-      fixtureList.push({slot,group,photo,label});
+      fixtureList.push({slot,group,photo,label,photoWidth:w-.16,photoHeight:h-.60});
     }
-    for(let row=0;row<2;row++) for(let col=0;col<3;col++) niche(row*3+col,(col-1)*3.35,row===0?3.72:1.62,-5.85,0);
-    for(let i=0;i<3;i++) { niche(6+i,-5.1,2.24,-3.45+i*3.1,Math.PI/2,2.8,2.65); niche(9+i,5.1,2.24,-3.45+i*3.1,-Math.PI/2,2.8,2.65); }
+    for(let col=0;col<6;col++) niche(col,(col-2.5)*1.64,2.55,-5.85,0,1.53,2.55);
+    for(let i=0;i<3;i++) { niche(6+i,-5.1,2.55,-3.45+i*3.1,Math.PI/2,2.2,3.4); niche(9+i,5.1,2.55,-3.45+i*3.1,-Math.PI/2,2.2,3.4); }
     fixtures.current=fixtureList;
     const loader=new THREE.TextureLoader();
     let generation=0;
@@ -134,7 +134,7 @@ const ShopScene = forwardRef<SceneHandle,Props>(function ShopScene(props,ref) {
           texture.colorSpace=THREE.SRGBColorSpace;texture.anisotropy=renderer.capabilities.getMaxAnisotropy();
           f.texture=texture;textures.add(texture);
           const aspect=texture.image.width/texture.image.height;
-          const height=f.slot<6?1.45:1.85; const width=Math.min(2.45,height*aspect);
+          const width=Math.min(f.photoWidth,f.photoHeight*aspect);
           f.photo.scale.set(width,width/aspect,1);
           const m=f.photo.material as THREE.MeshBasicMaterial;m.map=texture;m.needsUpdate=true;f.photo.visible=true;
         },undefined,()=>{/* The label remains usable when an individual photo is unavailable. */});

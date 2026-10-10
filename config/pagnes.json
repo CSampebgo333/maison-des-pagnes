@@ -1,0 +1,24 @@
+{
+  "pagne1": {
+    "name": "Rayures lavande",
+    "description": "Des bandes lavande et ivoire au dessin irrégulier. Découvrez le motif à plat, le tissu drapé et une vue de près pour apprécier chaque détail.",
+    "colors": ["Violet", "Ivoire"],
+    "pattern": "Rayures",
+    "accent": "#aaa0c7",
+    "price": null,
+    "unit": "",
+    "composition": "",
+    "dimensions": ""
+  },
+  "pagne2": {
+    "name": "Lignes indigo",
+    "description": "Un fond bleu indigo rythmé de lignes blanches et de petits accents horizontaux. Cinq vues pour découvrir le dessin et le tombé du tissu.",
+    "colors": ["Bleu", "Blanc"],
+    "pattern": "Rayures",
+    "accent": "#24437b",
+    "price": null,
+    "unit": "",
+    "composition": "",
+    "dimensions": ""
+  }
+}

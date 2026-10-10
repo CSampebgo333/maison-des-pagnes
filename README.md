@@ -1,6 +1,6 @@
 # Maison des Pagnes
 
-Une boutique de pagnes en français, avec une visite en 3D et une galerie classique. Cette première version se concentre sur le rendu et les interactions. Elle utilise les deux pagnes et dix photos uniques du ZIP fourni.
+Une boutique de pagnes en français, avec une visite en 3D et une galerie classique. Cette première version se concentre sur le rendu et les interactions. Elle utilise les douze pagnes et soixante photos uniques des deux ZIP fournis.
 
 ## Démarrer
 
@@ -31,9 +31,9 @@ Le build de production se trouve dans `dist/`. Aucune publication automatique n�
 - Galerie disponible directement et utilisée automatiquement si WebGL est indisponible.
 - Sélection des pagnes avec quantités, conservée sur l’appareil et partageable sous forme de texte.
 
-Les photos sont présentées dans un espace 3D ; elles ne sont pas des modèles volumétriques du tissu. Le nom de la boutique et les deux noms descriptifs sont provisoires. Aucun prix, matériau, longueur ou stock n’est inventé.
+Les photos sont présentées dans un espace 3D ; elles ne sont pas des modèles volumétriques du tissu. Le nom de la boutique et les noms descriptifs sont provisoires. Chaque pagne coûte 12 000 CFA (XOF), selon le prix fourni. Aucun matériau, longueur ou stock n’est inventé.
 
-## Ajouter les dix autres pagnes
+## Ajouter de nouveaux pagnes
 
 Placer les photos dans `public/pagnes/`, avec la convention :
 
@@ -55,7 +55,7 @@ Le catalogue est régénéré au démarrage et au build. On peut également impo
 pnpm import:photos /chemin/vers/mes-photos
 ```
 
-L’import inspecte également les sous-dossiers et refuse les remplacements silencieux. Les dix photos initiales sont optimisées en WebP, avec des aperçus légers, tout en conservant le nom de chaque vue.
+L’import inspecte également les sous-dossiers et refuse les remplacements silencieux. Les soixante photos sont optimisées en WebP, avec des aperçus légers, tout en conservant le nom de chaque vue.
 
 Renseigner les noms, couleurs, descriptions et futurs prix dans `config/pagnes.json`. Les pagnes sans métadonnées reçoivent un nom de référence et restent visibles avec « Prix sur demande ». Voir [le guide des photos](docs/PHOTOS.md).
 
@@ -63,7 +63,7 @@ Renseigner les noms, couleurs, descriptions et futurs prix dans `config/pagnes.j
 
 `config/boutique.json` contient le nom, la signature et le futur numéro WhatsApp. `currency` doit contenir une devise ISO lorsque des prix sont ajoutés : par exemple `XOF`, `GHS` ou `EUR`, selon la devise réelle de la boutique. Le numéro WhatsApp, s’il est renseigné, doit inclure l’indicatif international. Aucun numéro n’est configuré par défaut.
 
-Les couleurs et la mise en page sont dans `src/styles.css`. La pièce et les lumières sont dans `src/components/ShopScene.tsx`. Les photos de la vue 3 (tissu drapé) sont utilisées dans les compartiments lorsqu’elles existent.
+Les couleurs et la mise en page sont dans `src/styles.css`. La pièce et les lumières sont dans `src/components/ShopScene.tsx`. La vue numéro 1 est l’image principale dans les compartiments, la galerie et la sélection. Les autres vues ne sont accessibles qu’après ouverture de la fiche du pagne.
 
 ## Aperçu autonome
 

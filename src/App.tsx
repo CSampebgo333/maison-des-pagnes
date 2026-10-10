@@ -12,6 +12,11 @@ import { asset } from './lib/assets';
 const ShopScene = lazy(() => import('./components/ShopScene'));
 const products = catalogue as Product[];
 const BAG_KEY = 'maison-des-pagnes-selection-v1';
+const FAVORITE_KEY = 'maison-des-pagnes-prefere-v1';
+function loadFavorite() {
+  try { const id = localStorage.getItem(FAVORITE_KEY); return products.find((product) => product.id === id)?.id ?? products[0]?.id ?? ''; }
+  catch { return products[0]?.id ?? ''; }
+}
 const refLabel = (product: Product) => `PAG-${String(product.number).padStart(3, '0')}`;
 const priceLabel = (product: Product) => product.price === null ? 'Prix sur demande' : shop.currency === 'XOF' ? `${new Intl.NumberFormat(shop.locale).format(product.price)} CFA` : new Intl.NumberFormat(shop.locale, { style: 'currency', currency: shop.currency }).format(product.price);
 function loadBag() { try { return readBag(localStorage.getItem(BAG_KEY), products); } catch { return []; } }
@@ -31,6 +36,8 @@ export default function App() {
   const [sceneError, setSceneError] = useState(false);
   const [hovered, setHovered] = useState<string | null>(null);
   const [selected, setSelected] = useState<Product | null>(null);
+  const [favoriteId, setFavoriteId] = useState(loadFavorite);
+  const favorite = products.find((product) => product.id === favoriteId) ?? products[0];
   const [bag, setBag] = useState<BagItem[]>(loadBag);
   const [bagOpen, setBagOpen] = useState(false);
   const [helpOpen, setHelpOpen] = useState(false);
@@ -119,7 +126,7 @@ export default function App() {
         {view === 'galerie' && !visible.length && <div className="empty-gallery"><Search size={26} /><h2>Aucun pagne ne correspond à votre recherche.</h2><p>Essayez « bleu », « violet » ou « rayures ».</p><button className="primary-button" onClick={() => { setQuery(''); setColor(''); }}>Revoir tous les pagnes <ArrowRight size={16} /></button></div>}
       </section>
 
-      <section className="detail-story" aria-label="Découvrir les détails"><div className="detail-story-photo">{products[0] && <img src={asset(products[0].photos[0].thumbnail)} alt={`Détail du motif de ${products[0].name}`} loading="lazy" />}<span>CHAQUE DÉTAIL COMPTE.</span></div><div className="detail-story-copy"><p className="eyebrow">À REGARDER DE PLUS PRÈS</p><h2>La beauté est<br /><em>dans les détails.</em></h2><p>Le motif à plat. Le tissu drapé. La texture de près. Explorez chaque pagne sous plusieurs angles et prenez le temps de trouver votre coup de cœur.</p><button className="underlined-button" onClick={() => products[0] && setSelected(products[0])}>Approcher un motif <ArrowRight size={18} /></button></div></section>
+      <section className="detail-story" aria-label="Votre préféré du jour"><div className="detail-story-photo">{favorite && <img src={asset(favorite.photos[0].thumbnail)} alt={favorite.name} loading="lazy" />}<span>VOTRE PRÉFÉRÉ DU JOUR.</span></div><div className="detail-story-copy"><p className="eyebrow">VOTRE PRÉFÉRÉ DU JOUR</p><h2>La beauté est<br /><em>dans les détails.</em></h2><p>Un coup de cœur aujourd’hui ? Choisissez le pagne à mettre à l’honneur. Votre choix reste ici, même demain, jusqu’à ce que vous le changiez.</p><label className="favorite-picker" htmlFor="favorite-pagne"><span>Choisir mon préféré du jour</span><select id="favorite-pagne" value={favorite?.id ?? ''} onChange={(event) => { const id = event.target.value; setFavoriteId(id); try { localStorage.setItem(FAVORITE_KEY, id); setNotice('Votre préféré du jour est mémorisé sur cet appareil.'); } catch { setNotice('Votre choix est affiché. Ce navigateur ne permet pas de le mémoriser après fermeture.'); } }}>{products.map((product) => <option key={product.id} value={product.id}>{product.name} · {refLabel(product)}</option>)}</select></label><p className="favorite-reference" role="status">{favorite?.name} · {favorite && priceLabel(favorite)}</p><button className="underlined-button" onClick={() => favorite && setSelected(favorite)}>Découvrir mon préféré <ArrowRight size={18} /></button></div></section>
       <div className="values-strip"><div><span>01</span><strong>Choisir à votre rythme</strong><p>Une galerie simple ou une visite immersive.</p></div><div><span>02</span><strong>Voir sous tous les angles</strong><p>Plusieurs photos et un zoom sur les détails.</p></div><div><span>03</span><strong>Préparer votre sélection</strong><p>Gardez vos coups de cœur à portée de main.</p></div></div>
     </main>
 

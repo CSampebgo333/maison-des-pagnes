@@ -108,11 +108,11 @@ const ShopScene = forwardRef<SceneHandle,Props>(function ShopScene(props,ref) {
       const glowMat=new THREE.MeshBasicMaterial({color:"#9d8b60",transparent:true,opacity:.08}); materials.push(glowMat);
       box(group,w-.1,h-.12,.01,0,0,-.36,glowMat);
       const photoMat = new THREE.MeshBasicMaterial({color:"#ffffff",transparent:true,toneMapped:false}); materials.push(photoMat);
-      const photo = new THREE.Mesh(new THREE.PlaneGeometry(1,1),photoMat); photo.position.set(0,0,.06); photo.visible=false; group.add(photo);
+      const photo = new THREE.Mesh(new THREE.PlaneGeometry(1,1),photoMat); photo.position.set(0,0,-.08); photo.visible=false; group.add(photo);
       const labelMat = new THREE.MeshBasicMaterial({transparent:true,depthWrite:false,toneMapped:false});materials.push(labelMat);
       const label = new THREE.Mesh(new THREE.PlaneGeometry(Math.min(1.5,w-.12),.36),labelMat);label.position.set(0,-h/2-.22,.48);group.add(label);
       const hit=new THREE.Mesh(new THREE.PlaneGeometry(w-.1,h-.1),new THREE.MeshBasicMaterial({transparent:true,opacity:0,depthWrite:false}));materials.push(hit.material);hit.position.z=.49; hit.userData.slot=slot;group.add(hit);hitTargets.push(hit);
-      fixtureList.push({slot,group,photo,label,photoWidth:w-.10,photoHeight:h-.10});
+      fixtureList.push({slot,group,photo,label,photoWidth:w-.28,photoHeight:h-.28});
     }
     for(let col=0;col<6;col++) niche(col,(col-2.5)*1.64,2.55,-5.85,0,1.53,2.00);
     for(let i=0;i<3;i++) { niche(6+i,-5.1,2.55,-3.45+i*3.1,Math.PI/2,2.2,2.90); niche(9+i,5.1,2.55,-3.45+i*3.1,-Math.PI/2,2.2,2.90); }

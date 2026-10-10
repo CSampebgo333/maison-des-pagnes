@@ -14,7 +14,7 @@ test('La recherche combine les mots et ignore les accents et la casse', () => {
 test('Le filtre couleur et la recherche se combinent sans résultats incohérents', () => {
   assert.equal(findProducts(products, 'rayures', 'Bleu')[0].id, 'pagne2');
   assert.equal(findProducts(products, 'lavande', 'Bleu').length, 0);
-  assert.deepEqual(findProducts(products, '', '', 'name').map((p) => p.id), ['pagne2', 'pagne1']);
+  assert.deepEqual(findProducts(products, '', '', 'name').map((p) => p.id), ['pagne2', ...Array.from({ length: 10 }, (_, i) => `pagne${i + 3}`), 'pagne1']);
 });
 test('Une sélection corrompue ou liée à des produits retirés est nettoyée', () => {
   assert.deepEqual(readBag('not-json', products), []);

@@ -17,17 +17,18 @@ test('Deux extensions pour une même vue sont signalées avant la génération',
   assert.throws(() => groupPhotos(['pagne1-1.png', 'pagne1-1.webp']), /même vue/);
 });
 
-test('Le ZIP fourni devient exactement deux produits et dix photos présentes', async () => {
+test('La collection complète contient douze produits, leurs vues principales et soixante photos présentes', async () => {
   const raw = JSON.parse(await readFile(new URL('../src/catalogue.json', import.meta.url), 'utf8'));
-  assert.equal(raw.length, 2);
-  assert.equal(raw.reduce((n, p) => n + p.photos.length, 0), 10);
+  assert.equal(raw.length, 12);
+  assert.equal(raw.reduce((n, p) => n + p.photos.length, 0), 60);
   const files = await readdir(new URL('../public/pagnes/', import.meta.url));
   for (const product of raw) {
-    assert.equal(product.price, null);
+    assert.equal(product.price, 12000);
+    assert.equal(product.photos[0].view, 1);
     assert.equal(product.photos.length, 5);
     for (const photo of product.photos) {
       assert.ok(files.includes(photo.src.split('/').at(-1)));
-      await readFile(new URL(`../public/${photo.thumbnail}`, import.meta.url));
+      assert.ok((await readFile(new URL(`../public/${photo.thumbnail}`, import.meta.url))).length > 0);
     }
   }
 });

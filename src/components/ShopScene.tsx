@@ -108,14 +108,14 @@ const ShopScene = forwardRef<SceneHandle,Props>(function ShopScene(props,ref) {
       const glowMat=new THREE.MeshBasicMaterial({color:"#9d8b60",transparent:true,opacity:.08}); materials.push(glowMat);
       box(group,w-.1,h-.12,.01,0,0,-.36,glowMat);
       const photoMat = new THREE.MeshBasicMaterial({color:"#ffffff",transparent:true,toneMapped:false}); materials.push(photoMat);
-      const photo = new THREE.Mesh(new THREE.PlaneGeometry(1,1),photoMat); photo.position.set(0,.23,.06); photo.visible=false; group.add(photo);
+      const photo = new THREE.Mesh(new THREE.PlaneGeometry(1,1),photoMat); photo.position.set(0,0,.06); photo.visible=false; group.add(photo);
       const labelMat = new THREE.MeshBasicMaterial({transparent:true,depthWrite:false,toneMapped:false});materials.push(labelMat);
-      const label = new THREE.Mesh(new THREE.PlaneGeometry(Math.min(1.5,w-.12),.36),labelMat);label.position.set(0,-h/2+.23,.48);group.add(label);
+      const label = new THREE.Mesh(new THREE.PlaneGeometry(Math.min(1.5,w-.12),.36),labelMat);label.position.set(0,-h/2-.22,.48);group.add(label);
       const hit=new THREE.Mesh(new THREE.PlaneGeometry(w-.1,h-.1),new THREE.MeshBasicMaterial({transparent:true,opacity:0,depthWrite:false}));materials.push(hit.material);hit.position.z=.49; hit.userData.slot=slot;group.add(hit);hitTargets.push(hit);
-      fixtureList.push({slot,group,photo,label,photoWidth:w-.16,photoHeight:h-.60});
+      fixtureList.push({slot,group,photo,label,photoWidth:w-.10,photoHeight:h-.10});
     }
-    for(let col=0;col<6;col++) niche(col,(col-2.5)*1.64,2.55,-5.85,0,1.53,2.55);
-    for(let i=0;i<3;i++) { niche(6+i,-5.1,2.55,-3.45+i*3.1,Math.PI/2,2.2,3.4); niche(9+i,5.1,2.55,-3.45+i*3.1,-Math.PI/2,2.2,3.4); }
+    for(let col=0;col<6;col++) niche(col,(col-2.5)*1.64,2.55,-5.85,0,1.53,2.00);
+    for(let i=0;i<3;i++) { niche(6+i,-5.1,2.55,-3.45+i*3.1,Math.PI/2,2.2,2.90); niche(9+i,5.1,2.55,-3.45+i*3.1,-Math.PI/2,2.2,2.90); }
     fixtures.current=fixtureList;
     const loader=new THREE.TextureLoader();
     let generation=0;
@@ -131,6 +131,8 @@ const ShopScene = forwardRef<SceneHandle,Props>(function ShopScene(props,ref) {
         f.photo.visible=false;
         if(article?.photos[0]) loader.load(asset(article.photos[0].thumbnail),texture=> {
           if(disposed||generation!==version){texture.dispose();return;}
+          // Recadrage de présentation uniquement : la fiche conserve la photo intégrale.
+          texture.offset.set(.12,.12);texture.repeat.set(.76,.76);
           texture.colorSpace=THREE.SRGBColorSpace;texture.anisotropy=renderer.capabilities.getMaxAnisotropy();
           f.texture=texture;textures.add(texture);
           const aspect=texture.image.width/texture.image.height;

@@ -1,0 +1,35 @@
+{
+  "name": "maison-des-pagnes",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=22.18.0" },
+  "packageManager": "pnpm@11.25.0",
+  "scripts": {
+    "catalogue": "node scripts/prepare-catalogue.mjs",
+    "predev": "pnpm catalogue",
+    "dev": "vite --host 127.0.0.1",
+    "prebuild": "pnpm catalogue",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview --host 127.0.0.1",
+    "check": "tsc --noEmit",
+    "test": "node --experimental-strip-types --test tests/*.test.ts tests/*.test.mjs",
+    "import:photos": "node scripts/import-photos.mjs"
+  },
+  "dependencies": {
+    "lucide-react": "1.31.0",
+    "radix-ui": "1.6.7",
+    "react": "19.2.6",
+    "react-dom": "19.2.6",
+    "three": "0.186.1"
+  },
+  "devDependencies": {
+    "@types/node": "22.19.19",
+    "@types/react": "19.2.14",
+    "@types/react-dom": "19.2.3",
+    "@types/three": "0.186.0",
+    "@vitejs/plugin-react": "6.0.2",
+    "typescript": "5.9.3",
+    "vite": "8.0.13"
+  }
+}

@@ -1,2 +1,89 @@
-# maison-des-pagnes
-Boutique de pagnes en français : visite 3D, galerie, recherche et fiches avec plusieurs photos.
+# Maison des Pagnes
+
+Une boutique de pagnes en français, avec une visite en 3D et une galerie classique. Cette première version se concentre sur le rendu et les interactions. Elle utilise les deux pagnes et dix photos uniques du ZIP fourni.
+
+## Démarrer
+
+Node.js 22.18 ou plus récent et pnpm 11.25 sont requis.
+
+```sh
+corepack enable
+pnpm install --frozen-lockfile
+pnpm dev
+```
+
+Ouvrir l’adresse locale affichée par Vite. Les images, composants et icônes sont locaux ; aucun CDN n’est nécessaire.
+
+```sh
+pnpm test
+pnpm check
+pnpm build
+```
+
+Le build de production se trouve dans `dist/`. Aucune publication automatique n’est configurée.
+
+## Le rendu
+
+- Salon en 3D avec douze compartiments, éclairage, déplacement à la souris, au clavier et au doigt.
+- Visite guidée des produits affichés, approche directe d’un pagne et plein écran.
+- Recherche par mots et filtre couleur : les résultats sont réorganisés dans la boutique et la galerie.
+- Fiches avec plusieurs photos, zoom de 100 à 400 %, déplacement de la photo et pincement tactile.
+- Galerie disponible directement et utilisée automatiquement si WebGL est indisponible.
+- Sélection des pagnes avec quantités, conservée sur l’appareil et partageable sous forme de texte.
+
+Les photos sont présentées dans un espace 3D ; elles ne sont pas des modèles volumétriques du tissu. Le nom de la boutique et les deux noms descriptifs sont provisoires. Aucun prix, matériau, longueur ou stock n’est inventé.
+
+## Ajouter les dix autres pagnes
+
+Placer les photos dans `public/pagnes/`, avec la convention :
+
+```text
+pagne3-1.png
+pagne3-2.png
+pagne3-3.png
+pagne3-4.png
+pagne3-5.png
+...
+pagne12-5.png
+```
+
+PNG, JPG, JPEG et WebP sont acceptés. Le premier nombre identifie le pagne ; le second identifie la vue. Les fichiers `- Copy` sont ignorés. L’ordre est numérique : le pagne 2 passe avant le pagne 10. Une vue présente avec deux extensions différentes est signalée.
+
+Le catalogue est régénéré au démarrage et au build. On peut également importer un dossier déjà décompressé :
+
+```sh
+pnpm import:photos /chemin/vers/mes-photos
+```
+
+L’import inspecte également les sous-dossiers et refuse les remplacements silencieux. Les dix photos initiales sont optimisées en WebP, avec des aperçus légers, tout en conservant le nom de chaque vue.
+
+Renseigner les noms, couleurs, descriptions et futurs prix dans `config/pagnes.json`. Les pagnes sans métadonnées reçoivent un nom de référence et restent visibles avec « Prix sur demande ». Voir [le guide des photos](docs/PHOTOS.md).
+
+## Personnaliser la boutique
+
+`config/boutique.json` contient le nom, la signature et le futur numéro WhatsApp. `currency` doit contenir une devise ISO lorsque des prix sont ajoutés : par exemple `XOF`, `GHS` ou `EUR`, selon la devise réelle de la boutique. Le numéro WhatsApp, s’il est renseigné, doit inclure l’indicatif international. Aucun numéro n’est configuré par défaut.
+
+Les couleurs et la mise en page sont dans `src/styles.css`. La pièce et les lumières sont dans `src/components/ShopScene.tsx`. Les photos de la vue 3 (tissu drapé) sont utilisées dans les compartiments lorsqu’elles existent.
+
+## Aperçu autonome
+
+Le fichier HTML livré avec le projet inclut tout le code et toutes les photos. Il peut être ouvert directement dans un navigateur moderne, sans installation ni serveur. Les restrictions du navigateur peuvent empêcher la copie automatique depuis un fichier local ; le texte de la sélection reste accessible manuellement.
+
+Pour reconstruire cet aperçu après des modifications :
+
+```sh
+pnpm catalogue
+node scripts/make-apercu.mjs /chemin/maison-des-pagnes-apercu.html
+```
+
+## GitHub et suite du projet
+
+Voir [le guide GitHub](docs/GITHUB.md). Ce projet est préparé pour un dépôt personnel, sans dépendance à l’hébergement de la première démonstration.
+
+Cette version n’enregistre ni commande ni paiement. La sélection est locale au navigateur. Le catalogue provient de fichiers ; il n’y a pas encore de base de données, d’administration, de gestion des stocks ou d’authentification. Ces éléments seront ajoutés une fois le rendu validé, puis le déploiement sera choisi.
+
+## Vérification de cette livraison
+
+Les contrôles TypeScript, les tests du catalogue/recherche/sélection et le build de production ont été exécutés. Les tests couvrent également une collection de douze pagnes à cinq vues. Les dépendances utilisées pour les contrôles étaient déjà installées dans l’environnement aux versions du projet ; une installation neuve n’a pas pu être vérifiée dans cet environnement.
+
+La navigation WebGL et le comportement tactile n’ont pas été vérifiés visuellement dans un navigateur ici. L’aperçu autonome permet cette revue sur les appareils qui serviront à la boutique.

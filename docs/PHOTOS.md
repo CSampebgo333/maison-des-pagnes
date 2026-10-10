@@ -1,0 +1,42 @@
+# Photos et fiches des pagnes
+
+Le ZIP transmis contient `pagne1` et `pagne2`, cinq vues par pagne, plus deux copies identiques. Le projet affiche uniquement ces deux modèles. Il est prêt à recevoir les dix autres modèles sans créer de faux produits.
+
+## Noms des fichiers
+
+| Exemple | Signification |
+| --- | --- |
+| `pagne1-1.webp` | Pagne 1, vue d’ensemble |
+| `pagne1-2.webp` | Pagne 1, pagne plié |
+| `pagne1-3.webp` | Pagne 1, tissu drapé |
+| `pagne1-4.webp` | Pagne 1, détail du motif |
+| `pagne1-5.webp` | Pagne 1, autre vue |
+| `pagne12-1.png` | Pagne 12, première vue |
+
+Les légendes sont définies dans `scripts/catalogue-core.mjs` et peuvent être adaptées. Les vues au-delà de 5 sont acceptées avec la légende « Vue N ». Au moins une photo est nécessaire pour afficher un pagne.
+
+Mettre les images dans `public/pagnes/`. Les aperçus facultatifs doivent conserver le même nom et la même extension dans `public/pagnes/apercus/`. Lorsqu’un aperçu manque, l’original est utilisé. Si une photo est remplacée manuellement, remplacer ou retirer son ancien aperçu également.
+
+## Fiche produit
+
+Exemple à ajouter dans `config/pagnes.json` :
+
+```json
+"pagne3": {
+  "name": "Nom du pagne",
+  "description": "Description fidèle au modèle et aux photos.",
+  "colors": ["Vert", "Blanc"],
+  "pattern": "Motif du pagne",
+  "accent": "#5a7967",
+  "price": null,
+  "unit": "",
+  "composition": "",
+  "dimensions": ""
+}
+```
+
+`price: null` affiche « Prix sur demande ». Avant d’ajouter un prix, définir la devise dans `config/boutique.json`. Renseigner la véritable unité de vente dans `unit` : par pièce, par lot, au mètre, selon les articles. La quantité dans la sélection représente des unités de vente et ne constitue pas une réservation.
+
+La composition et les dimensions apparaissent seulement lorsqu’elles sont renseignées. Les couleurs et les motifs permettent la recherche. Les nouveaux noms, descriptions et caractéristiques doivent correspondre au produit réel.
+
+Le catalogue compilé dans `src/catalogue.json` est généré : modifier les fiches dans `config/pagnes.json`, pas directement dans le fichier compilé.

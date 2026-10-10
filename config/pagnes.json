@@ -2,10 +2,13 @@
   "pagne1": {
     "name": "Rayures lavande",
     "description": "Des bandes lavande et ivoire au dessin irrégulier. Découvrez le motif à plat, le tissu drapé et une vue de près pour apprécier chaque détail.",
-    "colors": ["Violet", "Ivoire"],
+    "colors": [
+      "Violet",
+      "Ivoire"
+    ],
     "pattern": "Rayures",
     "accent": "#aaa0c7",
-    "price": null,
+    "price": 12000,
     "unit": "",
     "composition": "",
     "dimensions": ""
@@ -13,12 +16,125 @@
   "pagne2": {
     "name": "Lignes indigo",
     "description": "Un fond bleu indigo rythmé de lignes blanches et de petits accents horizontaux. Cinq vues pour découvrir le dessin et le tombé du tissu.",
-    "colors": ["Bleu", "Blanc"],
+    "colors": [
+      "Bleu",
+      "Blanc"
+    ],
     "pattern": "Rayures",
     "accent": "#24437b",
-    "price": null,
+    "price": 12000,
     "unit": "",
     "composition": "",
     "dimensions": ""
+  },
+  "pagne3": {
+    "name": "Pagne 03",
+    "description": "Découvrez ce pagne en cinq vues et zoomez sur les détails.",
+    "colors": [],
+    "pattern": "",
+    "accent": "#9c7e8c",
+    "unit": "",
+    "composition": "",
+    "dimensions": "",
+    "price": 12000
+  },
+  "pagne4": {
+    "name": "Pagne 04",
+    "description": "Découvrez ce pagne en cinq vues et zoomez sur les détails.",
+    "colors": [],
+    "pattern": "",
+    "accent": "#9c7e8c",
+    "unit": "",
+    "composition": "",
+    "dimensions": "",
+    "price": 12000
+  },
+  "pagne5": {
+    "name": "Pagne 05",
+    "description": "Découvrez ce pagne en cinq vues et zoomez sur les détails.",
+    "colors": [],
+    "pattern": "",
+    "accent": "#9c7e8c",
+    "unit": "",
+    "composition": "",
+    "dimensions": "",
+    "price": 12000
+  },
+  "pagne6": {
+    "name": "Pagne 06",
+    "description": "Découvrez ce pagne en cinq vues et zoomez sur les détails.",
+    "colors": [],
+    "pattern": "",
+    "accent": "#9c7e8c",
+    "unit": "",
+    "composition": "",
+    "dimensions": "",
+    "price": 12000
+  },
+  "pagne7": {
+    "name": "Pagne 07",
+    "description": "Découvrez ce pagne en cinq vues et zoomez sur les détails.",
+    "colors": [],
+    "pattern": "",
+    "accent": "#9c7e8c",
+    "unit": "",
+    "composition": "",
+    "dimensions": "",
+    "price": 12000
+  },
+  "pagne8": {
+    "name": "Pagne 08",
+    "description": "Découvrez ce pagne en cinq vues et zoomez sur les détails.",
+    "colors": [],
+    "pattern": "",
+    "accent": "#9c7e8c",
+    "unit": "",
+    "composition": "",
+    "dimensions": "",
+    "price": 12000
+  },
+  "pagne9": {
+    "name": "Pagne 09",
+    "description": "Découvrez ce pagne en cinq vues et zoomez sur les détails.",
+    "colors": [],
+    "pattern": "",
+    "accent": "#9c7e8c",
+    "unit": "",
+    "composition": "",
+    "dimensions": "",
+    "price": 12000
+  },
+  "pagne10": {
+    "name": "Pagne 10",
+    "description": "Découvrez ce pagne en cinq vues et zoomez sur les détails.",
+    "colors": [],
+    "pattern": "",
+    "accent": "#9c7e8c",
+    "unit": "",
+    "composition": "",
+    "dimensions": "",
+    "price": 12000
+  },
+  "pagne11": {
+    "name": "Pagne 11",
+    "description": "Découvrez ce pagne en cinq vues et zoomez sur les détails.",
+    "colors": [],
+    "pattern": "",
+    "accent": "#9c7e8c",
+    "unit": "",
+    "composition": "",
+    "dimensions": "",
+    "price": 12000
+  },
+  "pagne12": {
+    "name": "Pagne 12",
+    "description": "Découvrez ce pagne en cinq vues et zoomez sur les détails.",
+    "colors": [],
+    "pattern": "",
+    "accent": "#9c7e8c",
+    "unit": "",
+    "composition": "",
+    "dimensions": "",
+    "price": 12000
   }
 }

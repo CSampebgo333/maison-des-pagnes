@@ -402,3 +402,9 @@ em { font-weight: 400; }
 .favorite-picker { display: grid; gap: 9px; max-width: 340px; margin: 22px 0 12px; color: #674956; font-size: 12px; }
 .favorite-picker select { width: 100%; min-height: 44px; padding: 11px 12px; border: 1px solid #d8c1cc; border-radius: 5px; background: #fffaf7; color: #674956; cursor: pointer; }
 .detail-story-copy > .favorite-reference { color: #674956; margin-bottom: 18px; }
+
+/* Une présentation aérée qui conserve tout le pagne dans le cadre. */
+.detail-story-photo { aspect-ratio: 1 / 1; background: #f7f3ee; border: 1px solid #eee5df; box-shadow: 0 18px 45px #67495610; }
+.detail-story-photo img { object-fit: contain; object-position: center; padding: 12px; }
+.detail-story-photo span { background: #674956; border-color: #ffffff50; font-size: 9px; letter-spacing: .18em; border-radius: 3px; }
+@media (max-width: 700px) { .detail-story-photo { aspect-ratio: 1 / 1; } .detail-story-photo img { padding: 8px; } }

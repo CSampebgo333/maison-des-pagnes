@@ -5,5 +5,15 @@
   "currency": "XOF",
   "locale": "fr-FR",
   "country": "Burkina Faso",
-  "city": "Bobo-Dioulasso"
+  "city": "Bobo-Dioulasso",
+  "contacts": {
+    "phones": [
+      "22667196556",
+      "22674387624"
+    ],
+    "whatsapp": [
+      "22677540792",
+      "22667196556"
+    ]
+  }
 }

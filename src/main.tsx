@@ -4,3 +4,10 @@ import App from './App';
 import './styles.css';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(<React.StrictMode><App /></React.StrictMode>);
+
+// Registration runs alongside rendering and gracefully degrades if unavailable.
+if (import.meta.env.PROD && 'serviceWorker' in navigator && location.protocol === 'https:') {
+  void navigator.serviceWorker.register(`${import.meta.env.BASE_URL}image-cache-sw.js`, {
+    scope: import.meta.env.BASE_URL, updateViaCache: 'none',
+  }).catch(() => { /* Photos still load normally when local caching is blocked. */ });
+}

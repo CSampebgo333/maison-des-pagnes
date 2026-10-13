@@ -2,8 +2,10 @@ import manifest from '../image-manifest.json';
 import { asset } from './assets';
 
 type Variant = { thumbnail: string; scene: string; display: string; width: number; height: number };
+let uploadedVariants: Record<string, Variant> = {};
+export function registerImageVariants(variants: Record<string, Variant>) { uploadedVariants = variants; }
 export function imageVariant(src: string): Variant {
-  return (manifest as Record<string, Variant>)[src] ?? { thumbnail: src, scene: src, display: src, width: 1000, height: 1000 };
+  return uploadedVariants[src] ?? (manifest as Record<string, Variant>)[src] ?? { thumbnail: src, scene: src, display: src, width: 1000, height: 1000 };
 }
 // Share in-flight requests across hover, keyboard focus and the photo viewer.
 const pending = new Map<string, Promise<void>>();

@@ -1,5 +1,5 @@
 const TTL = 7 * 24 * 60 * 60 * 1000;
-const LIMIT = 8 * 1024 * 1024;
+const LIMIT = 24 * 1024 * 1024;
 const json = (value,status=200) => new Response(JSON.stringify(value),{status,headers:{'Content-Type':'application/json','Cache-Control':'no-store','X-Content-Type-Options':'nosniff'}});
 async function cleanup(bucket) {
  const page = await bucket.list({prefix:'orders/',limit:100,include:['customMetadata']});

@@ -1,3 +1,4 @@
+import { catalogueRoute } from './catalogue-service.js';
 const TTL = 7 * 24 * 60 * 60 * 1000;
 const LIMIT = 24 * 1024 * 1024;
 const json = (value,status=200) => new Response(JSON.stringify(value),{status,headers:{'Content-Type':'application/json','Cache-Control':'no-store','X-Content-Type-Options':'nosniff'}});
@@ -8,6 +9,7 @@ async function cleanup(bucket) {
 export default {
  async fetch(request, env) {
   const url=new URL(request.url);
+  const catalogueResponse=await catalogueRoute(request,env);if(catalogueResponse)return catalogueResponse;
   if(url.pathname==='/api/order-pdfs' && request.method==='POST') {
    if(!env.BUCKET) return json({error:'Le stockage des PDF est temporairement indisponible.'},503);
    if(request.headers.get('Origin')!==url.origin) return json({error:'Origine non autorisée.'},403);

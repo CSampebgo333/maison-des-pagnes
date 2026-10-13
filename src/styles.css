@@ -70,10 +70,11 @@ main { max-width: 1600px; margin: auto; }
 .scene-canvas canvas { touch-action: none; cursor: grab; }
 .shop-stage::after { content: ''; position: absolute; inset: 0; z-index: 0; background: linear-gradient(90deg, #f2ece2c2 0%, #f0e8dd14 42%, transparent 65%); pointer-events: none; }
 .shop-stage.with-intro::after { background: linear-gradient(90deg, #f5efe8f2 0%, #f1e9e1e0 21%, #eadfd185 37%, transparent 58%); }
-.stage-topline, .stage-bottomline { position: absolute; left: 25px; right: 25px; z-index: 4; display: flex; justify-content: space-between; align-items: center; gap: 15px; }
-.stage-topline { top: 20px; }
+.stage-bottomline { position: absolute; left: 25px; right: 25px; z-index: 4; display: flex; justify-content: space-between; align-items: center; gap: 15px; }
 .stage-bottomline { bottom: 20px; }
-.room-badge { display: flex; align-items: center; gap: 7px; padding: 8px 12px; border: 1px solid #ffffff69; background: #fff9f1c9; backdrop-filter: blur(10px); border-radius: 20px; font-size: 13px; letter-spacing: .03em; color: #6c5356; }
+.scene-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: -4px 0 10px; min-height: 44px; }
+.room-badge { display: flex; align-items: center; gap: 7px; font-size: 13px; letter-spacing: .03em; color: #6c5356; }
+.scene-heading .stage-icon { background: #f0e9e3; border-color: #e4d8dc; backdrop-filter: none; flex-shrink: 0; }
 .room-badge i { width: 5px; height: 5px; background: #998058; border-radius: 50%; }
 .stage-icon, .tour-button { display: inline-flex; align-items: center; justify-content: center; color: #514048; background: #fffaf1da; backdrop-filter: blur(10px); border: 1px solid #ffffff6e; min-width: 35px; height: 35px; border-radius: 5px; }
 .stage-icon:hover, .tour-button:hover { background: #fffdf8; }
@@ -314,10 +315,9 @@ em { font-weight: 400; }
   .intro-card .primary-button { padding: 13px 17px; min-width: 210px; min-height: 43px; }
   .intro-detail { display: none; }
   .intro-secondary { font-size: 12px; margin-top: 6px; }
-  .stage-topline, .stage-bottomline { left: 14px; right: 14px; }
-  .stage-topline { top: 14px; }
+  .stage-bottomline { left: 14px; right: 14px; }
   .stage-bottomline { bottom: 14px; align-items: flex-end; }
-  .room-badge { font-size: 12px; padding: 8px 10px; }
+  .room-badge { font-size: 13px; }
   .navigation-hint { font-size: 11px; max-width: 120px; line-height: 1.6; padding: 5px; background: #f9f3e9d6; }
   .stage-icon, .tour-button { min-width: 35px; height: 37px; }
   .tour-button { padding: 0 10px; gap: 6px; font-size: 12px; }

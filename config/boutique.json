@@ -1,7 +1,9 @@
 {
   "name": "Maison des Pagnes",
   "tagline": "Le tissu, sous tous les angles.",
-  "whatsapp": "",
+  "whatsapp": "22677540792",
   "currency": "XOF",
-  "locale": "fr-FR"
+  "locale": "fr-FR",
+  "country": "Burkina Faso",
+  "city": "Bobo-Dioulasso"
 }

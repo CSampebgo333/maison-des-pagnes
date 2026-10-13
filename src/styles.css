@@ -14,6 +14,7 @@
   --plum-deep: #3a2532;
   --cream: #fbf8f3;
   --muted: #7d7274;
+  --text-accent: #963f65;
   --line: #e7dfd7;
   --sans: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   --serif: 'Lora', Georgia, serif;
@@ -83,7 +84,7 @@ main { max-width: 1600px; margin: auto; }
 .tour-button.is-touring { color: #f9f3ee; background: var(--plum); border-color: var(--plum); }
 .navigation-hint { padding: 8px 10px; font-size: 13px; letter-spacing: .025em; color: #765f64; background: #f5eee5bf; border-radius: 4px; }
 .intro-card { position: absolute; top: 50%; left: 46px; z-index: 3; transform: translateY(-48%); width: 340px; }
-.eyebrow { font-size: 12px; line-height: 1.7; font-weight: 500; letter-spacing: .17em; color: #987864; }
+.eyebrow { font-size: 12px; line-height: 1.7; font-weight: 500; letter-spacing: .17em; color: var(--text-accent); }
 .intro-card .eyebrow { margin-bottom: 16px; font-size: 11px; }
 .intro-card h1 { font-family: var(--serif); font-size: clamp(45px, 4.4vw, 66px); font-weight: 400; line-height: 1.06; letter-spacing: -.045em; color: #4b3441; }
 em { font-weight: 400; }
@@ -96,7 +97,7 @@ em { font-weight: 400; }
 .intro-secondary { display: flex; gap: 9px; align-items: center; font-size: 13px; margin-top: 11px; padding: 9px 0; color: #8a7279; }
 .intro-detail { display: flex; gap: 21px; margin-top: 25px; padding-top: 14px; border-top: 1px solid #b4a3954d; max-width: 260px; font-size: 11px; letter-spacing: .12em; color: #a08a87; }
 .stage-title { pointer-events: none; position: absolute; top: 100px; left: 35px; z-index: 3; }
-.stage-title .eyebrow { font-size: 11px; color: #97796a; }
+.stage-title .eyebrow { font-size: 11px; color: var(--text-accent); }
 .stage-title p { margin-top: 10px; font-family: var(--serif); font-size: 30px; line-height: 1.2; letter-spacing: -.025em; color: #5f4253; }
 .stage-title em { color: #977481; }
 .movement-controls { position: absolute; bottom: 80px; left: 27px; z-index: 4; display: flex; align-items: flex-end; gap: 15px; }
@@ -106,7 +107,7 @@ em { font-weight: 400; }
 .movement-pad button:hover, .scene-zoom button:hover { background: white; }
 .scene-zoom { display: flex; flex-direction: column; gap: 3px; }
 .hover-card { position: absolute; z-index: 5; left: 50%; bottom: 85px; transform: translateX(-50%); display: flex; flex-direction: column; gap: 5px; padding: 14px 20px; min-width: 200px; background: #fffbf1ed; border: 1px solid #fff; box-shadow: 0 10px 25px #32262716; border-radius: 5px; pointer-events: none; }
-.hover-card > span { color: #997e74; font-size: 11px; letter-spacing: .1em; }
+.hover-card > span { color: var(--text-accent); font-size: 11px; letter-spacing: .1em; }
 .hover-card strong { font-family: var(--serif); font-weight: 400; font-size: 19px; }
 .hover-card small { display: flex; align-items: center; gap: 5px; font-size: 12px; color: #8d7a7d; }
 .loading-label { position: absolute; top: 75px; left: 50%; transform: translateX(-50%); z-index: 5; font-size: 13px; color: #755663; background: #fff8efd9; padding: 8px 14px; border-radius: 20px; }
@@ -222,7 +223,7 @@ em { font-weight: 400; }
 .detail-selection-note { display: flex; align-items: center; justify-content: center; gap: 5px; margin: 10px 0 12px; color: #75616d; font-size: 11px; }
 .product-details > .text-button { display: flex; justify-content: space-between; width: 100%; padding: 9px 0; font-size: 13px; color: #926c82; }
 .detail-tip { padding: 16px; margin-top: 17px; background: #f0e8e7; border-radius: 4px; }
-.detail-tip span { font-size: 11px; letter-spacing: .14em; color: #a3878a; }
+.detail-tip span { font-size: 11px; letter-spacing: .14em; color: var(--text-accent); }
 .detail-tip p { font-size: 12px; line-height: 1.8; color: #75616d; margin-top: 7px; }
 
 .bag-drawer { position: fixed; z-index: 50; right: 0; top: 0; bottom: 0; width: min(460px, 100%); padding: 32px; display: flex; flex-direction: column; overflow: auto; background: #fcf8f2; box-shadow: -10px 0 60px #28102129; }

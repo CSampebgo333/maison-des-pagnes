@@ -32,7 +32,15 @@ export default {
    return new Response(request.method==='HEAD'?null:object.body,{headers:{'Content-Type':'application/pdf','Content-Disposition':'inline; filename="bon-de-commande.pdf"','Cache-Control':'private, no-store','X-Content-Type-Options':'nosniff','Referrer-Policy':'no-referrer','X-Robots-Tag':'noindex, nofollow, noarchive'}});
   }
   if(url.pathname.startsWith('/api/')||url.pathname.startsWith('/order-pdfs/'))return new Response('Introuvable',{status:404});
-  if(env.ASSETS)return env.ASSETS.fetch(request);
+  if(env.ASSETS){
+   const response=await env.ASSETS.fetch(request);
+   // Content hashes change whenever a photo changes: safe, long-lived caching.
+   if(response.ok && /^\/media\/[a-zA-Z0-9-]+-[a-f0-9]{12}\.webp$/.test(url.pathname)){
+    const headers=new Headers(response.headers);headers.set('Content-Type','image/webp');headers.set('Cache-Control','public, max-age=31536000, immutable');
+    return new Response(response.body,{status:response.status,headers});
+   }
+   return response;
+  }
   return new Response('Ressource introuvable',{status:404});
  }
 };

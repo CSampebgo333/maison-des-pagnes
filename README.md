@@ -150,3 +150,11 @@ Livraison proposée à Ouagadougou et Bobo-Dioulasso. Les autres villes du Burki
 La composition du salon et ses textes d’accueil restent en place dans la 3D. Les dimensions de la pièce sont conservées, avec un cadrage légèrement élargi. Les niches latérales sont inclinées de 16 degrés vers l’entrée ; le bois est clair, les murs crème et les détails dorés. L’éclairage est plus doux, avec une carte d’ombres statique ; les couleurs des photos restent inchangées.
 
 Toucher un pagne déclenche une approche courte avant sa fiche (0,65 à 1,5 seconde), annulable par un nouveau geste. Avec la réduction des animations, la fiche s’ouvre directement. Sur mobile, les commandes Précédent, Suivant et Vue d’ensemble sont sous le salon et permettent d’approcher tous ses pagnes sans déplacement libre. Les textes à l’intérieur sont conservés. Le glissement, le pincement et la visite guidée restent disponibles. La revue visuelle sur un vrai téléphone reste nécessaire.
+
+## Préparation du référencement
+
+Titre et description nomment le Faso Dan Fani et le Burkina Faso. L’accueil contient une présentation HTML lisible avant JavaScript, avec les villes desservies et les contacts réels ; React la remplace par l’application interactive. Le build ajoute des données structurées Organization, robots.txt et sitemap.xml. Aucun avis, certification, stock ou adresse précise n’est inventé.
+
+L’aperçu privé reste non indexable. Au déploiement public, fournir la variable de build `PUBLIC_SITE_URL=https://votre-domaine/` (origine HTTPS réelle sans chemin). Le build prépare alors la canonique, les aperçus sociaux, le sitemap et l’autorisation d’indexation. Cette variable ne rend pas un site privé public. Vérifier les accès publics réels et la protection de la gestion avant l’ouverture. Les PDF et les API restent exclus du sitemap ; les PDF portent aussi un en-tête noindex côté serveur.
+
+Après choix du domaine : vérifier la propriété dans Google Search Console, soumettre /sitemap.xml, contrôler l’URL et demander l’indexation. Prévoir ensuite de vraies pages publiques par produit, avec rendu serveur du catalogue actualisé et données Product fiables. Le catalogue actuel dans la 3D et les fenêtres produit ne constitue pas encore ces pages séparées. L’indexation et les positions dans Google ne sont jamais garanties.

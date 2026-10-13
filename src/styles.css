@@ -464,6 +464,12 @@ em { font-weight: 400; }
 .order-ready { margin-top: 25px; padding-top: 20px; border-top: 1px solid #d8c1cc; }.order-ready h3 { font: 26px var(--serif); }
 .order-ready .primary-button { width: 100%; margin-top: 12px; }.order-ready .underlined-button { margin: 15px 15px 8px 0; }.whatsapp-order { background: #25d366; color: #083b1d; }
 .whatsapp-order:hover { background: #1fbd5c; }
+.order-ready .primary-button:not(.whatsapp-order) { background: #dcebe2; color: #28513c; border: 1px solid #bfd7c8; }
+.order-ready .primary-button:not(.whatsapp-order):hover { background: #cce1d4; }
+.order-ready .underlined-button { background: #edf4ef; color: #365b47; border: 1px solid #d0e0d5; border-radius: 6px; padding: 12px 16px; min-height: 48px; gap: 10px; font-size: 14px; transition: background .2s; }
+.order-ready .underlined-button:hover { background: #dfede4; }
+@media (max-width: 480px) { .order-ready .underlined-button { width: 100%; margin: 10px 0 0; justify-content: center; } }
+
 @media (max-width: 480px) { .order-dialog { padding: 20px; }.order-form fieldset { grid-template-columns: 1fr; }.order-heading h2 { font-size: 27px; } }
 
 .culture-note { margin: 65px 8%; max-width: 740px; color: #674956; }

@@ -1,6 +1,6 @@
 import { basename } from 'node:path';
 
-export const labels = { 1: 'Vue d’ensemble', 2: 'Pagne plié', 3: 'Tissu drapé', 4: 'Détail du motif', 5: 'Autre vue' };
+export const labels = { 1: 'Vue d’ensemble', 2: 'Pagne plié', 3: 'Pagne drapé', 4: 'Détail du motif', 5: 'Autre vue' };
 
 export function groupPhotos(files) {
   const groups = new Map();

@@ -31,3 +31,14 @@ test('Seules les photos versionnées ont un cache immuable ; les erreurs ne sont
  const missing=await worker.fetch(new Request('https://shop.test/media/pagne1-1-scene-123456789abc.webp'),{ASSETS:{fetch:async ()=>new Response('missing',{status:404})}});
  assert.equal(missing.status,404);assert.notEqual(missing.headers.get('Cache-Control'),response.headers.get('Cache-Control'));
 });
+
+test('Les PDF partagés par lien restent bornés à 24 Mo, y compris les corps sans taille déclarée', async () => {
+ const url='https://shop.test/api/order-pdfs';
+ const headers={Origin:'https://shop.test','Content-Type':'application/pdf','Content-Length':String(24*1024*1024+1)};
+ assert.equal((await worker.fetch(new Request(url,{method:'POST',headers,body:'%PDF-1.4\nDocument de test\n%%EOF'}),{BUCKET:{}})).status,413);
+ let cancelled=false;
+ const chunk=new Uint8Array(4*1024*1024);let count=0;
+ const stream=new ReadableStream({pull(controller){controller.enqueue(count++<6?chunk:new Uint8Array(1));},cancel(){cancelled=true;}});
+ const response=await worker.fetch(new Request(url,{method:'POST',headers:{Origin:'https://shop.test','Content-Type':'application/pdf'},body:stream,duplex:'half'}),{BUCKET:{}});
+ assert.equal(response.status,413);assert.equal(cancelled,true);
+});

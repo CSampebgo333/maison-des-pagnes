@@ -1,4 +1,4 @@
-# Maison des Pagnes
+# Maison du Faso Dan Fani
 
 Une boutique de pagnes en français, avec une visite en 3D et une galerie classique. Cette première version se concentre sur le rendu et les interactions. Elle utilise les douze pagnes et soixante photos uniques des deux ZIP fournis.
 
@@ -31,7 +31,7 @@ Le build de production se trouve dans `dist/`. Aucune publication automatique n�
 - Galerie disponible directement et utilisée automatiquement si WebGL est indisponible.
 - Sélection des pagnes avec quantités, conservée sur l’appareil et partageable sous forme de texte.
 
-Les photos sont présentées dans un espace 3D ; elles ne sont pas des modèles volumétriques du tissu. Le nom de la boutique et les noms descriptifs sont provisoires. Chaque pagne coûte 12 000 CFA (XOF), selon le prix fourni. Aucun matériau, longueur ou stock n’est inventé.
+Les photos sont présentées dans un espace 3D ; elles ne sont pas des modèles volumétriques du tissu. Les noms des pagnes décrivent les motifs visibles sur leurs photos. Chaque pagne coûte 12 000 CFA (XOF), selon le prix fourni. Aucun matériau, longueur ou stock n’est inventé.
 
 ## Ajouter de nouveaux pagnes
 
@@ -61,13 +61,13 @@ Renseigner les noms, couleurs, descriptions et futurs prix dans `config/pagnes.j
 
 ## Personnaliser la boutique
 
-`config/boutique.json` contient le nom, la signature et le futur numéro WhatsApp. `currency` doit contenir une devise ISO lorsque des prix sont ajoutés : par exemple `XOF`, `GHS` ou `EUR`, selon la devise réelle de la boutique. Le numéro WhatsApp, s’il est renseigné, doit inclure l’indicatif international. Aucun numéro n’est configuré par défaut.
+`config/boutique.json` contient le nom, la signature et le futur numéro WhatsApp. `currency` doit contenir une devise ISO lorsque des prix sont ajoutés : par exemple `XOF`, `GHS` ou `EUR`, selon la devise réelle de la boutique. Le numéro WhatsApp, s’il est renseigné, doit inclure l’indicatif international. Le numéro WhatsApp de la boutique est configuré dans ce fichier.
 
 Les couleurs et la mise en page sont dans `src/styles.css`. La pièce et les lumières sont dans `src/components/ShopScene.tsx`. La vue numéro 1 est l’image principale dans les compartiments, la galerie et la sélection. Les autres vues ne sont accessibles qu’après ouverture de la fiche du pagne.
 
 ## Aperçu autonome
 
-Le fichier HTML livré avec le projet inclut tout le code et toutes les photos. Il peut être ouvert directement dans un navigateur moderne, sans installation ni serveur. Les restrictions du navigateur peuvent empêcher la copie automatique depuis un fichier local ; le texte de la sélection reste accessible manuellement.
+L’ancien fichier HTML autonome inclut le code et les photos de sa version de démonstration. Il ne propose pas la gestion serveur du catalogue ni les actualisations de cette version hébergée. Il peut être ouvert directement dans un navigateur moderne, sans installation ni serveur. Les restrictions du navigateur peuvent empêcher la copie automatique depuis un fichier local ; le texte de la sélection reste accessible manuellement.
 
 Pour reconstruire cet aperçu après des modifications :
 
@@ -80,7 +80,7 @@ node scripts/make-apercu.mjs /chemin/maison-des-pagnes-apercu.html
 
 Voir [le guide GitHub](docs/GITHUB.md). Ce projet est préparé pour un dépôt personnel, sans dépendance à l’hébergement de la première démonstration.
 
-Cette version n’enregistre ni commande ni paiement. La sélection est locale au navigateur. Le catalogue provient de fichiers ; il n’y a pas encore de base de données, d’administration, de gestion des stocks ou d’authentification. Ces éléments seront ajoutés une fois le rendu validé, puis le déploiement sera choisi.
+Cette version n’enregistre ni commande ni paiement. La sélection est locale au navigateur. Le catalogue initial provient de fichiers. Une gestion protégée permet désormais de modifier les pagnes et leur disponibilité dans le stockage de l’hébergement. Voir la section Gestion du catalogue, favoris et livraison ci-dessous.
 
 ## Vérification de cette livraison
 
@@ -128,3 +128,19 @@ Le lien WhatsApp conserve le même fonctionnement et expire après sept jours.
 La limite du PDF partagé par lien est de 24 Mo ; le téléchargement et le partage
 direct restent disponibles pour un document plus volumineux. Les photos des
 clients ne sont pas enregistrées dans le catalogue ni dans son cache local.
+
+## Gestion du catalogue, favoris et livraison
+
+L’espace **Gérer la boutique** (en pied de page) ou `/?gestion=1` permet d’ajouter et modifier les pagnes : prix en CFA hors livraison, disponibilité, description, dimensions, contenu de l’achat, couleurs, occasions et de 1 à 8 photos. La première photo est toujours l’image principale. Un pagne peut être masqué puis réaffiché sans suppression de ses données.
+
+La gestion vérifie côté serveur l’identité ChatGPT transmise par Sites et la variable secrète `CATALOGUE_ADMIN_EMAIL`. Elle reste interdite aux autres comptes et aux visiteurs anonymes, y compris après une future publication publique. Le compte propriétaire actuel est configuré. Pour l’usage autonome de la maman, configurer son compte autorisé et l’accès au site lors de la mise en production ; ne jamais mettre un mot de passe ou cette configuration dans le code client. Sur un autre hébergement, remplacer cette vérification par une authentification serveur fiable : les en-têtes d’identité doivent provenir d’un proxy de confiance.
+
+Les changements sont stockés durablement dans R2 sous `catalogue/current.json`, séparément des PDF de commande. Chaque sauvegarde conserve une version précédente sous `catalogue/history/`. La révision et l’ETag empêchent d’écraser une modification concurrente : si un conflit apparaît, recharger la gestion avant de réessayer. Les fichiers retirés d’une fiche sont conservés pour les versions précédentes. Les uploads abandonnés ne sont pas automatiquement purgés dans cette version.
+
+Chaque upload JPEG/PNG (6 Mo, 24 mégapixels maximum) conserve son original et produit automatiquement trois WebP : miniature 200 px / 100 Ko maximum, boutique 3D 650 px / 300 Ko, galerie 1000 px / 600 Ko. Le traitement est séquentiel sur l’appareil et l’envoi est validé côté serveur. Les variantes portent une empreinte de contenu et bénéficient du cache d’images existant ; le zoom et les PDF utilisent l’original. Les nouvelles photos rejoignent tous les parcours existants. La galerie comprend toute la collection ; la 3D propose des salons de 12 articles. La limite actuelle est de 200 pagnes.
+
+Le catalogue source JSON demeure le catalogue initial et de secours. Les mises à jour effectuées dans la gestion ne nécessitent ni GitHub ni nouveau déploiement et prennent priorité sur ce catalogue. Elles sont sauvegardées dans le stockage de l’hébergement, pas dans Git. Le code ne considère pas le catalogue de secours comme une preuve de disponibilité : les prix et disponibilités sont revérifiés avant création d’un bon PDF.
+
+Les favoris sont multiples et mémorisés sur l’appareil (`maison-faso-favoris-v1`), distincts du choix À la une et du panier. Une vue Favoris et un filtre par occasion sont disponibles dans la collection ; les occasions initiales viennent des descriptions existantes et restent éditables dans la gestion. Ces suggestions n’excluent pas les autres usages d’un pagne.
+
+Livraison proposée à Ouagadougou et Bobo-Dioulasso. Les autres villes du Burkina Faso sont étudiées selon la situation générale. Les prix affichés concernent les pagnes hors livraison ; les frais et délais doivent être convenus avec la boutique avant accord. Retrait à Bobo-Dioulasso, lieu et heure à convenir. La disponibilité initiale est « À confirmer », faute de stock réel renseigné. « Disponible en stock », « Sur commande » et « Indisponible pour le moment » se règlent par produit. Un modèle indisponible reste consultable et peut être favori, mais ne peut être ajouté ou validé dans une commande.

@@ -110,3 +110,21 @@ impose un cache court. Il exclut les PDF, les commandes, les pages HTML, les
 réponses d'authentification et les erreurs. Si le navigateur refuse ce cache,
 le chargement normal reste disponible. La première visite nécessite toujours
 le téléchargement des images ; les visites suivantes bénéficient du cache.
+
+### Demander un pagne hors galerie
+
+Le bouton « Demander ce pagne » permet de préparer une demande avec une photo,
+une quantité et des précisions, sans sélectionner un produit du catalogue.
+Le formulaire d'une commande classique peut également ajouter cette demande.
+Le prix et la disponibilité sont à confirmer par la boutique ; le sous-total
+ne comprend que les articles de la galerie. Aucun achat n'est confirmé avant
+accord sur le prix.
+
+Les photos JPEG/PNG sont limitées à 6 Mo et 24 mégapixels. Le PDF contient une
+page photo complète : le JPEG est incorporé sans réencodage, et le PNG sans
+réduction de résolution ni compression avec perte. L'orientation EXIF est
+appliquée à l'affichage, sans modifier la photo. Le bon est créé localement.
+Le lien WhatsApp conserve le même fonctionnement et expire après sept jours.
+La limite du PDF partagé par lien est de 24 Mo ; le téléchargement et le partage
+direct restent disponibles pour un document plus volumineux. Les photos des
+clients ne sont pas enregistrées dans le catalogue ni dans son cache local.

@@ -103,3 +103,10 @@ vues voisines et chargent l'original lorsque le visiteur zoome. L'anticipation
 est désactivée si le navigateur annonce une économie de données ou un réseau
 2G. La scène conserve ses textures lors des filtres et ne se redessine que si
 la caméra ou son contenu change. Les bons de commande restent hors du cache.
+
+Un service worker conserve localement jusqu'à 96 variantes versionnées déjà
+consultées. Il évite leur revalidation réseau dans les aperçus dont l'hébergement
+impose un cache court. Il exclut les PDF, les commandes, les pages HTML, les
+réponses d'authentification et les erreurs. Si le navigateur refuse ce cache,
+le chargement normal reste disponible. La première visite nécessite toujours
+le téléchargement des images ; les visites suivantes bénéficient du cache.

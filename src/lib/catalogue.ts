@@ -31,5 +31,5 @@ export function readBag(raw: string | null, products: Product[]): BagItem[] {
 }
 
 export const photoLabels: Record<number, string> = {
-  1: 'Vue d’ensemble', 2: 'Pagne plié', 3: 'Tissu drapé', 4: 'Détail du motif', 5: 'Autre vue',
+  1: 'Vue d’ensemble', 2: 'Pagne plié', 3: 'Pagne drapé', 4: 'Détail du motif', 5: 'Autre vue',
 };

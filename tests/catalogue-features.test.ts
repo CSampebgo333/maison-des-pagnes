@@ -1,0 +1,10 @@
+import {test} from 'node:test';
+import assert from 'node:assert/strict';
+import {readFavorites,productOccasions,availabilityLabel} from '../src/lib/catalogue-features.ts';
+import {readBag} from '../src/lib/catalogue.ts';
+import {validateOrder} from '../src/lib/order.ts';
+import type {Product} from '../src/lib/types.ts';
+const p={id:'new-model',description:'Une belle idée pour un mariage traditionnel ou une fête en famille.',price:12000} as Product;
+test('Les favoris résistent aux données corrompues, dédoublonnent et gardent les modèles ajoutés',()=>{assert.deepEqual(readFavorites('["new-model","new-model",null,3,"<script>"]'),['new-model']);assert.deepEqual(readFavorites('oops'),[]);assert.deepEqual(readBag('[{"id":"new-model","quantity":2}]'),[{id:'new-model',quantity:2}]);});
+test('Les occasions viennent des descriptions existantes ou du choix explicite de la gestion',()=>{assert.deepEqual(productOccasions(p),['Mariage traditionnel','Fête en famille']);assert.deepEqual(productOccasions({...p,occasions:['Cadeau']}),['Cadeau']);assert.deepEqual(productOccasions({...p,occasions:[]}),[]);assert.equal(availabilityLabel(p),'Disponibilité à confirmer');});
+test('Un modèle indisponible ne peut pas entrer dans une demande de commande',()=>{assert.match(validateOrder({name:'Test',phone:'+22670000000',city:'Ouagadougou',mode:'livraison',address:'Quartier de test',deadline:'2026-10-20',notes:''},[{product:{...p,availability:'unavailable'},quantity:1}],'2026-10-13'),/indisponible/);});

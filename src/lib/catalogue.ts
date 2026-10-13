@@ -16,13 +16,13 @@ export function findProducts(products: Product[], query: string, color = '', sor
   return result;
 }
 
-export function readBag(raw: string | null, products: Product[]): BagItem[] {
+export function readBag(raw: string | null, products?: Product[]): BagItem[] {
   try {
     const items: unknown = JSON.parse(raw ?? '[]');
     if (!Array.isArray(items)) return [];
     const unique = new Map<string, number>();
     for (const item of items) {
-      if (item && typeof item.id === 'string' && products.some((p) => p.id === item.id) && Number.isInteger(item.quantity) && item.quantity > 0) {
+      if (item && typeof item.id === 'string' && (!products || products.some((p) => p.id === item.id)) && Number.isInteger(item.quantity) && item.quantity > 0) {
         unique.set(item.id, Math.min(99, (unique.get(item.id) ?? 0) + item.quantity));
       }
     }

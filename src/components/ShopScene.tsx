@@ -124,6 +124,7 @@ const ShopScene = forwardRef<SceneHandle,Props>(function ShopScene(props,ref) {
     const loader=new THREE.TextureLoader();
     // Textures belong to the scene, not to individual slots. Filters reuse them.
     const photoCache = new Map<string, Promise<THREE.Texture<HTMLImageElement> | null>>();
+    const loadedPhotos = new Map<string, THREE.Texture>();
     function loadPhoto(path:string) {
       if (!photoCache.has(path)) photoCache.set(path,new Promise(resolve => {
         loader.load(asset(path),texture => {
@@ -131,7 +132,7 @@ const ShopScene = forwardRef<SceneHandle,Props>(function ShopScene(props,ref) {
           texture.offset.set(.12,.12);texture.repeat.set(.76,.76);
           texture.colorSpace=THREE.SRGBColorSpace;
           texture.anisotropy=Math.min(4,renderer.capabilities.getMaxAnisotropy());
-          textures.add(texture);resolve(texture);
+          textures.add(texture);loadedPhotos.set(path,texture);resolve(texture);
         },undefined,()=>{photoCache.delete(path);resolve(null);});
       }));
       return photoCache.get(path)!;
@@ -160,7 +161,11 @@ const ShopScene = forwardRef<SceneHandle,Props>(function ShopScene(props,ref) {
             const m=f.photo.material as THREE.MeshBasicMaterial;m.map=texture;m.needsUpdate=true;f.photo.visible=true;
           }
           dirty=true;current.current.onProgress(++completed,total);
-          if(completed===total)current.current.onReady();
+          if(completed===total){
+            current.current.onReady();
+            const used=new Set(fixtureList.map(f=>f.texture));
+            for(const [key,cached] of loadedPhotos){if(loadedPhotos.size<=24)break;if(used.has(cached))continue;cached.dispose();textures.delete(cached);loadedPhotos.delete(key);photoCache.delete(key);}
+          }
         });
       });
     };

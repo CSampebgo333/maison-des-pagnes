@@ -577,3 +577,23 @@ button, input, select, textarea { line-height: 1.45; }
 @media(max-width:1000px){.header-actions{gap:12px;}.admin-layout{grid-template-columns:230px minmax(0,1fr);}.admin-photo-grid{grid-template-columns:repeat(2,minmax(0,1fr));}.filters{flex-wrap:wrap;gap:8px 16px;}.collection-toolbar{flex-wrap:wrap;}}
 @media(max-width:760px){.favorites-nav > span{display:none;}.header-actions{gap:8px;}.favorites-nav{padding:6px;}.filters label:last-child{display:flex;}.filters{flex-wrap:wrap;}.delivery-info{margin:35px 5%;padding:22px;}.delivery-info > div{grid-template-columns:1fr;gap:20px;}.delivery-info h2{font-size:30px;}.admin-heading{flex-direction:column;gap:14px;}.admin-layout{grid-template-columns:1fr;gap:20px;}.admin-list{position:static;max-height:240px;border-bottom:1px solid #e7d9df;}.admin-editor{padding:18px;}.admin-editor fieldset{grid-template-columns:1fr;}.scene-pages{font-size:12px;}.scene-pages button{font-size:13px;}.scene-pages span{text-align:center;}.product-price small{display:block;font-size:12px;}.stock-label{font-size:12px;padding:4px 8px;}}
 @media(max-width:380px){.admin-photo-grid{grid-template-columns:1fr;}.header-actions{gap:2px;}.favorites-nav{gap:4px;}}
+
+/* Un salon dégagé : l’accueil et les commandes tactiles restent hors des photos. */
+.scene-welcome { display:flex;align-items:center;justify-content:space-between;gap:28px;padding:22px 0 24px; }
+.scene-welcome h1 { font:clamp(28px,3vw,42px)/1.22 var(--serif);color:var(--plum);margin:8px 0 10px;letter-spacing:-.035em; }
+.scene-welcome h1 em { color:#987486; }.scene-welcome p:not(.eyebrow) { color:#75616d;font-size:15px; }.scene-welcome > button { flex-shrink:0; }
+.refined-stage { background:#f2ebe1;border:1px solid #e6d9c8;box-shadow:0 16px 36px #5537470a; }
+.refined-stage::after { background:linear-gradient(0deg,#f3eade50,transparent 18%); }
+.refined-stage .stage-bottomline { bottom:14px;left:16px;right:16px; }
+.refined-stage .stage-icon, .refined-stage .tour-button { background:#fffaf2ed;border-color:#eadfce;box-shadow:0 2px 8px #5537470c;min-height:44px; }
+.overview-button { gap:7px;padding:0 12px;font-size:13px; }
+.refined-stage .navigation-hint { background:#fffaf2df;color:#674956;font-size:12px; }
+.refined-stage .movement-controls { bottom:76px; }
+.refined-stage .movement-pad button,.refined-stage .scene-zoom button { width:40px;height:40px;border:1px solid #e6d9c8;background:#fffaf2eb; }
+.mobile-scene-navigation { display:none; }.mobile-scene-product { width:100%; }
+@media(max-width:760px){
+ .scene-welcome{flex-direction:column;align-items:flex-start;gap:16px;padding:16px 0 20px;}.scene-welcome h1{font-size:30px;}.scene-welcome h1 em{display:block;}.scene-welcome>button{min-height:48px;width:100%;}
+ .refined-stage{height:clamp(390px,56svh,540px);max-height:none;min-height:0;}.refined-stage .movement-controls{display:none;}.refined-stage .navigation-hint{display:none;}.refined-stage .stage-bottomline{justify-content:center;bottom:12px;left:10px;right:10px;}.refined-stage .overview-button{display:none;}.refined-stage .stage-actions{justify-content:center;gap:10px;}.refined-stage .tour-button{min-height:48px;padding:0 16px;font-size:13px;}.refined-stage .stage-icon{min-width:48px;min-height:48px;}
+ .mobile-scene-navigation{display:block;margin-top:12px;}.mobile-scene-buttons{display:grid;grid-template-columns:1fr 1.25fr 1fr;gap:7px;}.mobile-scene-buttons>button{display:flex;align-items:center;justify-content:center;gap:6px;min-height:52px;padding:9px 7px;border-radius:7px;border:1px solid #dfccd5;background:#f5edf0;color:#674956;font-size:13px;}.mobile-scene-buttons>button:nth-child(2){background:#fbf6ec;border-color:#e1d5bd;}.mobile-scene-buttons svg{flex-shrink:0;}.mobile-scene-buttons>button:active{background:#eadce5;}.mobile-scene-product{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px;margin-top:9px;padding:12px 14px;border-radius:6px;background:#fffaf5;border:1px solid #e6d8dd;color:#674956;font-size:14px;text-align:left;min-height:48px;}.mobile-scene-product>span:last-child{display:flex;align-items:center;gap:6px;font-size:13px;}
+}
+@media(max-width:380px){.mobile-scene-buttons>button{flex-direction:column;font-size:12px;gap:4px;}.refined-stage .stage-actions{gap:8px;}}

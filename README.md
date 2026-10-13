@@ -87,3 +87,19 @@ Cette version n’enregistre ni commande ni paiement. La sélection est locale a
 Les contrôles TypeScript, les tests du catalogue/recherche/sélection et le build de production ont été exécutés. Les tests couvrent également une collection de douze pagnes à cinq vues. Les dépendances utilisées pour les contrôles étaient déjà installées dans l’environnement aux versions du projet ; une installation neuve n’a pas pu être vérifiée dans cet environnement.
 
 La navigation WebGL et le comportement tactile n’ont pas été vérifiés visuellement dans un navigateur ici. L’aperçu autonome permet cette revue sur les appareils qui serviront à la boutique.
+
+### Images et performances
+
+Les originaux dans `public/pagnes` restent disponibles pour le zoom et les PDF.
+La boutique utilise des variantes WebP adaptées : miniature 200 px, galerie/3D
+650 px, fiche produit 1 000 px. Après une importation ou un remplacement,
+exécuter `python scripts/optimize-images.py` (Pillow requis), puis `pnpm build`.
+Le script génère `src/image-manifest.json` et les fichiers `public/media` avec
+une empreinte dans leur nom. Ces fichiers peuvent être mis en cache un an sans
+risquer d'afficher une ancienne photo après une mise à jour.
+
+Les fiches affichent un aperçu pendant le chargement, anticipent seulement les
+vues voisines et chargent l'original lorsque le visiteur zoome. L'anticipation
+est désactivée si le navigateur annonce une économie de données ou un réseau
+2G. La scène conserve ses textures lors des filtres et ne se redessine que si
+la caméra ou son contenu change. Les bons de commande restent hors du cache.

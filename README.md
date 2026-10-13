@@ -144,3 +144,13 @@ Le catalogue source JSON demeure le catalogue initial et de secours. Les mises �
 Les favoris sont multiples et mémorisés sur l’appareil (`maison-faso-favoris-v1`), distincts du choix À la une et du panier. Une vue Favoris et un filtre par occasion sont disponibles dans la collection ; les occasions initiales viennent des descriptions existantes et restent éditables dans la gestion. Ces suggestions n’excluent pas les autres usages d’un pagne.
 
 Livraison proposée à Ouagadougou et Bobo-Dioulasso. Les autres villes du Burkina Faso sont étudiées selon la situation générale. Les prix affichés concernent les pagnes hors livraison ; les frais et délais doivent être convenus avec la boutique avant accord. Retrait à Bobo-Dioulasso, lieu et heure à convenir. La disponibilité initiale est « À confirmer », faute de stock réel renseigné. « Disponible en stock », « Sur commande » et « Indisponible pour le moment » se règlent par produit. Un modèle indisponible reste consultable et peut être favori, mais ne peut être ajouté ou validé dans une commande.
+
+## Salon 3D : cadrage et navigation
+
+Le salon utilise des murs crème, un bois clair, des accents dorés et des niches latérales inclinées de 16 degrés vers l’entrée. L’éclairage architectural est adouci, avec une seule lumière produisant une carte d’ombres statique. Les photos restent sans modification de leurs couleurs et conservent le recadrage de présentation et l’espace naturel des compartiments.
+
+L’accueil est placé au-dessus du salon, afin de laisser les produits visibles. La caméra de vue d’ensemble adapte sa distance et son champ au format de l’écran ; elle ne déforme pas les images. Sur téléphone, **Précédent**, **Suivant** et **Vue d’ensemble** restent sous le salon, et un bouton de détails accompagne le pagne approché. Les commandes de déplacement libre restent disponibles sur ordinateur ; glissement, pincement et visite guidée sont conservés.
+
+Un clic ou un toucher sur un pagne approche la caméra avant d’ouvrir la fiche (environ 0,65 à 1,5 seconde). Un nouveau geste, une autre commande, un changement de collection ou une interruption de la visite annule l’approche en attente. La fiche s’ouvre directement avec la préférence de réduction des animations. Échap retrouve la vue d’ensemble lorsque le canevas a le focus.
+
+Les images légères, la pause quand la scène est masquée et le rendu uniquement lorsque la caméra ou le contenu change sont conservés. La résolution du canevas est plafonnée à 1,25 fois sur les petits écrans et 1,5 fois ailleurs. Les tests couvrent le cadrage des douze emplacements dans différents ratios, le parcours circulaire des produits et la limite d’attente avant ouverture. La revue visuelle WebGL et tactile sur un vrai appareil reste nécessaire.

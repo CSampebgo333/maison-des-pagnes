@@ -3,12 +3,12 @@
     "id": "pagne1",
     "number": 1,
     "name": "Rayures lavande",
-    "description": "Des bandes lavande et ivoire au dessin irrégulier. Découvrez le motif à plat, le tissu drapé et une vue de près pour apprécier chaque détail.",
+    "description": "Faso Dan Fani · Des bandes lavande et blanches, traversées de dessins aux contours nuancés. Un pagne au contraste délicat qui met le motif en valeur. Une belle idée pour une tenue de mariage traditionnel ou une fête en famille.",
     "colors": [
       "Violet",
-      "Ivoire"
+      "Blanc"
     ],
-    "pattern": "Rayures",
+    "pattern": "Bandes à dessins nuancés",
     "accent": "#aaa0c7",
     "price": 12000,
     "unit": "",
@@ -31,7 +31,7 @@
         "src": "pagnes/pagne1-3.webp",
         "thumbnail": "pagnes/apercus/pagne1-3.webp",
         "view": 3,
-        "label": "Tissu drapé"
+        "label": "Pagne drapé"
       },
       {
         "src": "pagnes/pagne1-4.webp",
@@ -50,13 +50,13 @@
   {
     "id": "pagne2",
     "number": 2,
-    "name": "Lignes indigo",
-    "description": "Un fond bleu indigo rythmé de lignes blanches et de petits accents horizontaux. Cinq vues pour découvrir le dessin et le tombé du tissu.",
+    "name": "Lignes bleu profond",
+    "description": "Faso Dan Fani · Un bleu profond souligné de fines lignes blanches et de petits traits horizontaux. Un dessin régulier pour une allure soignée. À envisager pour une cérémonie, une rencontre professionnelle ou une tenue de fête.",
     "colors": [
       "Bleu",
       "Blanc"
     ],
-    "pattern": "Rayures",
+    "pattern": "Rayures et petits traits",
     "accent": "#24437b",
     "price": 12000,
     "unit": "",
@@ -79,7 +79,7 @@
         "src": "pagnes/pagne2-3.webp",
         "thumbnail": "pagnes/apercus/pagne2-3.webp",
         "view": 3,
-        "label": "Tissu drapé"
+        "label": "Pagne drapé"
       },
       {
         "src": "pagnes/pagne2-4.webp",
@@ -98,11 +98,15 @@
   {
     "id": "pagne3",
     "number": 3,
-    "name": "Pagne 03",
-    "description": "Découvrez ce pagne en cinq vues et zoomez sur les détails.",
-    "colors": [],
-    "pattern": "",
-    "accent": "#9c7e8c",
+    "name": "Rayures jaune et bleu",
+    "description": "Faso Dan Fani · Des bandes jaunes, bleues et blanches alternent avec des zones au tissage bien visible. Une association lumineuse, facile à remarquer. Superbe pour imaginer une tenue de mariage traditionnel ou de célébration culturelle.",
+    "colors": [
+      "Jaune",
+      "Bleu",
+      "Blanc"
+    ],
+    "pattern": "Bandes multicolores",
+    "accent": "#cda845",
     "price": 12000,
     "unit": "",
     "composition": "",
@@ -124,7 +128,7 @@
         "src": "pagnes/pagne3-3.webp",
         "thumbnail": "pagnes/apercus/pagne3-3.webp",
         "view": 3,
-        "label": "Tissu drapé"
+        "label": "Pagne drapé"
       },
       {
         "src": "pagnes/pagne3-4.webp",
@@ -143,11 +147,15 @@
   {
     "id": "pagne4",
     "number": 4,
-    "name": "Pagne 04",
-    "description": "Découvrez ce pagne en cinq vues et zoomez sur les détails.",
-    "colors": [],
-    "pattern": "",
-    "accent": "#9c7e8c",
+    "name": "Rayures bleu, noir et blanc",
+    "description": "Faso Dan Fani · De larges espaces blancs séparent des groupes de rayures bleues et noires. Un motif équilibré, à la fois sobre et marqué. Une belle option pour un baptême, une cérémonie familiale ou une tenue habillée.",
+    "colors": [
+      "Bleu",
+      "Noir",
+      "Blanc"
+    ],
+    "pattern": "Groupes de rayures",
+    "accent": "#344b75",
     "price": 12000,
     "unit": "",
     "composition": "",
@@ -169,7 +177,7 @@
         "src": "pagnes/pagne4-3.webp",
         "thumbnail": "pagnes/apercus/pagne4-3.webp",
         "view": 3,
-        "label": "Tissu drapé"
+        "label": "Pagne drapé"
       },
       {
         "src": "pagnes/pagne4-4.webp",
@@ -188,11 +196,14 @@
   {
     "id": "pagne5",
     "number": 5,
-    "name": "Pagne 05",
-    "description": "Découvrez ce pagne en cinq vues et zoomez sur les détails.",
-    "colors": [],
-    "pattern": "",
-    "accent": "#9c7e8c",
+    "name": "Fines rayures noir et blanc",
+    "description": "Faso Dan Fani · Des rayures noires et blanches très fines se répètent sur tout le pagne. Le contraste net donne au modèle une élégance discrète. À choisir pour une réception, un rendez-vous professionnel ou une tenue de cérémonie sobre.",
+    "colors": [
+      "Noir",
+      "Blanc"
+    ],
+    "pattern": "Fines rayures",
+    "accent": "#42424c",
     "price": 12000,
     "unit": "",
     "composition": "",
@@ -214,7 +225,7 @@
         "src": "pagnes/pagne5-3.webp",
         "thumbnail": "pagnes/apercus/pagne5-3.webp",
         "view": 3,
-        "label": "Tissu drapé"
+        "label": "Pagne drapé"
       },
       {
         "src": "pagnes/pagne5-4.webp",
@@ -233,11 +244,16 @@
   {
     "id": "pagne6",
     "number": 6,
-    "name": "Pagne 06",
-    "description": "Découvrez ce pagne en cinq vues et zoomez sur les détails.",
-    "colors": [],
-    "pattern": "",
-    "accent": "#9c7e8c",
+    "name": "Rayures vert et violet",
+    "description": "Faso Dan Fani · Des bandes vert vif, violettes, bleues et noires composent un motif plein de couleur. Un modèle qui apporte du caractère à la tenue. Une suggestion pour une fête, une sortie culturelle ou une tenue originale lors d’un mariage.",
+    "colors": [
+      "Vert",
+      "Violet",
+      "Bleu",
+      "Noir"
+    ],
+    "pattern": "Rayures multicolores",
+    "accent": "#708e58",
     "price": 12000,
     "unit": "",
     "composition": "",
@@ -259,7 +275,7 @@
         "src": "pagnes/pagne6-3.webp",
         "thumbnail": "pagnes/apercus/pagne6-3.webp",
         "view": 3,
-        "label": "Tissu drapé"
+        "label": "Pagne drapé"
       },
       {
         "src": "pagnes/pagne6-4.webp",
@@ -278,11 +294,16 @@
   {
     "id": "pagne7",
     "number": 7,
-    "name": "Pagne 07",
-    "description": "Découvrez ce pagne en cinq vues et zoomez sur les détails.",
-    "colors": [],
-    "pattern": "",
-    "accent": "#9c7e8c",
+    "name": "Bandes bleu et gris",
+    "description": "Faso Dan Fani · Des bandes bleu profond alternent avec des dessins gris et noirs, encadrés de lignes blanches. Le détail du motif mérite d’être regardé de près. Une belle base pour une tenue de cérémonie ou une célébration en famille.",
+    "colors": [
+      "Bleu",
+      "Gris",
+      "Noir",
+      "Blanc"
+    ],
+    "pattern": "Bandes à motifs contrastés",
+    "accent": "#526482",
     "price": 12000,
     "unit": "",
     "composition": "",
@@ -304,7 +325,7 @@
         "src": "pagnes/pagne7-3.webp",
         "thumbnail": "pagnes/apercus/pagne7-3.webp",
         "view": 3,
-        "label": "Tissu drapé"
+        "label": "Pagne drapé"
       },
       {
         "src": "pagnes/pagne7-4.webp",
@@ -323,11 +344,15 @@
   {
     "id": "pagne8",
     "number": 8,
-    "name": "Pagne 08",
-    "description": "Découvrez ce pagne en cinq vues et zoomez sur les détails.",
-    "colors": [],
-    "pattern": "",
-    "accent": "#9c7e8c",
+    "name": "Fines rayures bleu et jaune",
+    "description": "Faso Dan Fani · De fines lignes bleues, jaunes et claires donnent au pagne un rythme serré et régulier. Un motif discret à distance, riche en détails de près. À envisager pour une chemise de sortie, une tenue professionnelle ou une cérémonie.",
+    "colors": [
+      "Bleu",
+      "Jaune",
+      "Blanc"
+    ],
+    "pattern": "Fines rayures multicolores",
+    "accent": "#8c9765",
     "price": 12000,
     "unit": "",
     "composition": "",
@@ -349,7 +374,7 @@
         "src": "pagnes/pagne8-3.webp",
         "thumbnail": "pagnes/apercus/pagne8-3.webp",
         "view": 3,
-        "label": "Tissu drapé"
+        "label": "Pagne drapé"
       },
       {
         "src": "pagnes/pagne8-4.webp",
@@ -368,11 +393,14 @@
   {
     "id": "pagne9",
     "number": 9,
-    "name": "Pagne 09",
-    "description": "Découvrez ce pagne en cinq vues et zoomez sur les détails.",
-    "colors": [],
-    "pattern": "",
-    "accent": "#9c7e8c",
+    "name": "Nuances turquoise",
+    "description": "Faso Dan Fani · Un fond turquoise accueille des dessins blancs aux contours irréguliers. Le jeu de nuances apporte de la fraîcheur au pagne. Une belle idée pour une fête en journée, une cérémonie familiale ou une tenue de mariage colorée.",
+    "colors": [
+      "Turquoise",
+      "Blanc"
+    ],
+    "pattern": "Dessins nuancés",
+    "accent": "#219ba2",
     "price": 12000,
     "unit": "",
     "composition": "",
@@ -394,7 +422,7 @@
         "src": "pagnes/pagne9-3.webp",
         "thumbnail": "pagnes/apercus/pagne9-3.webp",
         "view": 3,
-        "label": "Tissu drapé"
+        "label": "Pagne drapé"
       },
       {
         "src": "pagnes/pagne9-4.webp",
@@ -413,11 +441,14 @@
   {
     "id": "pagne10",
     "number": 10,
-    "name": "Pagne 10",
-    "description": "Découvrez ce pagne en cinq vues et zoomez sur les détails.",
-    "colors": [],
-    "pattern": "",
-    "accent": "#9c7e8c",
+    "name": "Éclat orangé",
+    "description": "Faso Dan Fani · Une teinte orangée lumineuse, ponctuée de fines lignes claires. Un modèle presque uni à distance, dont les détails apparaissent de près. À envisager pour un anniversaire, une fête en famille ou une célébration culturelle.",
+    "colors": [
+      "Orange",
+      "Blanc"
+    ],
+    "pattern": "Fines lignes claires",
+    "accent": "#d39c57",
     "price": 12000,
     "unit": "",
     "composition": "",
@@ -439,7 +470,7 @@
         "src": "pagnes/pagne10-3.webp",
         "thumbnail": "pagnes/apercus/pagne10-3.webp",
         "view": 3,
-        "label": "Tissu drapé"
+        "label": "Pagne drapé"
       },
       {
         "src": "pagnes/pagne10-4.webp",
@@ -458,11 +489,15 @@
   {
     "id": "pagne11",
     "number": 11,
-    "name": "Pagne 11",
-    "description": "Découvrez ce pagne en cinq vues et zoomez sur les détails.",
-    "colors": [],
-    "pattern": "",
-    "accent": "#9c7e8c",
+    "name": "Rayures brun et blanc",
+    "description": "Faso Dan Fani · Des lignes brunes, foncées et blanches se mêlent dans un motif serré, au relief visuel marqué. Une palette chaleureuse et sobre. Une belle option pour une tenue de mariage traditionnel, une cérémonie ou une sortie habillée.",
+    "colors": [
+      "Marron",
+      "Noir",
+      "Blanc"
+    ],
+    "pattern": "Rayures à relief visuel",
+    "accent": "#75594b",
     "price": 12000,
     "unit": "",
     "composition": "",
@@ -484,7 +519,7 @@
         "src": "pagnes/pagne11-3.webp",
         "thumbnail": "pagnes/apercus/pagne11-3.webp",
         "view": 3,
-        "label": "Tissu drapé"
+        "label": "Pagne drapé"
       },
       {
         "src": "pagnes/pagne11-4.webp",
@@ -503,11 +538,13 @@
   {
     "id": "pagne12",
     "number": 12,
-    "name": "Pagne 12",
-    "description": "Découvrez ce pagne en cinq vues et zoomez sur les détails.",
-    "colors": [],
-    "pattern": "",
-    "accent": "#9c7e8c",
+    "name": "Blanc sobre",
+    "description": "Faso Dan Fani · Un pagne blanc au dessin discret, qui laisse voir la finesse des lignes et du tissage. Une base épurée pour mettre la coupe de votre tenue en valeur. À envisager pour un baptême, une cérémonie ou un mariage, selon la tenue et les usages de la famille.",
+    "colors": [
+      "Blanc"
+    ],
+    "pattern": "Uni à lignes discrètes",
+    "accent": "#c5c5d4",
     "price": 12000,
     "unit": "",
     "composition": "",
@@ -529,7 +566,7 @@
         "src": "pagnes/pagne12-3.webp",
         "thumbnail": "pagnes/apercus/pagne12-3.webp",
         "view": 3,
-        "label": "Tissu drapé"
+        "label": "Pagne drapé"
       },
       {
         "src": "pagnes/pagne12-4.webp",

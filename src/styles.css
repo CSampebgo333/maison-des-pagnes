@@ -507,3 +507,12 @@ button, input, select, textarea { line-height: 1.45; }
 @media(max-width:760px) { .shop-stage.with-intro { min-height: 540px; max-height: none; height: 72svh; } }
 
 @media(max-width:760px) { .brand-link { min-width: 0; max-width: calc(100% - 66px); }.brand-link .brand { max-width: 100%; }.brand svg { flex-shrink: 0; }.brand > span { min-width: 0; } }
+
+/* Show a small preview immediately, then fade in the detailed photo. */
+.product-image > .progressive-preview, .viewer-stage > .progressive-preview { filter: blur(3px); }
+.product-image > .progressive-full, .viewer-stage > .progressive-full { opacity: 0; transition: opacity .25s ease; }
+.product-image > .progressive-full.is-ready, .viewer-stage > .progressive-full.is-ready { opacity: 1; }
+.image-load-status { position: absolute; z-index: 2; left: 50%; top: 50%; transform: translate(-50%, -50%); display: flex; align-items: center; gap: 8px; padding: 9px 12px; border-radius: 18px; background: #fff9f0ee; color: #553747; font-size: 13px; white-space: nowrap; pointer-events: none; }
+.image-load-status i { width: 13px; height: 13px; border: 2px solid #55374733; border-top-color: #553747; border-radius: 50%; animation: spin 1s linear infinite; }
+.image-load-status button { pointer-events: auto; color: inherit; text-decoration: underline; border: 0; background: transparent; }
+@media(prefers-reduced-motion:reduce) { .progressive-full { transition: none !important; } .image-load-status i { animation: none; } }

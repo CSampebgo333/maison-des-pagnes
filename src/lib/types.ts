@@ -1,5 +1,8 @@
 export type Photo = { src: string; thumbnail: string; view: number; label: string };
 export type Product = {
+  published?: boolean;
+  availability?: 'available' | 'on-order' | 'unavailable' | 'confirm';
+  occasions?: string[];
   id: string;
   number: number;
   name: string;

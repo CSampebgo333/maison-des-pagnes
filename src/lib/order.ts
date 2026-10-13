@@ -1,4 +1,5 @@
 import type { Product } from './types';
+import { availabilityLabel } from './catalogue-features.ts';
 import type { OrderPhoto } from './custom-photo';
 export type OrderItem = { product: Product; quantity: number };
 export type OrderDetails = { name: string; phone: string; city: string; mode: 'livraison' | 'retrait'; address: string; deadline: string; notes: string };
@@ -11,6 +12,7 @@ export function validateOrder(d: OrderDetails, items: OrderItem[], today = local
   if (custom && !custom.photo) return 'Ajoutez la photo du pagne que vous recherchez.';
   if (custom && (!Number.isInteger(custom.quantity) || custom.quantity < 1 || custom.quantity > 99)) return 'Choisissez une quantité de 1 à 99 pour le pagne à rechercher.';
   if (items.some(i => !Number.isInteger(i.quantity) || i.quantity < 1 || i.quantity > 99 || i.product.price === null)) return 'Vérifiez les quantités et les prix des articles.';
+  if (items.some(i=>i.product.availability==='unavailable')) return 'Un pagne de votre sélection est indisponible pour le moment.';
   if (!d.name.trim() || !d.city.trim()) return 'Renseignez votre nom et votre ville.';
   if (!/^\+?[\d\s().-]+$/.test(d.phone) || d.phone.replace(/\D/g,'').length < 8 || d.phone.replace(/\D/g,'').length > 15) return 'Renseignez un numéro de téléphone valide avec son indicatif.';
   if (!/^\d{4}-\d{2}-\d{2}$/.test(d.deadline) || Number.isNaN(Date.parse(d.deadline)) || new Date(d.deadline).toISOString().slice(0,10) !== d.deadline || d.deadline < today) return 'Choisissez une date de réception souhaitée à partir d’aujourd’hui.';
@@ -52,7 +54,7 @@ export async function renderOrderPages(order: Order, photoUrl: (path: string) =>
   if(d.mode==='livraison')block('Quartier et indications',d.address);
   block('Recevoir au plus tard le (date souhaitée)',dateLabel(d.deadline));
   if(d.notes.trim())block('Remarques',d.notes);
-  for(const item of order.items){ensure(210);const image=await imageLoader(photoUrl(item.product.photos[0].src));ctx.fillStyle='#f0e6eb';ctx.fillRect(70,y,1100,188);const img=image as HTMLImageElement;const iw=img.naturalWidth||img.width;const ih=img.naturalHeight||img.height;const scale=Math.min(164/iw,164/ih);ctx.drawImage(image,82+(164-iw*scale)/2,y+12+(164-ih*scale)/2,iw*scale,ih*scale);text(item.product.name,280,y+50,28,'#603a53',true);text(`Quantité : ${item.quantity}`,280,y+92,23);text(`Prix unitaire : ${amount(item.product.price??0)}`,280,y+132,23);text(amount((item.product.price??0)*item.quantity),820,y+165,25,'#603a53',true);y+=210;}
+  for(const item of order.items){ensure(245);const image=await imageLoader(photoUrl(item.product.photos[0].src));ctx.fillStyle='#f0e6eb';ctx.fillRect(70,y,1100,223);const img=image as HTMLImageElement;const iw=img.naturalWidth||img.width;const ih=img.naturalHeight||img.height;const scale=Math.min(164/iw,164/ih);ctx.drawImage(image,82+(164-iw*scale)/2,y+12+(164-ih*scale)/2,iw*scale,ih*scale);text(item.product.name,280,y+50,28,'#603a53',true);text(`Quantité : ${item.quantity}`,280,y+92,23);text(`Prix unitaire : ${amount(item.product.price??0)}`,280,y+132,23);text(amount((item.product.price??0)*item.quantity),820,y+165,25,'#603a53',true);text(availabilityLabel(item.product),280,y+202,21);y+=245;}
   if(order.custom){
     ensure(245);ctx.fillStyle='#f0e6eb';ctx.fillRect(70,y,1100,220);
     text('PAGNE À RECHERCHER',95,y+44,28,'#603a53',true);
@@ -65,6 +67,7 @@ export async function renderOrderPages(order: Order, photoUrl: (path: string) =>
   text(order.items.length?(order.custom?'SOUS-TOTAL DE LA GALERIE':'TOTAL DES ARTICLES'):'PRIX À CONFIRMER',95,y+50,24,'#ffffff',true);
   text(order.items.length?amount(orderTotal(order.items)):'À définir',790,y+50,30,'#ffffff',true);y+=120;
   if(order.custom && order.items.length)block('Pagne à rechercher','Son prix n’est pas compris dans le sous-total. La boutique vous proposera un prix avant toute confirmation.');
+  block('Livraison et prix','Prix des pagnes hors livraison. Livraison à Ouagadougou et Bobo-Dioulasso ; autres villes du Burkina Faso selon la situation générale, après confirmation. Frais et délai à convenir avant votre accord.');
   block('À confirmer par la boutique',`${order.custom?'Prix et disponibilité du pagne recherché, ':''}disponibilité des articles, frais de livraison ou de retrait, lieu de retrait, délai et modalités de paiement. Cette demande ne vaut ni paiement ni confirmation de commande.`);
   return canvases.map((c,i)=>{ctx=c.getContext('2d')!;ctx.strokeStyle='#d8c1cc';ctx.beginPath();ctx.moveTo(70,1640);ctx.lineTo(1170,1640);ctx.stroke();text('WhatsApp : +226 77 54 07 92  |  Bobo-Dioulasso',70,1682,20);text(`${i+1} / ${canvases.length+(order.custom?1:0)}`,1100,1682,20);const binary=atob(c.toDataURL('image/jpeg',.9).split(',')[1]);return Uint8Array.from(binary,ch=>ch.charCodeAt(0));});
 }

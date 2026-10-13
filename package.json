@@ -3,14 +3,16 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "engines": { "node": ">=22.18.0" },
+  "engines": {
+    "node": ">=22.18.0"
+  },
   "packageManager": "pnpm@11.25.0",
   "scripts": {
     "catalogue": "node scripts/prepare-catalogue.mjs",
     "predev": "pnpm catalogue",
     "dev": "vite --host 127.0.0.1",
     "prebuild": "pnpm catalogue",
-    "build": "tsc --noEmit && vite build",
+    "build": "tsc --noEmit && vite build && node scripts/build-worker.mjs",
     "preview": "vite preview --host 127.0.0.1",
     "check": "tsc --noEmit",
     "test": "node --experimental-strip-types --test tests/*.test.ts tests/*.test.mjs",

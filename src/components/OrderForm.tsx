@@ -5,6 +5,10 @@ import { amount, createOrderPdf, localDate, orderTotal, validateOrder } from '..
 import type { CustomOrderItem, Order, OrderDetails, OrderItem } from '../lib/order';
 import { readOrderPhoto, type OrderPhoto } from '../lib/custom-photo';
 import { asset } from '../lib/assets';
+import { availabilityLabel } from '../lib/catalogue-features';
+import { fetchCatalogue } from '../lib/catalogue-client';
+import { normalize } from '../lib/catalogue';
+import { imageVariant } from '../lib/images';
 const initial: OrderDetails = { name:'',phone:'',city:'Bobo-Dioulasso',mode:'livraison',address:'',deadline:'',notes:'' };
 const LINK_LIMIT = 24 * 1024 * 1024;
 
@@ -50,10 +54,15 @@ export default function OrderForm({ items, whatsapp, onClose, initialCustom = fa
     if(invalid){setError(invalid);return;}
     invalidate();setBusy(true);
     try {
-      const order: Order = { reference:`MP-${localDate().replaceAll('-','')}-${crypto.randomUUID().slice(0,8).toUpperCase()}`,created:new Date().toISOString(),details:{...details},items,custom };
+      let confirmedItems=items;
+      if(items.length){
+        const latest=await fetchCatalogue();
+        confirmedItems=items.map(item=>{const product=latest.products.find(p=>p.id===item.product.id);if(!product||product.availability==='unavailable')throw Error('Un pagne de la sélection n’est plus disponible. Fermez le formulaire et actualisez la collection.');if(product.price!==item.product.price)throw Error('Le prix d’un pagne a changé. Fermez le formulaire et vérifiez votre sélection actualisée.');return {...item,product};});
+      }
+      const order: Order = { reference:`MP-${localDate().replaceAll('-','')}-${crypto.randomUUID().slice(0,8).toUpperCase()}`,created:new Date().toISOString(),details:{...details},items:confirmedItems,custom };
       const pdf=await createOrderPdf(order,asset);
       setFile(new File([pdf],`${order.reference}.pdf`,{type:'application/pdf'}));
-    } catch { setError('Le PDF n’a pas pu être créé. Vérifiez votre connexion et la photo choisie, puis réessayez.'); }
+    } catch(e) { setError((e as Error).message||'Le PDF n’a pas pu être créé. Réessayez.'); }
     finally { setBusy(false); }
   }
   async function share() {
@@ -85,10 +94,10 @@ export default function OrderForm({ items, whatsapp, onClose, initialCustom = fa
       <div className="order-heading"><div><p className="eyebrow">VOTRE DEMANDE</p><Dialog.Title>{initialCustom?'Le pagne que vous cherchez.':'Vos pagnes, à votre rythme.'}</Dialog.Title></div><Dialog.Close disabled={working} className="icon-button" aria-label="Fermer le formulaire"><X/></Dialog.Close></div>
       <Dialog.Description>{initialCustom?'Ajoutez la photo du pagne que vous recherchez. La boutique confirmera sa disponibilité et vous proposera un prix sur WhatsApp.':'Préparez votre bon PDF avec les photos de vos pagnes. Vous pouvez aussi joindre la photo d’un pagne à rechercher.'}</Dialog.Description>
       {(items.length>0 || photo && customEnabled) && <div className="order-summary">
-        {items.map(i=><div key={i.product.id}><img src={asset(i.product.photos[0].thumbnail)} alt={i.product.name}/><span>{i.product.name}<small>{i.quantity} × {amount(i.product.price??0)}</small></span><strong>{amount((i.product.price??0)*i.quantity)}</strong></div>)}
+        {items.map(i=><div key={i.product.id}><img src={asset(imageVariant(i.product.photos[0].src).thumbnail)} alt={i.product.name}/><span>{i.product.name}<small>{i.quantity} × {amount(i.product.price??0)} · hors livraison<br/>{availabilityLabel(i.product)}</small></span><strong>{amount((i.product.price??0)*i.quantity)}</strong></div>)}
         {customEnabled&&photo&&<div><img src={photoUrl} alt="Pagne à rechercher"/><span>Pagne à rechercher<small>{quantity || '…'} unité(s) · Prix à confirmer</small></span></div>}
         {items.length>0&&<p>{customEnabled?'Sous-total de la galerie':'Total des articles'}<strong>{amount(orderTotal(items))}</strong></p>}
-        <small>{customEnabled?'Le prix du pagne recherché sera proposé par la boutique. ':''}Frais et disponibilité à confirmer. Aucun paiement sur le site.</small>
+        <small>{customEnabled?'Le prix du pagne recherché sera proposé par la boutique. ':''}Prix des pagnes hors livraison. Les frais de livraison et le délai seront confirmés avant votre accord. Aucun paiement sur le site.</small>
       </div>}
       <form onSubmit={generate} className="order-form">
         <fieldset disabled={working} className="custom-request-fields"><legend className="sr-only">Pagne à rechercher</legend>
@@ -107,12 +116,13 @@ export default function OrderForm({ items, whatsapp, onClose, initialCustom = fa
           <label>Votre nom<input required maxLength={80} autoComplete="name" value={details.name} onChange={e=>change('name',e.target.value)}/></label>
           <label>Téléphone avec indicatif<input required type="tel" maxLength={25} autoComplete="tel" placeholder="+226 …" value={details.phone} onChange={e=>change('phone',e.target.value)}/></label>
           <label>Pays<input value="Burkina Faso" readOnly/></label>
-          <label>Ville<input required maxLength={80} autoComplete="address-level2" value={details.city} onChange={e=>change('city',e.target.value)}/></label>
-          <label>Mode de réception<select value={details.mode} onChange={e=>change('mode',e.target.value)}><option value="livraison">Livraison</option><option value="retrait">Retrait à Bobo-Dioulasso</option></select></label>
+          <label>Ville<input required maxLength={80} list="delivery-cities" autoComplete="address-level2" value={details.city} onChange={e=>change('city',e.target.value)}/></label>
+          <datalist id="delivery-cities"><option value="Bobo-Dioulasso"/><option value="Ouagadougou"/></datalist><label>Mode de réception<select value={details.mode} onChange={e=>change('mode',e.target.value)}><option value="livraison">Livraison</option><option value="retrait">Retrait à Bobo-Dioulasso</option></select></label>
           <label>Recevoir au plus tard le<input required type="date" min={localDate()} value={details.deadline} onChange={e=>change('deadline',e.target.value)}/><small>Date souhaitée, à confirmer par la boutique.</small></label>
           {details.mode==='livraison'?<label className="order-wide">Quartier et indications de livraison<textarea required maxLength={240} autoComplete="street-address" value={details.address} onChange={e=>change('address',e.target.value)}/></label>:<p className="order-wide">Le lieu et l’heure de retrait seront convenus sur WhatsApp.</p>}
           <label className="order-wide">Remarques (facultatif)<textarea maxLength={500} placeholder="Disponibilités pour vous contacter, précisions utiles…" value={details.notes} onChange={e=>change('notes',e.target.value)}/></label>
         </fieldset>
+        <p className="order-wide delivery-order-note">{details.mode==='retrait'?'Retrait à Bobo-Dioulasso, lieu et heure à convenir.': ['bobo-dioulasso','ouagadougou'].includes(normalize(details.city).trim())?'Livraison proposée dans votre ville. Frais et délai à confirmer sur WhatsApp.':'Autre ville du Burkina Faso : la livraison dépend de la situation générale et doit être confirmée par la boutique.'}</p>
         <p className="order-note">Le PDF, y compris votre éventuelle photo, est créé sur votre appareil. Si vous préparez un lien WhatsApp, une copie est enregistrée temporairement pour être consultée pendant sept jours par les personnes qui possèdent ce lien.</p>
         {error&&<p role="alert" className="order-error">{error}</p>}
         <button disabled={working} className="primary-button" type="submit"><FileText size={18}/>{busy?'Préparation du PDF…':reading?'Lecture de la photo…':file?'Regénérer le bon PDF':'Préparer mon bon PDF'}</button>

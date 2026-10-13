@@ -516,3 +516,26 @@ button, input, select, textarea { line-height: 1.45; }
 .image-load-status i { width: 13px; height: 13px; border: 2px solid #55374733; border-top-color: #553747; border-radius: 50%; animation: spin 1s linear infinite; }
 .image-load-status button { pointer-events: auto; color: inherit; text-decoration: underline; border: 0; background: transparent; }
 @media(prefers-reduced-motion:reduce) { .progressive-full { transition: none !important; } .image-load-status i { animation: none; } }
+
+.custom-request-banner { display: flex; align-items: center; justify-content: space-between; gap: 28px; margin: 24px 4% 42px; padding: 28px 32px; border: 1px solid #dbc9d2; background: #f2e8ed; border-radius: 10px; }
+.custom-request-banner h2 { font: 30px/1.25 var(--serif); margin: 8px 0 12px; color: var(--plum); }
+.custom-request-banner p:not(.eyebrow) { max-width: 650px; font-size: 16px; line-height: 1.7; }
+.custom-request-banner > button { flex-shrink: 0; }
+.order-form .custom-request-fields { margin: 22px 0; }
+.order-form .custom-request-toggle { display: flex; align-items: center; gap: 10px; cursor: pointer; }
+.order-form .custom-request-toggle input { width: 20px; height: 20px; flex-shrink: 0; accent-color: var(--plum); }
+.custom-photo-section { padding: 20px; background: #f3ebee; border: 1px solid #e1cdd7; border-radius: 8px; }
+.custom-photo-section h3 { font: 24px var(--serif); margin-bottom: 10px; }
+.custom-photo-section p { font-size: 15px; line-height: 1.6; }
+.order-form .custom-photo-upload { display: block; margin: 16px 0; }
+.custom-photo-upload > span { display: flex; align-items: center; gap: 9px; margin-bottom: 8px; }
+.custom-photo-upload input { padding: 10px; font-size: 14px; }
+.custom-photo-preview { padding: 12px; background: #fffaf7; border-radius: 6px; margin-bottom: 18px; }
+.custom-photo-preview > img { display: block; width: 100%; height: 240px; object-fit: contain; border-radius: 4px; }
+.custom-photo-preview p { margin: 10px 0; overflow-wrap: anywhere; }
+.custom-photo-preview small { display: block; margin-top: 4px; }
+.custom-photo-preview > div { display: flex; flex-wrap: wrap; gap: 12px; justify-content: space-between; }
+.custom-photo-details { display: grid; grid-template-columns: 130px minmax(0,1fr); gap: 16px; }
+.custom-price-note { margin-top: 16px; color: var(--plum); }
+@media(max-width:760px) { .custom-request-banner { flex-direction: column; align-items: stretch; padding: 22px; gap: 20px; }.custom-request-banner h2 { font-size: 26px; }.custom-request-banner > button { justify-content: center; } }
+@media(max-width:480px) { .custom-photo-section { padding: 14px; }.custom-photo-details { grid-template-columns: 1fr; }.custom-photo-preview > img { height: 210px; } }

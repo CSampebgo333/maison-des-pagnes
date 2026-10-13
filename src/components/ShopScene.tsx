@@ -4,6 +4,7 @@ import type { Product } from "../lib/types";
 import { asset } from "../lib/assets";
 import { imageVariant } from "../lib/images";
 import shop from "../../config/boutique.json";
+import { overviewView, approachReady } from "../lib/scene-navigation";
 
 const displayOrder = [1, 4, 0, 2, 3, 5, 6, 9, 7, 10, 8, 11];
 
@@ -37,12 +38,17 @@ const ShopScene = forwardRef<SceneHandle,Props>(function ShopScene(props,ref) {
     scene.background = new THREE.Color("#e8ded0");
     scene.fog = new THREE.Fog("#e8ded0",22,42);
     const camera = new THREE.PerspectiveCamera(58,1,.08,60);
-    const position = new THREE.Vector3(0,2.45,6.4);
-    camera.position.set(0,2.6,7.4);
-    let yaw = 0, pitch = -.03, fov = 58;
-    let currentYaw = 0, currentPitch = -.03;
+    const initialView=overviewView(element.clientWidth/Math.max(1,element.clientHeight));
+    const position = new THREE.Vector3(initialView.x,initialView.y,initialView.z);
+    camera.position.copy(position);
+    let yaw = 0, pitch = -.015, fov = initialView.fov;
+    let currentYaw = 0, currentPitch = -.015;
+    camera.fov=fov;
+    let overview=true;
+    let pendingSelection:{id:string;elapsed:number}|null=null;
+    const cancelApproach=()=>{pendingSelection=null;};
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio,1.5));
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio,element.clientWidth<600?1.25:1.5));
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
     renderer.toneMappingExposure = 1.0;
@@ -58,11 +64,12 @@ const ShopScene = forwardRef<SceneHandle,Props>(function ShopScene(props,ref) {
     function material(color:string,metalness=0,roughness=.75) {
       const m = new THREE.MeshStandardMaterial({color,metalness,roughness}); materials.push(m); return m;
     }
-    const wall = material("#e7dfd4");
-    const dark = material("#654552");
-    const wood = material("#997c68",0,.65);
-    const brass = material("#bca07b",.58,.32);
-    const floor = material("#dcd0bd",.05,.64);
+    const wall = material("#f2ebe1",0,.92);
+    const dark = material("#d5cbbd",0,.95);
+    const wood = material("#c8a98b",0,.78);
+    const brass = material("#c49a4b",.48,.42);
+    const floor = material("#e8dcc9",0,.85);
+    const seam = material("#d4c6b0");
     const lamp = new THREE.MeshBasicMaterial({color:"#ffe0a5"}); materials.push(lamp);
     function box(parent:THREE.Object3D,w:number,h:number,d:number,x:number,y:number,z:number,m:THREE.Material) {
       const mesh = new THREE.Mesh(new THREE.BoxGeometry(w,h,d),m); mesh.position.set(x,y,z); mesh.castShadow=true; mesh.receiveShadow=true; parent.add(mesh); return mesh;
@@ -73,22 +80,22 @@ const ShopScene = forwardRef<SceneHandle,Props>(function ShopScene(props,ref) {
     box(scene,.22,5.8,17,5.9,2.8,.8,wall);
     box(scene,12,.18,17,0,5.65,.8,material("#f0e9de"));
     // Architectural seams and brass skirting make perspective and depth readable.
-    for(let x=-5.5;x<6;x+=1.1) box(scene,.015,.012,17,x,.003,.8,material("#c4b6a0"));
-    for(let z=-6;z<9;z+=1.5) box(scene,12,.012,.018,0,.005,z,material("#c4b6a0"));
+    for(let x=-5.5;x<6;x+=1.1) box(scene,.015,.012,17,x,.003,.8,seam);
+    for(let z=-6;z<9;z+=1.5) box(scene,12,.012,.018,0,.005,z,seam);
     box(scene,11.7,.1,.09,0,.11,-6.4,brass);
     box(scene,.09,.1,16.8,-5.7,.11,.8,brass);
     box(scene,.09,.1,16.8,5.7,.11,.8,brass);
-    for(let x=-5.5;x<=5.6;x+=.28) box(scene,.05,5,.04,x,2.8,-6.42,wood);
+    for(let x=-5.5;x<=5.6;x+=.44) box(scene,.035,5,.025,x,2.8,-6.42,wood);
     // Ceiling light strips, not decorative bitmap scenery.
     for(const x of [-3.5,3.5]) box(scene,.055,.035,11,x,5.53,-.1,lamp);
     box(scene,9.5,.035,.055,0,5.53,-5.2,lamp);
-    scene.add(new THREE.HemisphereLight("#fff0d4","#a698a0",2.5));
-    const key = new THREE.DirectionalLight("#fff0d7",3.1); key.position.set(4,5,4); key.castShadow=true;
-    key.shadow.mapSize.set(1024,1024); key.shadow.camera.left=-9; key.shadow.camera.right=9; key.shadow.camera.top=9; key.shadow.camera.bottom=-9; key.shadow.bias=-.0005; scene.add(key);
-    const backLight = new THREE.PointLight("#ffddab",55,18,2); backLight.position.set(0,4.8,-4.4); scene.add(backLight);
-    const fill = new THREE.PointLight("#fff6e2",30,17,2); fill.position.set(-4,4,1); scene.add(fill);
+    scene.add(new THREE.HemisphereLight("#fff6e8","#b9ada1",1.9));
+    const key = new THREE.DirectionalLight("#fff5e5",2.25); key.position.set(2.5,7,5); key.castShadow=true;
+    key.shadow.mapSize.set(1024,1024); key.shadow.camera.left=-9; key.shadow.camera.right=9; key.shadow.camera.top=9; key.shadow.camera.bottom=-9; key.shadow.bias=-.00015; key.shadow.normalBias=.025; key.shadow.radius=3; key.shadow.camera.near=.5; key.shadow.camera.far=26; scene.add(key);
+    const backLight = new THREE.PointLight("#ffe6bc",24,16,2); backLight.position.set(0,4.8,-4.4); scene.add(backLight);
+    const fill = new THREE.PointLight("#fff8ee",16,16,2); fill.position.set(-4,4,1); scene.add(fill);
 
-    function textTexture(text:string,detail:string,color="#edcf96",bg?:string) {
+    function textTexture(text:string,detail:string,color="#654552",bg?:string) {
       const canvas = document.createElement("canvas"); canvas.width=1024; canvas.height=256;
       const ctx=canvas.getContext("2d")!;
       if(bg){ctx.fillStyle=bg;ctx.fillRect(0,0,1024,256);}
@@ -98,6 +105,8 @@ const ShopScene = forwardRef<SceneHandle,Props>(function ShopScene(props,ref) {
       const texture=new THREE.CanvasTexture(canvas); texture.colorSpace=THREE.SRGBColorSpace; textures.add(texture); return texture;
     }
     const signMaterial = new THREE.MeshBasicMaterial({map:textTexture(shop.name,"LE SALON DES PAGNES"),transparent:true,depthWrite:false}); materials.push(signMaterial);
+    box(scene,8.8,.08,.4,0,.95,-6.03,wood);
+    box(scene,4.8,.018,4.2,0,.006,.8,material("#f3eade",0,1));
     const sign = new THREE.Mesh(new THREE.PlaneGeometry(3.8,.95),signMaterial); sign.position.set(0,5,-6.36); scene.add(sign);
 
     const hitTargets: THREE.Mesh[]=[];
@@ -108,18 +117,18 @@ const ShopScene = forwardRef<SceneHandle,Props>(function ShopScene(props,ref) {
       box(group,w+.13,.1,.92,0,-h/2,.0,wood);
       box(group,w+.13,.08,.92,0,h/2,.0,wood);
       box(group,.075,h,.92,-w/2,0,0,brass); box(group,.075,h,.92,w/2,0,0,brass);
-      box(group,w-.1,.035,.04,0,h/2-.06,.25,lamp);
+      box(group,w-.1,.022,.035,0,h/2-.055,.25,lamp);
       const glowMat=new THREE.MeshBasicMaterial({color:"#9d8b60",transparent:true,opacity:.08}); materials.push(glowMat);
       box(group,w-.1,h-.12,.01,0,0,-.36,glowMat);
       const photoMat = new THREE.MeshBasicMaterial({color:"#ffffff",transparent:true,toneMapped:false}); materials.push(photoMat);
-      const photo = new THREE.Mesh(new THREE.PlaneGeometry(1,1),photoMat); photo.position.set(0,0,-.08); photo.visible=false; group.add(photo);
+      const photo = new THREE.Mesh(new THREE.PlaneGeometry(1,1),photoMat); photo.position.set(0,0,.04); photo.visible=false; group.add(photo);
       const labelMat = new THREE.MeshBasicMaterial({transparent:true,depthWrite:false,toneMapped:false});materials.push(labelMat);
       const label = new THREE.Mesh(new THREE.PlaneGeometry(Math.min(1.5,w-.12),.36),labelMat);label.position.set(0,-h/2-.22,.48);group.add(label);
       const hit=new THREE.Mesh(new THREE.PlaneGeometry(w-.1,h-.1),new THREE.MeshBasicMaterial({transparent:true,opacity:0,depthWrite:false}));materials.push(hit.material);hit.position.z=.49; hit.userData.slot=slot;group.add(hit);hitTargets.push(hit);
       fixtureList.push({slot,group,photo,label,photoWidth:w-.28,photoHeight:h-.28});
     }
-    for(let col=0;col<6;col++) niche(col,(col-2.5)*1.64,2.55,-5.85,0,1.53,2.00);
-    for(let i=0;i<3;i++) { niche(6+i,-5.1,2.55,-3.45+i*3.1,Math.PI/2,2.2,2.90); niche(9+i,5.1,2.55,-3.45+i*3.1,-Math.PI/2,2.2,2.90); }
+    for(let col=0;col<6;col++) niche(col,(col-2.5)*1.64,2.55,-5.85,-(col-2.5)*.035,1.53,2.00);
+    for(let i=0;i<3;i++) { niche(6+i,-5.1,2.55,-3.45+i*3.1,Math.PI/2-.28,2.2,2.90); niche(9+i,5.1,2.55,-3.45+i*3.1,-Math.PI/2+.28,2.2,2.90); }
     fixtures.current=fixtureList;
     const loader=new THREE.TextureLoader();
     // Textures belong to the scene, not to individual slots. Filters reuse them.
@@ -139,6 +148,7 @@ const ShopScene = forwardRef<SceneHandle,Props>(function ShopScene(props,ref) {
     }
     let generation=0;
     refresh.current=()=> {
+      cancelApproach();
       const version=++generation;
       let completed=0;
       const total=Math.min(current.current.products.length,fixtureList.length);
@@ -174,65 +184,78 @@ const ShopScene = forwardRef<SceneHandle,Props>(function ShopScene(props,ref) {
       const dx=target.x-position.x,dy=target.y-position.y,dz=target.z-position.z;
       yaw=Math.atan2(-dx,-dz);pitch=Math.atan2(dy,Math.hypot(dx,dz));
     }
-    function constrain() { position.x=THREE.MathUtils.clamp(position.x,-4.2,4.2);position.z=THREE.MathUtils.clamp(position.z,-4.55,7.5); }
+    function constrain() { position.x=THREE.MathUtils.clamp(position.x,-4.2,4.2);position.z=THREE.MathUtils.clamp(position.z,-4.55,overviewView(camera.aspect).z); }
     function move(direction: "forward"|"back"|"left"|"right",amount=.7) {
-      current.current.onInterrupt();
+      cancelApproach();overview=false;current.current.onInterrupt();
       const angle = yaw+(direction==="left"?Math.PI/2:direction==="right"?-Math.PI/2:0);
       const sign=direction==="back"?-1:1;
       position.x-=Math.sin(angle)*amount*sign;position.z-=Math.cos(angle)*amount*sign;constrain();
     }
+    function focusProduct(id:string) {
+      const slot=displayOrder[current.current.products.findIndex(p=>p.id===id)];
+      const fixture=fixtureList.find(n=>n.slot===slot);if(!fixture)return false;
+      overview=false;current.current.onInterrupt();
+      const normal=new THREE.Vector3(0,0,1).applyQuaternion(fixture.group.quaternion);
+      const distance=camera.aspect<.85?4.4:3.3;
+      position.copy(fixture.group.position).addScaledVector(normal,distance);position.y=2.55;constrain();lookAt(fixture.group.position);fov=camera.aspect<.85?66:52;dirty=true;
+      return true;
+    }
+    function approachProduct(id:string) {
+      if(!current.current.active)return;
+      cancelApproach();
+      if(reduced){current.current.onSelect(id);return;}
+      if(focusProduct(id))pendingSelection={id,elapsed:0};
+    }
     actions.current={
-      reset:()=>{current.current.onInterrupt();position.set(0,2.45,6.4);yaw=0;pitch=-.03;fov=58;},
+      reset:()=>{cancelApproach();overview=true;current.current.onInterrupt();const entry=overviewView(camera.aspect);position.set(entry.x,entry.y,entry.z);yaw=0;pitch=-.015;fov=entry.fov;dirty=true;current.current.onHover(null);},
       move,
-      zoom:amount=>{current.current.onInterrupt();fov=THREE.MathUtils.clamp(fov+amount,30,80);},
-      focus:id=> { const slot=displayOrder[current.current.products.findIndex(p=>p.id===id)]; const f=fixtureList.find(n=>n.slot===slot);if(!f)return;current.current.onInterrupt();
-        const normal=new THREE.Vector3(0,0,1).applyQuaternion(f.group.quaternion);
-        position.copy(f.group.position).addScaledVector(normal,3.3);position.y=2.45;constrain();lookAt(f.group.position);fov=52;
-      },
+      zoom:amount=>{cancelApproach();overview=false;current.current.onInterrupt();fov=THREE.MathUtils.clamp(fov+amount,30,80);},
+      focus:id=> {cancelApproach();focusProduct(id);},
     };
-    const resize=()=>{const w=element.clientWidth,h=element.clientHeight;renderer.setSize(w,h);camera.aspect=w/h;camera.updateProjectionMatrix();dirty=true;};
+    const resize=()=>{const w=element.clientWidth,h=Math.max(1,element.clientHeight);renderer.setSize(w,h);camera.aspect=w/h;if(overview){const entry=overviewView(camera.aspect);position.set(entry.x,entry.y,entry.z);fov=entry.fov;}camera.updateProjectionMatrix();dirty=true;};
     const observer=new ResizeObserver(resize);observer.observe(element);resize();
     const ray=new THREE.Raycaster();const pointer=new THREE.Vector2();
     const hitAt=(x:number,y:number)=>{const rect=renderer.domElement.getBoundingClientRect();pointer.set(((x-rect.left)/rect.width)*2-1,-((y-rect.top)/rect.height)*2+1);ray.setFromCamera(pointer,camera);const hit=ray.intersectObjects(hitTargets,false)[0];return hit?current.current.products[displayOrder.indexOf(hit.object.userData.slot as number)]?.id??null:null;};
     let dragging=false,lastX=0,lastY=0,downX=0,downY=0,travel=0;
     const touches=new Map<number,{x:number;y:number}>();let pinchDistance=0;
-    const onDown=(e:PointerEvent)=>{if(!current.current.active)return;renderer.domElement.focus();touches.set(e.pointerId,{x:e.clientX,y:e.clientY});dragging=true;lastX=downX=e.clientX;lastY=downY=e.clientY;travel=0;renderer.domElement.setPointerCapture(e.pointerId);
+    const onDown=(e:PointerEvent)=>{if(!current.current.active)return;cancelApproach();renderer.domElement.focus();touches.set(e.pointerId,{x:e.clientX,y:e.clientY});dragging=true;lastX=downX=e.clientX;lastY=downY=e.clientY;travel=0;renderer.domElement.setPointerCapture(e.pointerId);
       if(touches.size===2){const [a,b]=[...touches.values()];pinchDistance=Math.hypot(a.x-b.x,a.y-b.y);travel=10;}
     };
     const onMove=(e:PointerEvent)=>{
       if(!current.current.active)return;
       if(touches.has(e.pointerId))touches.set(e.pointerId,{x:e.clientX,y:e.clientY});
-      if(touches.size===2){const [a,b]=[...touches.values()];const distance=Math.hypot(a.x-b.x,a.y-b.y);fov=THREE.MathUtils.clamp(fov-(distance-pinchDistance)*.12,30,80);pinchDistance=distance;travel=10;current.current.onInterrupt();return;}
-      if(dragging){const dx=e.clientX-lastX,dy=e.clientY-lastY;travel+=Math.abs(dx)+Math.abs(dy);yaw-=dx*.0035;pitch=THREE.MathUtils.clamp(pitch-dy*.0035,-.65,.65);lastX=e.clientX;lastY=e.clientY;if(travel>3)current.current.onInterrupt();}
+      if(touches.size===2){const [a,b]=[...touches.values()];const distance=Math.hypot(a.x-b.x,a.y-b.y);fov=THREE.MathUtils.clamp(fov-(distance-pinchDistance)*.12,30,80);pinchDistance=distance;travel=10;overview=false;current.current.onInterrupt();return;}
+      if(dragging){const dx=e.clientX-lastX,dy=e.clientY-lastY;travel+=Math.abs(dx)+Math.abs(dy);yaw-=dx*.0035;pitch=THREE.MathUtils.clamp(pitch-dy*.0035,-.65,.65);lastX=e.clientX;lastY=e.clientY;if(travel>3){overview=false;current.current.onInterrupt();}}
       else{const slot=hitAt(e.clientX,e.clientY);current.current.onHover(slot);renderer.domElement.style.cursor=slot!==null?"pointer":"grab";}
     };
-    const onUp=(e:PointerEvent)=>{touches.delete(e.pointerId);if(!dragging)return;dragging=false;if(travel<7&&Math.hypot(e.clientX-downX,e.clientY-downY)<7){const slot=hitAt(e.clientX,e.clientY);if(slot!==null)current.current.onSelect(slot);} };
+    const onUp=(e:PointerEvent)=>{touches.delete(e.pointerId);if(!dragging)return;dragging=false;if(travel<7&&Math.hypot(e.clientX-downX,e.clientY-downY)<7){const slot=hitAt(e.clientX,e.clientY);if(slot!==null)approachProduct(slot);} };
     const onCancel=(e:PointerEvent)=>{touches.delete(e.pointerId);dragging=false;};
-    const onWheel=(e:WheelEvent)=>{if(!current.current.active)return;e.preventDefault();current.current.onInterrupt();fov=THREE.MathUtils.clamp(fov+e.deltaY*.035,30,80);};
+    const onWheel=(e:WheelEvent)=>{if(!current.current.active)return;e.preventDefault();cancelApproach();overview=false;current.current.onInterrupt();fov=THREE.MathUtils.clamp(fov+e.deltaY*.035,30,80);};
     const keys=new Set<string>();
-    const onKey=(e:KeyboardEvent)=>{if(!current.current.active||e.target!==renderer.domElement)return;const k=e.key.toLowerCase();if(["arrowup","arrowdown","arrowleft","arrowright","w","a","s","d","z","q"].includes(k)){e.preventDefault();keys.add(k);current.current.onInterrupt();}};
+    const onKey=(e:KeyboardEvent)=>{if(!current.current.active||e.target!==renderer.domElement)return;const k=e.key.toLowerCase();if(k==="escape"){e.preventDefault();actions.current.reset();return;}if(["arrowup","arrowdown","arrowleft","arrowright","w","a","s","d","z","q"].includes(k)){e.preventDefault();cancelApproach();overview=false;keys.add(k);current.current.onInterrupt();}};
     const onKeyUp=(e:KeyboardEvent)=>keys.delete(e.key.toLowerCase());
-    const blur=()=>keys.clear();
+    const blur=()=>{keys.clear();};
     const leave=()=>{current.current.onHover(null);};
     const onLost=(e:Event)=>{e.preventDefault();current.current.onError();};
     const canvas=renderer.domElement;
     canvas.addEventListener("pointerdown",onDown);canvas.addEventListener("pointermove",onMove);canvas.addEventListener("pointerup",onUp);canvas.addEventListener("pointercancel",onCancel);canvas.addEventListener("pointerleave",leave);canvas.addEventListener("wheel",onWheel,{passive:false});canvas.addEventListener("keydown",onKey);canvas.addEventListener("keyup",onKeyUp);canvas.addEventListener("blur",blur);canvas.addEventListener("webglcontextlost",onLost);
     let frame=0,lastTime=performance.now(),tourTime=0,wasTour=false;
     function tourPath() {
-      const entry = {p:[0,2.45,6.4],t:[0,2.6,-5.8]};
+      const view=overviewView(camera.aspect);
+      const entry = {p:[view.x,view.y,view.z],t:[0,2.6,-5.8]};
       const stops = current.current.products.slice(0,12).map((_,i)=> {
         const f=fixtureList.find(n=>n.slot===displayOrder[i])!;
         const normal=new THREE.Vector3(0,0,1).applyQuaternion(f.group.quaternion);
-        const p=f.group.position.clone().addScaledVector(normal,3.3);p.y=2.45;
-        p.x=THREE.MathUtils.clamp(p.x,-4.2,4.2);p.z=THREE.MathUtils.clamp(p.z,-4.55,7.5);
+        const p=f.group.position.clone().addScaledVector(normal,camera.aspect<.85?4.4:3.3);p.y=2.55;
+        p.x=THREE.MathUtils.clamp(p.x,-4.2,4.2);p.z=THREE.MathUtils.clamp(p.z,-4.55,overviewView(camera.aspect).z);
         return {p:p.toArray(),t:f.group.position.toArray()};
       });
       return [entry,...stops,entry];
     }
     const tick=(time:number)=>{
-      if(document.hidden || !current.current.active){lastTime=time;frame=requestAnimationFrame(tick);return;}
+      if(document.hidden || !current.current.active){cancelApproach();keys.clear();dragging=false;touches.clear();lastTime=time;frame=requestAnimationFrame(tick);return;}
       const dt=Math.min((time-lastTime)/1000,.05);lastTime=time;
-      if(current.current.touring&&current.current.active){if(!wasTour){tourTime=0;wasTour=true;}tourTime+=dt;const path=tourPath();const phase=(tourTime/7)%(path.length-1),index=Math.floor(phase),t=THREE.MathUtils.smoothstep(phase-index,0,1);const a=path[index],b=path[index+1];position.set(...a.p as [number,number,number]).lerp(new THREE.Vector3(...b.p as [number,number,number]),t);lookAt(new THREE.Vector3(...a.t as [number,number,number]).lerp(new THREE.Vector3(...b.t as [number,number,number]),t));fov=58;}
+      if(current.current.touring&&current.current.active){if(!wasTour){cancelApproach();overview=false;tourTime=0;wasTour=true;}tourTime+=dt;const path=tourPath();const phase=(tourTime/7)%(path.length-1),index=Math.floor(phase),t=THREE.MathUtils.smoothstep(phase-index,0,1);const a=path[index],b=path[index+1];position.set(...a.p as [number,number,number]).lerp(new THREE.Vector3(...b.p as [number,number,number]),t);lookAt(new THREE.Vector3(...a.t as [number,number,number]).lerp(new THREE.Vector3(...b.t as [number,number,number]),t));fov=camera.aspect<.85?68:58;}
       else{wasTour=false;if(current.current.active){if(keys.has("arrowup")||keys.has("w")||keys.has("z"))move("forward",dt*2.4);if(keys.has("arrowdown")||keys.has("s"))move("back",dt*2.4);if(keys.has("a")||keys.has("q"))move("left",dt*2.4);if(keys.has("d"))move("right",dt*2.4);if(keys.has("arrowleft"))yaw+=dt*.9;if(keys.has("arrowright"))yaw-=dt*.9;}else keys.clear();}
       dirty ||= camera.position.distanceToSquared(position)>0.000001 || Math.abs(yaw-currentYaw)>.0001 || Math.abs(pitch-currentPitch)>.0001 || Math.abs(camera.fov-fov)>.001;
       const smoothing=reduced?1:1-Math.exp(-dt*7);
@@ -240,6 +263,7 @@ const ShopScene = forwardRef<SceneHandle,Props>(function ShopScene(props,ref) {
       let angle=yaw-currentYaw;angle=Math.atan2(Math.sin(angle),Math.cos(angle));currentYaw+=angle*smoothing;currentPitch=THREE.MathUtils.lerp(currentPitch,pitch,smoothing);
       camera.rotation.set(currentPitch,currentYaw,0,"YXZ");camera.fov=THREE.MathUtils.lerp(camera.fov,fov,smoothing);camera.updateProjectionMatrix();
       if(dirty){renderer.render(scene,camera);dirty=false;}
+      if(pendingSelection){pendingSelection.elapsed+=dt;const angleError=Math.abs(Math.atan2(Math.sin(yaw-currentYaw),Math.cos(yaw-currentYaw)))+Math.abs(pitch-currentPitch);if(approachReady(pendingSelection.elapsed,camera.position.distanceToSquared(position),angleError)){const id=pendingSelection.id;cancelApproach();if(current.current.products.some(p=>p.id===id))current.current.onSelect(id);}}
       frame=requestAnimationFrame(tick);
     };
     frame=requestAnimationFrame(tick);

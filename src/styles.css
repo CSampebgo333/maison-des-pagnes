@@ -505,3 +505,5 @@ button, input, select, textarea { line-height: 1.45; }
 }
 @media(max-width:380px) { .brand { font-size: 18px; }.brand small { max-width: 170px; }.navigation-hint { display: none; }.stage-bottomline { justify-content: flex-end; }.gallery-heading h1 { font-size: 38px; } }
 @media(max-width:760px) { .shop-stage.with-intro { min-height: 540px; max-height: none; height: 72svh; } }
+
+@media(max-width:760px) { .brand-link { min-width: 0; max-width: calc(100% - 66px); }.brand-link .brand { max-width: 100%; }.brand svg { flex-shrink: 0; }.brand > span { min-width: 0; } }

@@ -2,6 +2,7 @@ import { forwardRef, useEffect, useImperativeHandle, useRef } from "react";
 import * as THREE from "three";
 import type { Product } from "../lib/types";
 import { asset } from "../lib/assets";
+import { imageVariant } from "../lib/images";
 import shop from "../../config/boutique.json";
 
 const displayOrder = [1, 4, 0, 2, 3, 5, 6, 9, 7, 10, 8, 11];
@@ -12,7 +13,7 @@ export type SceneHandle = {
   zoom: (amount: number) => void;
   focus: (id: string) => void;
 };
-type Props = {products: Product[]; touring: boolean; active: boolean; onSelect: (id:string)=>void; onHover: (id:string|null)=>void; onReady:()=>void; onError:()=>void; onInterrupt:()=>void};
+type Props = {products: Product[]; touring: boolean; active: boolean; onSelect: (id:string)=>void; onHover: (id:string|null)=>void; onReady:()=>void; onProgress:(loaded:number,total:number)=>void; onError:()=>void; onInterrupt:()=>void};
 type Fixture = {group: THREE.Group; photo: THREE.Mesh; label: THREE.Mesh; slot: number; photoWidth: number; photoHeight: number; texture?: THREE.Texture};
 
 const ShopScene = forwardRef<SceneHandle,Props>(function ShopScene(props,ref) {
@@ -31,6 +32,7 @@ const ShopScene = forwardRef<SceneHandle,Props>(function ShopScene(props,ref) {
     try { renderer = new THREE.WebGLRenderer({antialias:true,alpha:false,powerPreference:"high-performance"}); }
     catch { current.current.onError(); return; }
     let disposed = false;
+    let dirty = true;
     const scene = new THREE.Scene();
     scene.background = new THREE.Color("#e8ded0");
     scene.fog = new THREE.Fog("#e8ded0",22,42);
@@ -45,6 +47,8 @@ const ShopScene = forwardRef<SceneHandle,Props>(function ShopScene(props,ref) {
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
     renderer.toneMappingExposure = 1.0;
     renderer.shadowMap.enabled = true;
+    renderer.shadowMap.autoUpdate = false;
+    renderer.shadowMap.needsUpdate = true;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     element.appendChild(renderer.domElement);
     renderer.domElement.setAttribute("aria-label","Intérieur de la boutique en trois dimensions. Faites glisser pour regarder autour de vous.");
@@ -118,28 +122,46 @@ const ShopScene = forwardRef<SceneHandle,Props>(function ShopScene(props,ref) {
     for(let i=0;i<3;i++) { niche(6+i,-5.1,2.55,-3.45+i*3.1,Math.PI/2,2.2,2.90); niche(9+i,5.1,2.55,-3.45+i*3.1,-Math.PI/2,2.2,2.90); }
     fixtures.current=fixtureList;
     const loader=new THREE.TextureLoader();
+    // Textures belong to the scene, not to individual slots. Filters reuse them.
+    const photoCache = new Map<string, Promise<THREE.Texture<HTMLImageElement> | null>>();
+    function loadPhoto(path:string) {
+      if (!photoCache.has(path)) photoCache.set(path,new Promise(resolve => {
+        loader.load(asset(path),texture => {
+          if(disposed){texture.dispose();resolve(null);return;}
+          texture.offset.set(.12,.12);texture.repeat.set(.76,.76);
+          texture.colorSpace=THREE.SRGBColorSpace;
+          texture.anisotropy=Math.min(4,renderer.capabilities.getMaxAnisotropy());
+          textures.add(texture);resolve(texture);
+        },undefined,()=>{photoCache.delete(path);resolve(null);});
+      }));
+      return photoCache.get(path)!;
+    }
     let generation=0;
     refresh.current=()=> {
       const version=++generation;
+      let completed=0;
+      const total=Math.min(current.current.products.length,fixtureList.length);
+      current.current.onProgress(0,total);
+      if(!total)current.current.onReady();
       fixtureList.forEach(f=> {
         const article=current.current.products[displayOrder.indexOf(f.slot)];
         const lm=f.label.material as THREE.MeshBasicMaterial;
         const old=lm.map;
         lm.map=textTexture(article?.name??"",article?`${article.photos.length} VUES · DÉCOUVRIR`:""); lm.needsUpdate=true;
         if(old){textures.delete(old);old.dispose();}
-        if(f.texture){textures.delete(f.texture);f.texture.dispose();f.texture=undefined;}
-        f.photo.visible=false;
-        if(article?.photos[0]) loader.load(asset(article.photos[0].thumbnail),texture=> {
-          if(disposed||generation!==version){texture.dispose();return;}
-          // Recadrage de présentation uniquement : la fiche conserve la photo intégrale.
-          texture.offset.set(.12,.12);texture.repeat.set(.76,.76);
-          texture.colorSpace=THREE.SRGBColorSpace;texture.anisotropy=renderer.capabilities.getMaxAnisotropy();
-          f.texture=texture;textures.add(texture);
-          const aspect=texture.image.width/texture.image.height;
-          const width=Math.min(f.photoWidth,f.photoHeight*aspect);
-          f.photo.scale.set(width,width/aspect,1);
-          const m=f.photo.material as THREE.MeshBasicMaterial;m.map=texture;m.needsUpdate=true;f.photo.visible=true;
-        },undefined,()=>{/* The label remains usable when an individual photo is unavailable. */});
+        f.photo.visible=false;f.texture=undefined;dirty=true;
+        if(article?.photos[0]) void loadPhoto(imageVariant(article.photos[0].src).scene).then(texture=> {
+          if(disposed||generation!==version)return;
+          if(texture){
+            f.texture=texture;
+            const aspect=texture.image.width/texture.image.height;
+            const width=Math.min(f.photoWidth,f.photoHeight*aspect);
+            f.photo.scale.set(width,width/aspect,1);
+            const m=f.photo.material as THREE.MeshBasicMaterial;m.map=texture;m.needsUpdate=true;f.photo.visible=true;
+          }
+          dirty=true;current.current.onProgress(++completed,total);
+          if(completed===total)current.current.onReady();
+        });
       });
     };
     refresh.current();
@@ -163,7 +185,7 @@ const ShopScene = forwardRef<SceneHandle,Props>(function ShopScene(props,ref) {
         position.copy(f.group.position).addScaledVector(normal,3.3);position.y=2.45;constrain();lookAt(f.group.position);fov=52;
       },
     };
-    const resize=()=>{const w=element.clientWidth,h=element.clientHeight;renderer.setSize(w,h);camera.aspect=w/h;camera.updateProjectionMatrix();};
+    const resize=()=>{const w=element.clientWidth,h=element.clientHeight;renderer.setSize(w,h);camera.aspect=w/h;camera.updateProjectionMatrix();dirty=true;};
     const observer=new ResizeObserver(resize);observer.observe(element);resize();
     const ray=new THREE.Raycaster();const pointer=new THREE.Vector2();
     const hitAt=(x:number,y:number)=>{const rect=renderer.domElement.getBoundingClientRect();pointer.set(((x-rect.left)/rect.width)*2-1,-((y-rect.top)/rect.height)*2+1);ray.setFromCamera(pointer,camera);const hit=ray.intersectObjects(hitTargets,false)[0];return hit?current.current.products[displayOrder.indexOf(hit.object.userData.slot as number)]?.id??null:null;};
@@ -203,17 +225,19 @@ const ShopScene = forwardRef<SceneHandle,Props>(function ShopScene(props,ref) {
       return [entry,...stops,entry];
     }
     const tick=(time:number)=>{
+      if(document.hidden || !current.current.active){lastTime=time;frame=requestAnimationFrame(tick);return;}
       const dt=Math.min((time-lastTime)/1000,.05);lastTime=time;
       if(current.current.touring&&current.current.active){if(!wasTour){tourTime=0;wasTour=true;}tourTime+=dt;const path=tourPath();const phase=(tourTime/7)%(path.length-1),index=Math.floor(phase),t=THREE.MathUtils.smoothstep(phase-index,0,1);const a=path[index],b=path[index+1];position.set(...a.p as [number,number,number]).lerp(new THREE.Vector3(...b.p as [number,number,number]),t);lookAt(new THREE.Vector3(...a.t as [number,number,number]).lerp(new THREE.Vector3(...b.t as [number,number,number]),t));fov=58;}
       else{wasTour=false;if(current.current.active){if(keys.has("arrowup")||keys.has("w")||keys.has("z"))move("forward",dt*2.4);if(keys.has("arrowdown")||keys.has("s"))move("back",dt*2.4);if(keys.has("a")||keys.has("q"))move("left",dt*2.4);if(keys.has("d"))move("right",dt*2.4);if(keys.has("arrowleft"))yaw+=dt*.9;if(keys.has("arrowright"))yaw-=dt*.9;}else keys.clear();}
+      dirty ||= camera.position.distanceToSquared(position)>0.000001 || Math.abs(yaw-currentYaw)>.0001 || Math.abs(pitch-currentPitch)>.0001 || Math.abs(camera.fov-fov)>.001;
       const smoothing=reduced?1:1-Math.exp(-dt*7);
       camera.position.lerp(position,smoothing);
       let angle=yaw-currentYaw;angle=Math.atan2(Math.sin(angle),Math.cos(angle));currentYaw+=angle*smoothing;currentPitch=THREE.MathUtils.lerp(currentPitch,pitch,smoothing);
       camera.rotation.set(currentPitch,currentYaw,0,"YXZ");camera.fov=THREE.MathUtils.lerp(camera.fov,fov,smoothing);camera.updateProjectionMatrix();
-      if(!document.hidden)renderer.render(scene,camera);
+      if(dirty){renderer.render(scene,camera);dirty=false;}
       frame=requestAnimationFrame(tick);
     };
-    frame=requestAnimationFrame(tick);current.current.onReady();
+    frame=requestAnimationFrame(tick);
     return()=>{
       disposed=true;cancelAnimationFrame(frame);observer.disconnect();
       canvas.removeEventListener("pointerdown",onDown);canvas.removeEventListener("pointermove",onMove);canvas.removeEventListener("pointerup",onUp);canvas.removeEventListener("pointercancel",onCancel);canvas.removeEventListener("pointerleave",leave);canvas.removeEventListener("wheel",onWheel);canvas.removeEventListener("keydown",onKey);canvas.removeEventListener("keyup",onKeyUp);canvas.removeEventListener("blur",blur);canvas.removeEventListener("webglcontextlost",onLost);

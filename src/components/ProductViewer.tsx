@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from 'react';
 import { ChevronLeft, ChevronRight, Minus, Plus, RotateCcw, Move } from 'lucide-react';
 import type { Product } from '../lib/types';
 import { asset } from '../lib/assets';
+import { imageVariant, warmImage, canPrefetch } from '../lib/images';
+import ProgressiveImage from './ProgressiveImage';
 
 const clamp = (value: number, min: number, max: number) => Math.max(min, Math.min(max, value));
 
@@ -9,14 +11,28 @@ export default function ProductViewer({ product }: { product: Product }) {
   const [index, setIndex] = useState(0);
   const [zoom, setZoom] = useState(1);
   const [pan, setPan] = useState({ x: 0, y: 0 });
-  const [failed, setFailed] = useState(false);
   const stage = useRef<HTMLDivElement>(null);
   const pointers = useRef(new Map<number, { x: number; y: number }>());
   const pinch = useRef(0);
   const [dragging, setDragging] = useState(false);
   const photo = product.photos[index];
+  const variant = imageVariant(photo.src);
+  const displaySrc = zoom > 1 ? photo.src : variant.display;
+  useEffect(() => {
+    if (!canPrefetch()) return;
+    let cancelled = false;
+    const timer = setTimeout(async () => {
+      await warmImage(variant.display);
+      for (const offset of [1, -1]) {
+        if (cancelled) break;
+        const neighbor = product.photos[(index + offset + product.photos.length) % product.photos.length];
+        await warmImage(imageVariant(neighbor.src).display);
+      }
+    }, 350);
+    return () => { cancelled = true; clearTimeout(timer); };
+  }, [index, product, variant.display]);
 
-  useEffect(() => { setZoom(1); setPan({ x: 0, y: 0 }); setFailed(false); pointers.current.clear(); }, [index, product.id]);
+  useEffect(() => { setZoom(1); setPan({ x: 0, y: 0 }); pointers.current.clear(); }, [index, product.id]);
   useEffect(() => {
     const node = stage.current;
     if (!node) return;
@@ -62,7 +78,7 @@ export default function ProductViewer({ product }: { product: Product }) {
       }}
       onPointerUp={(event) => { pointers.current.delete(event.pointerId); if (!pointers.current.size) setDragging(false); pinch.current = 0; }}
       onPointerCancel={(event) => { pointers.current.delete(event.pointerId); setDragging(false); pinch.current = 0; }}>
-      {failed ? <p className="image-error">Cette photo n’a pas pu être chargée. Essayez une autre vue.</p> : <img src={asset(photo.src)} alt={`${product.name} — ${photo.label}`} draggable={false} onError={() => setFailed(true)} style={{ transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})` }} />}
+      <ProgressiveImage key={displaySrc} src={displaySrc} preview={zoom > 1 ? variant.display : variant.thumbnail} alt={`${product.name} — ${photo.label}`} draggable={false} fetchPriority="high" style={{ transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})` }} />
       <span className="view-caption">{photo.label}</span>
       <span className="view-counter">{index + 1} / {product.photos.length}</span>
     </div>
@@ -77,7 +93,7 @@ export default function ProductViewer({ product }: { product: Product }) {
     </div>
     <div className="photo-thumbnails">
       <button className="icon-button" aria-label="Photo précédente" onClick={previous}><ChevronLeft size={18} /></button>
-      <div className="thumbnail-scroll">{product.photos.map((item, number) => <button key={item.src} className={`photo-thumbnail ${index === number ? 'is-current' : ''}`} aria-pressed={index === number} aria-label={`Afficher ${item.label.toLowerCase()}`} onClick={() => setIndex(number)}><img src={asset(item.thumbnail)} alt="" loading="lazy" /><span>{number + 1}</span></button>)}</div>
+      <div className="thumbnail-scroll">{product.photos.map((item, number) => <button key={item.src} className={`photo-thumbnail ${index === number ? 'is-current' : ''}`} aria-pressed={index === number} aria-label={`Afficher ${item.label.toLowerCase()}`} onPointerEnter={() => { if (canPrefetch()) void warmImage(imageVariant(item.src).display); }} onFocus={() => { if (canPrefetch()) void warmImage(imageVariant(item.src).display); }} onClick={() => setIndex(number)}><img src={asset(imageVariant(item.src).thumbnail)} alt="" decoding="async" /><span>{number + 1}</span></button>)}</div>
       <button className="icon-button" aria-label="Photo suivante" onClick={next}><ChevronRight size={18} /></button>
     </div>
   </div>;

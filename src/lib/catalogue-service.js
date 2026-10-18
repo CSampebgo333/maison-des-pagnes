@@ -34,6 +34,7 @@ function webpDimensions(bytes){
  if(kind==='VP8L'&&size>=5&&bytes[p]===47){const bits=view.getUint32(p+1,true);return [(bits&16383)+1,((bits>>>14)&16383)+1];}offset=p+size+(size%2);
  }throw Error('Version WebP invalide.');
 }
+export function englishFor(product){const initial=seed.products.find(p=>p.id===product.id);return product.translations?.en??(initial?.name===product.name&&initial?.description===product.description?initial.translations?.en:undefined);}
 const text=(value,max,required=false)=>{if(typeof value!=='string'||value.length>max||required&&!value.trim())throw Error('Vérifiez les textes du pagne.');return value.trim();};
 export async function catalogueRoute(request,env) {
  const url=new URL(request.url),path=url.pathname;
@@ -51,7 +52,7 @@ export async function catalogueRoute(request,env) {
  if(!['GET','HEAD'].includes(request.method)&&request.headers.get('Origin')!==url.origin)return json({error:'Origine non autorisée.'},403);
  try {
   if((path==='/api/catalogue'||path==='/api/admin/catalogue')&&request.method==='GET'){
-   const {document}=await getCatalogue(env);return json(path==='/api/catalogue'?{...document,products:document.products.filter(p=>p.published!==false)}:document);
+   const {document}=await getCatalogue(env);const enriched={...document,products:document.products.map(p=>({...p,translations:{en:englishFor(p)}}))};return json(path==='/api/catalogue'?{...enriched,products:enriched.products.filter(p=>p.published!==false)}:enriched);
   }
   if(path==='/api/admin/photos'&&request.method==='POST'){
    const data=await bounded(request,LIMIT);const form=await new Response(data,{headers:{'Content-Type':request.headers.get('Content-Type')??''}}).formData();
@@ -87,7 +88,8 @@ export async function catalogueRoute(request,env) {
      variants[photo.src]=variant;photos.push({src:photo.src,thumbnail:variant.thumbnail,view:i+1,label:text(photo.label??'',60)||['Vue d’ensemble','Pagne plié','Pagne drapé','Détail du motif','Autre vue'][i]||'Autre vue'});
     }
     if(!Array.isArray(p.colors)||p.colors.length>8)throw Error('Vérifiez les couleurs.');
-    products.push({id:p.id,number:p.number,name:text(p.name,100,true),description:text(p.description,1000,true),colors:p.colors.map(c=>text(c,30,true)),pattern:text(p.pattern,100),accent:/^#[a-f0-9]{6}$/i.test(p.accent)?p.accent:'#aaa0c7',price:p.price,unit:text(p.unit,80),composition:text(p.composition,120),dimensions:text(p.dimensions,120),availability:p.availability,occasions:[...new Set(p.occasions)],published:p.published!==false,photos});
+    const english=englishFor(p);const translations={en:english?Object.fromEntries(Object.entries({name:100,description:1000,pattern:100,unit:80,composition:120,dimensions:120}).map(([key,max])=>[key,text(english[key]??'',max)])):undefined};
+    products.push({translations,id:p.id,number:p.number,name:text(p.name,100,true),description:text(p.description,1000,true),colors:p.colors.map(c=>text(c,30,true)),pattern:text(p.pattern,100),accent:/^#[a-f0-9]{6}$/i.test(p.accent)?p.accent:'#aaa0c7',price:p.price,unit:text(p.unit,80),composition:text(p.composition,120),dimensions:text(p.dimensions,120),availability:p.availability,occasions:[...new Set(p.occasions)],published:p.published!==false,photos});
    }
    const next={products,variants,revision:crypto.randomUUID(),updatedAt:new Date().toISOString()};
    // Keep recoverable snapshots; optimistic concurrency prevents overwriting another edit.

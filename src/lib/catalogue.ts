@@ -1,16 +1,17 @@
+import {tr} from './i18n-core.js';
 import type { Product, BagItem } from './types.ts';
 
 export function normalize(value: string) {
   return value.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
 }
 
-export function findProducts(products: Product[], query: string, color = '', sort = 'collection') {
+export function findProducts(products: Product[], query: string, color = '', sort = 'collection',language = 'fr') {
   const tokens = normalize(query).trim().split(/\s+/).filter(Boolean);
   const result = products.filter((product) => {
-    const haystack = normalize([product.id, product.name, product.description, product.pattern, ...product.colors].join(' '));
+    const haystack = normalize([product.sourceText??'', product.id, product.name, product.description, product.pattern, ...product.colors,...product.colors.map(c=>tr(c,'en')), product.translations?.en?.name??'',product.translations?.en?.description??'',product.translations?.en?.pattern??''].join(' '));
     return tokens.every((token) => haystack.includes(token)) && (!color || product.colors.includes(color));
   });
-  if (sort === 'name') result.sort((a, b) => a.name.localeCompare(b.name, 'fr'));
+  if (sort === 'name') result.sort((a, b) => a.name.localeCompare(b.name, language));
   else if (sort === 'price') result.sort((a, b) => (a.price ?? Infinity) - (b.price ?? Infinity) || a.number - b.number);
   else result.sort((a, b) => a.number - b.number);
   return result;

@@ -7,3 +7,6 @@ coverage/
 .DS_Store
 *.log
 *.zip
+
+/tmp/
+/deployment/cloudflare/wrangler.local.jsonc

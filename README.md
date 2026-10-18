@@ -80,7 +80,7 @@ node scripts/make-apercu.mjs /chemin/maison-des-pagnes-apercu.html
 
 Voir [le guide GitHub](docs/GITHUB.md). Ce projet est préparé pour un dépôt personnel, sans dépendance à l’hébergement de la première démonstration.
 
-Cette version n’enregistre ni commande ni paiement. La sélection est locale au navigateur. Le catalogue initial provient de fichiers. Une gestion protégée permet désormais de modifier les pagnes et leur disponibilité dans le stockage de l’hébergement. Voir la section Gestion du catalogue, favoris et livraison ci-dessous.
+Les commandes et les encaissements saisis manuellement sont désormais enregistrés dans D1. La sélection avant envoi reste locale au navigateur. Le catalogue initial provient de fichiers. Une gestion protégée permet désormais de modifier les pagnes et leur disponibilité dans le stockage de l’hébergement. Voir la section Gestion du catalogue, favoris et livraison ci-dessous.
 
 ## Vérification de cette livraison
 
@@ -133,7 +133,7 @@ clients ne sont pas enregistrées dans le catalogue ni dans son cache local.
 
 L’espace **Gérer la boutique** (en pied de page) ou `/?gestion=1` permet d’ajouter et modifier les pagnes : prix en CFA hors livraison, disponibilité, description, dimensions, contenu de l’achat, couleurs, occasions et de 1 à 8 photos. La première photo est toujours l’image principale. Un pagne peut être masqué puis réaffiché sans suppression de ses données.
 
-La gestion vérifie côté serveur l’identité ChatGPT transmise par Sites et la variable secrète `CATALOGUE_ADMIN_EMAIL`. Elle reste interdite aux autres comptes et aux visiteurs anonymes, y compris après une future publication publique. Le compte propriétaire actuel est configuré. Pour l’usage autonome de la maman, configurer son compte autorisé et l’accès au site lors de la mise en production ; ne jamais mettre un mot de passe ou cette configuration dans le code client. Sur un autre hébergement, remplacer cette vérification par une authentification serveur fiable : les en-têtes d’identité doivent provenir d’un proxy de confiance.
+La gestion vérifie côté serveur l’identité ChatGPT transmise par Sites et la variable secrète `CATALOGUE_ADMIN_EMAIL`. Elle reste interdite aux autres comptes et aux visiteurs anonymes, y compris après une future publication publique. Le compte propriétaire actuel est configuré. Le propriétaire gère seul la boutique ; configurer son compte autorisé et l’accès au site lors de la mise en production ; ne jamais mettre un mot de passe ou cette configuration dans le code client. Sur un autre hébergement, remplacer cette vérification par une authentification serveur fiable : les en-têtes d’identité doivent provenir d’un proxy de confiance.
 
 Les changements sont stockés durablement dans R2 sous `catalogue/current.json`, séparément des PDF de commande. Chaque sauvegarde conserve une version précédente sous `catalogue/history/`. La révision et l’ETag empêchent d’écraser une modification concurrente : si un conflit apparaît, recharger la gestion avant de réessayer. Les fichiers retirés d’une fiche sont conservés pour les versions précédentes. Les uploads abandonnés ne sont pas automatiquement purgés dans cette version.
 
@@ -164,3 +164,13 @@ Après choix du domaine : vérifier la propriété dans Google Search Console, s
 À l’ouverture de la boutique, un léger mouvement de caméra commence après le chargement des photos et dure sept secondes, puis revient au cadrage de départ et s’arrête. Son amplitude est réduite sur téléphone. Les textes restent dans le salon et la visite guidée complète se lance seulement sur demande.
 
 Le bouton Pause interrompt l’accueil ; toute action tactile, frappe, recherche, défilement ou changement d’onglet l’arrête également. Un geste dans la scène fige d’abord le mouvement avant d’appliquer le déplacement ou le zoom. Le chargement ne consomme pas les sept secondes. La préférence de réduction des animations empêche le démarrage et interrompt l’animation si elle est activée pendant la visite. Le mouvement n’est pas relancé après une interaction ou un changement de salon.
+
+## Gestion des commandes (D1)
+
+Le catalogue courant, les commandes et le stock résident désormais dans D1 lorsque le binding DB est disponible. Le catalogue existant en R2 est repris une seule fois, sans écraser ses modifications. R2 conserve les photos originales, variantes et bons PDF. La migration structurelle est dans `drizzle/0000_orders.sql` ; elle ne contient aucune commande ni donnée client.
+
+L’espace `?gestion=1` propose une vue d’ensemble, commandes avec recherche/statuts/historique, stock et collection. Une demande client est enregistrée avant son PDF et reçoit un suivi privé. La confirmation exige l’accord du client, les frais, la date convenue et le prix personnalisé éventuel ; elle réserve les unités disponibles par une transaction SQL. Une annulation avant remise restitue les unités. Livraison et encaissement restent distincts ; Orange Money ou Wave sont saisis manuellement à la remise. Les requêtes répétées utilisent une clé d’idempotence.
+
+Les quantités initiales entre 2 et 5 sont explicitement des données de démonstration et n’écrasent aucun stock existant. L’administration doit renseigner les stocks réels avant ouverture publique. Les nouveaux pagnes ne reçoivent aucun stock inventé.
+
+Le futur déploiement indépendant, les transferts de données, la connexion Access, les sauvegardes et les limites de cette version sont documentés dans `deployment/cloudflare/README.md`. Aucun compte Cloudflare personnel ni abonnement n’est configuré par le seul ajout de ces fichiers. Le code demeure sur l’aperçu privé jusqu’au transfert autorisé et sécurisé des ressources.

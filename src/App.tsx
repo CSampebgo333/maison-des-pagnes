@@ -17,7 +17,8 @@ import { wrappedIndex } from './lib/scene-navigation';
 
 const ShopScene = lazy(() => import('./components/ShopScene'));
 const initialProducts = catalogue as Product[];
-const CatalogueAdmin = lazy(() => import('./components/CatalogueAdmin'));
+const CatalogueAdmin = lazy(() => import('./components/ManagementDashboard'));
+const OrderTracking=lazy(()=>import('./components/OrderTracking'));
 const SAVED_KEY = 'maison-faso-favoris-v1';
 const contactLabel = (number:string) => `+${number.slice(0,3)} ${number.slice(3).match(/.{1,2}/g)?.join(' ')}`;
 const BAG_KEY = 'maison-des-pagnes-selection-v1';
@@ -143,6 +144,7 @@ export default function App() {
     catch { setNotice('Le plein écran n’est pas disponible sur cet appareil.'); }
   }
 
+  if(location.hash.startsWith('#suivi/'))return <Suspense fallback={<p>Chargement du suivi…</p>}><OrderTracking/></Suspense>;
   if(adminOpen) return <Suspense fallback={<div className="scene-loading">Ouverture de la gestion…</div>}><CatalogueAdmin onSaved={applyCatalogue} onClose={()=>{setAdminOpen(false);history.replaceState(null,'',location.pathname);void fetchCatalogue().then(applyCatalogue).catch(()=>{});}} /></Suspense>;
   return <div onPointerDownCapture={event=>{if(!(event.target as Element).closest('[data-welcome-pause]'))stopWelcome();}} onKeyDownCapture={event=>{if(!((event.target as Element).closest('[data-welcome-pause]')&&(event.key==='Enter'||event.key===' ')))stopWelcome();}} onWheelCapture={stopWelcome} onInputCapture={stopWelcome}>
     <div className="announcement"><span>Des motifs à découvrir. Des détails à aimer.</span><span className="announcement-end">Une boutique familiale <span aria-hidden="true">✦</span></span></div>

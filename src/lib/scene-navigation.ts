@@ -11,3 +11,10 @@ export function wrappedIndex(index:number,direction:number,count:number) {
 export function approachReady(elapsed:number,distanceSquared:number,angleError:number) {
  return elapsed>=.65&&distanceSquared<.035&&angleError<.025 || elapsed>=1.5;
 }
+
+export const WELCOME_SECONDS = 7;
+export function welcomeOffset(elapsed:number,mobile:boolean) {
+ const t=Math.max(0,Math.min(1,elapsed/WELCOME_SECONDS));
+ const arc=Math.sin(Math.PI*t)**2;
+ return {x:arc*(mobile?.18:.55),z:-arc*(mobile?.12:.35),yaw:-arc*(mobile?.012:.035),done:t>=1};
+}

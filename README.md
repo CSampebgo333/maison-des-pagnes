@@ -158,3 +158,9 @@ Titre et description nomment le Faso Dan Fani et le Burkina Faso. L’accueil co
 L’aperçu privé reste non indexable. Au déploiement public, fournir la variable de build `PUBLIC_SITE_URL=https://votre-domaine/` (origine HTTPS réelle sans chemin). Le build prépare alors la canonique, les aperçus sociaux, le sitemap et l’autorisation d’indexation. Cette variable ne rend pas un site privé public. Vérifier les accès publics réels et la protection de la gestion avant l’ouverture. Les PDF et les API restent exclus du sitemap ; les PDF portent aussi un en-tête noindex côté serveur.
 
 Après choix du domaine : vérifier la propriété dans Google Search Console, soumettre /sitemap.xml, contrôler l’URL et demander l’indexation. Prévoir ensuite de vraies pages publiques par produit, avec rendu serveur du catalogue actualisé et données Product fiables. Le catalogue actuel dans la 3D et les fenêtres produit ne constitue pas encore ces pages séparées. L’indexation et les positions dans Google ne sont jamais garanties.
+
+## Animation d’accueil
+
+À l’ouverture de la boutique, un léger mouvement de caméra commence après le chargement des photos et dure sept secondes, puis revient au cadrage de départ et s’arrête. Son amplitude est réduite sur téléphone. Les textes restent dans le salon et la visite guidée complète se lance seulement sur demande.
+
+Le bouton Pause interrompt l’accueil ; toute action tactile, frappe, recherche, défilement ou changement d’onglet l’arrête également. Un geste dans la scène fige d’abord le mouvement avant d’appliquer le déplacement ou le zoom. Le chargement ne consomme pas les sept secondes. La préférence de réduction des animations empêche le démarrage et interrompt l’animation si elle est activée pendant la visite. Le mouvement n’est pas relancé après une interaction ou un changement de salon.

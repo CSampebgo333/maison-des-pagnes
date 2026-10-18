@@ -38,6 +38,7 @@ const text=(value,max,required=false)=>{if(typeof value!=='string'||value.length
 export async function catalogueRoute(request,env) {
  const url=new URL(request.url),path=url.pathname;
  const admin=path.startsWith('/api/admin/');
+ if(path==='/api/admin/login'){if(await isCatalogueAdmin(request,env))return Response.redirect(url.origin+'/?gestion=1',303);if(env.AUTH_MODE==='cloudflare')return json({error:'La connexion sécurisée Cloudflare Access doit être configurée.'},403);return Response.redirect(url.origin+'/signin-with-chatgpt?return_to=%2F%3Fgestion%3D1',303);}
  if(path==='/api/admin/session')return json({allowed:await isCatalogueAdmin(request,env)},await isCatalogueAdmin(request,env)?200:403);
  const photoPath=/^\/catalogue-images\/([a-f0-9-]{36})\.(jpg|png)$/.test(path)||/^\/media\/catalogue-(thumbnail|scene|display)-[a-f0-9]{12}\.webp$/.test(path);
  if(photoPath&&['GET','HEAD'].includes(request.method)){

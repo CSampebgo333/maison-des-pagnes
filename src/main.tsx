@@ -1,11 +1,11 @@
-import {initializeLanguage,LanguageSwitcher} from './lib/i18n';
+import {initializeLanguage} from './lib/i18n';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
 import './styles.css';
 
 await initializeLanguage();
-ReactDOM.createRoot(document.getElementById('root')!).render(<React.StrictMode><><LanguageSwitcher/><App /></></React.StrictMode>);
+ReactDOM.createRoot(document.getElementById('root')!).render(<React.StrictMode><App /></React.StrictMode>);
 
 // Registration runs alongside rendering and gracefully degrades if unavailable.
 if (import.meta.env.PROD && 'serviceWorker' in navigator && location.protocol === 'https:') {

@@ -4,7 +4,7 @@ import type { Product } from "../lib/types";
 import { asset } from "../lib/assets";
 import { imageVariant } from "../lib/images";
 import shop from "../../config/boutique.json";
-import { overviewView, approachReady } from "../lib/scene-navigation";
+import { overviewView, approachReady, welcomeOffset } from "../lib/scene-navigation";
 
 const displayOrder = [1, 4, 0, 2, 3, 5, 6, 9, 7, 10, 8, 11];
 
@@ -14,7 +14,7 @@ export type SceneHandle = {
   zoom: (amount: number) => void;
   focus: (id: string) => void;
 };
-type Props = {products: Product[]; touring: boolean; active: boolean; onSelect: (id:string)=>void; onHover: (id:string|null)=>void; onReady:()=>void; onProgress:(loaded:number,total:number)=>void; onError:()=>void; onInterrupt:()=>void};
+type Props = {products: Product[]; touring: boolean; welcoming:boolean; onWelcomeEnd:()=>void; active: boolean; onSelect: (id:string)=>void; onHover: (id:string|null)=>void; onReady:()=>void; onProgress:(loaded:number,total:number)=>void; onError:()=>void; onInterrupt:()=>void};
 type Fixture = {group: THREE.Group; photo: THREE.Mesh; label: THREE.Mesh; slot: number; photoWidth: number; photoHeight: number; texture?: THREE.Texture};
 
 const ShopScene = forwardRef<SceneHandle,Props>(function ShopScene(props,ref) {
@@ -45,6 +45,12 @@ const ShopScene = forwardRef<SceneHandle,Props>(function ShopScene(props,ref) {
     let currentYaw = 0, currentPitch = -.015;
     camera.fov=fov;
     let overview=true;
+    let welcomeTime=0,welcomeMoving=false,sceneLoaded=false;
+    function freezeWelcome() {
+      if(!welcomeMoving)return;
+      position.copy(camera.position);yaw=currentYaw;pitch=currentPitch;fov=camera.fov;
+      welcomeMoving=false;current.current.onWelcomeEnd();
+    }
     let pendingSelection:{id:string;elapsed:number}|null=null;
     const cancelApproach=()=>{pendingSelection=null;};
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -149,11 +155,12 @@ const ShopScene = forwardRef<SceneHandle,Props>(function ShopScene(props,ref) {
     let generation=0;
     refresh.current=()=> {
       cancelApproach();
+      sceneLoaded=false;
       const version=++generation;
       let completed=0;
       const total=Math.min(current.current.products.length,fixtureList.length);
       current.current.onProgress(0,total);
-      if(!total)current.current.onReady();
+      if(!total){sceneLoaded=true;current.current.onReady();}
       fixtureList.forEach(f=> {
         const article=current.current.products[displayOrder.indexOf(f.slot)];
         const lm=f.label.material as THREE.MeshBasicMaterial;
@@ -172,7 +179,7 @@ const ShopScene = forwardRef<SceneHandle,Props>(function ShopScene(props,ref) {
           }
           dirty=true;current.current.onProgress(++completed,total);
           if(completed===total){
-            current.current.onReady();
+            sceneLoaded=true;current.current.onReady();
             const used=new Set(fixtureList.map(f=>f.texture));
             for(const [key,cached] of loadedPhotos){if(loadedPhotos.size<=24)break;if(used.has(cached))continue;cached.dispose();textures.delete(cached);loadedPhotos.delete(key);photoCache.delete(key);}
           }
@@ -186,7 +193,7 @@ const ShopScene = forwardRef<SceneHandle,Props>(function ShopScene(props,ref) {
     }
     function constrain() { position.x=THREE.MathUtils.clamp(position.x,-4.2,4.2);position.z=THREE.MathUtils.clamp(position.z,-4.55,overviewView(camera.aspect).z); }
     function move(direction: "forward"|"back"|"left"|"right",amount=.7) {
-      cancelApproach();overview=false;current.current.onInterrupt();
+      freezeWelcome();cancelApproach();overview=false;current.current.onInterrupt();
       const angle = yaw+(direction==="left"?Math.PI/2:direction==="right"?-Math.PI/2:0);
       const sign=direction==="back"?-1:1;
       position.x-=Math.sin(angle)*amount*sign;position.z-=Math.cos(angle)*amount*sign;constrain();
@@ -194,7 +201,7 @@ const ShopScene = forwardRef<SceneHandle,Props>(function ShopScene(props,ref) {
     function focusProduct(id:string) {
       const slot=displayOrder[current.current.products.findIndex(p=>p.id===id)];
       const fixture=fixtureList.find(n=>n.slot===slot);if(!fixture)return false;
-      overview=false;current.current.onInterrupt();
+      freezeWelcome();overview=false;current.current.onInterrupt();
       const normal=new THREE.Vector3(0,0,1).applyQuaternion(fixture.group.quaternion);
       const distance=camera.aspect<.85?4.4:3.3;
       position.copy(fixture.group.position).addScaledVector(normal,distance);position.y=2.55;constrain();lookAt(fixture.group.position);fov=camera.aspect<.85?66:52;dirty=true;
@@ -207,9 +214,9 @@ const ShopScene = forwardRef<SceneHandle,Props>(function ShopScene(props,ref) {
       if(focusProduct(id))pendingSelection={id,elapsed:0};
     }
     actions.current={
-      reset:()=>{cancelApproach();overview=true;current.current.onInterrupt();const entry=overviewView(camera.aspect);position.set(entry.x,entry.y,entry.z);yaw=0;pitch=-.015;fov=entry.fov;dirty=true;current.current.onHover(null);},
+      reset:()=>{freezeWelcome();cancelApproach();overview=true;current.current.onInterrupt();const entry=overviewView(camera.aspect);position.set(entry.x,entry.y,entry.z);yaw=0;pitch=-.015;fov=entry.fov;dirty=true;current.current.onHover(null);},
       move,
-      zoom:amount=>{cancelApproach();overview=false;current.current.onInterrupt();fov=THREE.MathUtils.clamp(fov+amount,30,80);},
+      zoom:amount=>{freezeWelcome();cancelApproach();overview=false;current.current.onInterrupt();fov=THREE.MathUtils.clamp(fov+amount,30,80);},
       focus:id=> {cancelApproach();focusProduct(id);},
     };
     const resize=()=>{const w=element.clientWidth,h=Math.max(1,element.clientHeight);renderer.setSize(w,h);camera.aspect=w/h;if(overview){const entry=overviewView(camera.aspect);position.set(entry.x,entry.y,entry.z);fov=entry.fov;}camera.updateProjectionMatrix();dirty=true;};
@@ -218,7 +225,7 @@ const ShopScene = forwardRef<SceneHandle,Props>(function ShopScene(props,ref) {
     const hitAt=(x:number,y:number)=>{const rect=renderer.domElement.getBoundingClientRect();pointer.set(((x-rect.left)/rect.width)*2-1,-((y-rect.top)/rect.height)*2+1);ray.setFromCamera(pointer,camera);const hit=ray.intersectObjects(hitTargets,false)[0];return hit?current.current.products[displayOrder.indexOf(hit.object.userData.slot as number)]?.id??null:null;};
     let dragging=false,lastX=0,lastY=0,downX=0,downY=0,travel=0;
     const touches=new Map<number,{x:number;y:number}>();let pinchDistance=0;
-    const onDown=(e:PointerEvent)=>{if(!current.current.active)return;cancelApproach();renderer.domElement.focus();touches.set(e.pointerId,{x:e.clientX,y:e.clientY});dragging=true;lastX=downX=e.clientX;lastY=downY=e.clientY;travel=0;renderer.domElement.setPointerCapture(e.pointerId);
+    const onDown=(e:PointerEvent)=>{if(!current.current.active)return;freezeWelcome();cancelApproach();renderer.domElement.focus();touches.set(e.pointerId,{x:e.clientX,y:e.clientY});dragging=true;lastX=downX=e.clientX;lastY=downY=e.clientY;travel=0;renderer.domElement.setPointerCapture(e.pointerId);
       if(touches.size===2){const [a,b]=[...touches.values()];pinchDistance=Math.hypot(a.x-b.x,a.y-b.y);travel=10;}
     };
     const onMove=(e:PointerEvent)=>{
@@ -230,9 +237,9 @@ const ShopScene = forwardRef<SceneHandle,Props>(function ShopScene(props,ref) {
     };
     const onUp=(e:PointerEvent)=>{touches.delete(e.pointerId);if(!dragging)return;dragging=false;if(travel<7&&Math.hypot(e.clientX-downX,e.clientY-downY)<7){const slot=hitAt(e.clientX,e.clientY);if(slot!==null)approachProduct(slot);} };
     const onCancel=(e:PointerEvent)=>{touches.delete(e.pointerId);dragging=false;};
-    const onWheel=(e:WheelEvent)=>{if(!current.current.active)return;e.preventDefault();cancelApproach();overview=false;current.current.onInterrupt();fov=THREE.MathUtils.clamp(fov+e.deltaY*.035,30,80);};
+    const onWheel=(e:WheelEvent)=>{if(!current.current.active)return;e.preventDefault();freezeWelcome();cancelApproach();overview=false;current.current.onInterrupt();fov=THREE.MathUtils.clamp(fov+e.deltaY*.035,30,80);};
     const keys=new Set<string>();
-    const onKey=(e:KeyboardEvent)=>{if(!current.current.active||e.target!==renderer.domElement)return;const k=e.key.toLowerCase();if(k==="escape"){e.preventDefault();actions.current.reset();return;}if(["arrowup","arrowdown","arrowleft","arrowright","w","a","s","d","z","q"].includes(k)){e.preventDefault();cancelApproach();overview=false;keys.add(k);current.current.onInterrupt();}};
+    const onKey=(e:KeyboardEvent)=>{if(!current.current.active||e.target!==renderer.domElement)return;const k=e.key.toLowerCase();if(k==="escape"){e.preventDefault();actions.current.reset();return;}if(["arrowup","arrowdown","arrowleft","arrowright","w","a","s","d","z","q"].includes(k)){e.preventDefault();freezeWelcome();cancelApproach();overview=false;keys.add(k);current.current.onInterrupt();}};
     const onKeyUp=(e:KeyboardEvent)=>keys.delete(e.key.toLowerCase());
     const blur=()=>{keys.clear();};
     const leave=()=>{current.current.onHover(null);};
@@ -253,9 +260,16 @@ const ShopScene = forwardRef<SceneHandle,Props>(function ShopScene(props,ref) {
       return [entry,...stops,entry];
     }
     const tick=(time:number)=>{
-      if(document.hidden || !current.current.active){cancelApproach();keys.clear();dragging=false;touches.clear();lastTime=time;frame=requestAnimationFrame(tick);return;}
+      if(document.hidden || !current.current.active){freezeWelcome();cancelApproach();keys.clear();dragging=false;touches.clear();lastTime=time;frame=requestAnimationFrame(tick);return;}
       const dt=Math.min((time-lastTime)/1000,.05);lastTime=time;
-      if(current.current.touring&&current.current.active){if(!wasTour){cancelApproach();overview=false;tourTime=0;wasTour=true;}tourTime+=dt;const path=tourPath();const phase=(tourTime/7)%(path.length-1),index=Math.floor(phase),t=THREE.MathUtils.smoothstep(phase-index,0,1);const a=path[index],b=path[index+1];position.set(...a.p as [number,number,number]).lerp(new THREE.Vector3(...b.p as [number,number,number]),t);lookAt(new THREE.Vector3(...a.t as [number,number,number]).lerp(new THREE.Vector3(...b.t as [number,number,number]),t));fov=camera.aspect<.85?68:58;}
+      if(welcomeMoving&&!current.current.welcoming)freezeWelcome();
+      if(current.current.welcoming&&!reduced&&sceneLoaded&&!current.current.touring){
+        welcomeMoving=true;welcomeTime+=dt;
+        const entry=overviewView(camera.aspect),offset=welcomeOffset(welcomeTime,camera.aspect<1);
+        position.set(entry.x+offset.x,entry.y,entry.z+offset.z);yaw=offset.yaw;pitch=-.015;fov=entry.fov;
+        if(offset.done){welcomeMoving=false;current.current.onWelcomeEnd();}
+      }
+      else if(current.current.touring&&current.current.active){if(!wasTour){cancelApproach();overview=false;tourTime=0;wasTour=true;}tourTime+=dt;const path=tourPath();const phase=(tourTime/7)%(path.length-1),index=Math.floor(phase),t=THREE.MathUtils.smoothstep(phase-index,0,1);const a=path[index],b=path[index+1];position.set(...a.p as [number,number,number]).lerp(new THREE.Vector3(...b.p as [number,number,number]),t);lookAt(new THREE.Vector3(...a.t as [number,number,number]).lerp(new THREE.Vector3(...b.t as [number,number,number]),t));fov=camera.aspect<.85?68:58;}
       else{wasTour=false;if(current.current.active){if(keys.has("arrowup")||keys.has("w")||keys.has("z"))move("forward",dt*2.4);if(keys.has("arrowdown")||keys.has("s"))move("back",dt*2.4);if(keys.has("a")||keys.has("q"))move("left",dt*2.4);if(keys.has("d"))move("right",dt*2.4);if(keys.has("arrowleft"))yaw+=dt*.9;if(keys.has("arrowright"))yaw-=dt*.9;}else keys.clear();}
       dirty ||= camera.position.distanceToSquared(position)>0.000001 || Math.abs(yaw-currentYaw)>.0001 || Math.abs(pitch-currentPitch)>.0001 || Math.abs(camera.fov-fov)>.001;
       const smoothing=reduced?1:1-Math.exp(-dt*7);

@@ -6,7 +6,7 @@ import {createBackup,scheduledBackup,backupRoute} from '../src/lib/backups.js';
 import {requestGuard,secureResponse} from '../src/lib/security.js';
 function db(){
  const database=new DatabaseSync(':memory:');
- for(const p of ['0000_orders.sql','0001_security.sql'])database.exec(readFileSync(new URL('../drizzle/'+p,import.meta.url),'utf8'));
+ for(const p of ['0000_orders.sql','0001_security.sql','0002_order_language.sql'])database.exec(readFileSync(new URL('../drizzle/'+p,import.meta.url),'utf8'));
  const prepare=q=>{
   const statement={q,args:[],bind(...args){
    return {...statement,args,async first(){return database.prepare(q).get(...args);},async run(){return {meta:{changes:database.prepare(q).run(...args).changes}};}};

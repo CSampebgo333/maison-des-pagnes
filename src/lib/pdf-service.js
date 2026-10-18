@@ -1,3 +1,4 @@
+import {ordersRoute} from './orders-service.js';
 import { catalogueRoute } from './catalogue-service.js';
 const TTL = 7 * 24 * 60 * 60 * 1000;
 const LIMIT = 24 * 1024 * 1024;
@@ -9,6 +10,7 @@ async function cleanup(bucket) {
 export default {
  async fetch(request, env) {
   const url=new URL(request.url);
+  const orderResponse=await ordersRoute(request,env);if(orderResponse)return orderResponse;
   const catalogueResponse=await catalogueRoute(request,env);if(catalogueResponse)return catalogueResponse;
   if(url.pathname==='/api/order-pdfs' && request.method==='POST') {
    if(!env.BUCKET) return json({error:'Le stockage des PDF est temporairement indisponible.'},503);

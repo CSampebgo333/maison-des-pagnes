@@ -1,7 +1,10 @@
+import english from '../locales/en.json' with {type:'json'};
+import {tr,normalLanguage,installEnglish} from './i18n-core.js';
 import {requestGuard,secureResponse} from './security.js';
 import {backupRoute,scheduledBackup} from './backups.js';
 import {ordersRoute} from './orders-service.js';
 import { catalogueRoute } from './catalogue-service.js';
+installEnglish(english);
 const TTL = 7 * 24 * 60 * 60 * 1000;
 const LIMIT = 24 * 1024 * 1024;
 const json = (value,status=200) => new Response(JSON.stringify(value),{status,headers:{'Content-Type':'application/json','Cache-Control':'no-store','X-Content-Type-Options':'nosniff'}});
@@ -40,7 +43,8 @@ const application={
   }
   if(url.pathname.startsWith('/api/')||url.pathname.startsWith('/order-pdfs/'))return new Response('Introuvable',{status:404});
   if(env.ASSETS){
-   const response=await env.ASSETS.fetch(request);
+   const assetRequest=url.pathname==='/'&&url.searchParams.get('lang')==='en'?new Request(new URL('/index.en.html',url),request):request;
+   const response=await env.ASSETS.fetch(assetRequest);
    // Content hashes change whenever a photo changes: safe, long-lived caching.
    if(response.ok && /^\/media\/[a-zA-Z0-9-]+-[a-f0-9]{12}\.webp$/.test(url.pathname)){
     const headers=new Headers(response.headers);headers.set('Content-Type','image/webp');headers.set('Cache-Control','public, max-age=31536000, immutable');
@@ -54,7 +58,10 @@ const application={
 
 export default {
  async fetch(request,env){
-  try{const blocked=await requestGuard(request,env);return secureResponse(blocked??await application.fetch(request,env),request,env);}
+  try{const blocked=await requestGuard(request,env);let response=blocked??await application.fetch(request,env);
+   const language=normalLanguage(request.headers.get('X-Shop-Language')??new URL(request.url).searchParams.get('lang')??request.headers.get('Accept-Language')?.split(',')[0]);
+   if(language==='en'&&response.headers.get('Content-Type')?.includes('application/json')&&response.status>=400){const body=await response.json();if(typeof body.error==='string')body.error=tr(body.error,'en');response=new Response(JSON.stringify(body),{status:response.status,headers:response.headers});}
+   return secureResponse(response,request,env);}
   catch{return secureResponse(json({error:'Le service est temporairement indisponible. Réessayez.'},503),request,env);}
  },
  async scheduled(controller,env,ctx){ctx.waitUntil(scheduledBackup(env));}

@@ -49,6 +49,8 @@ export default function App() {
   const [view, setView] = useState<'boutique' | 'galerie'>('boutique');
   const [intro, setIntro] = useState(true);
   const [touring, setTouring] = useState(false);
+  const [welcoming, setWelcoming] = useState(() => !window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+  const stopWelcome = useCallback(() => setWelcoming(false), []);
   const [imageProgress, setImageProgress] = useState({ loaded: 0, total: 0 });
   const onProgress = useCallback((loaded: number, total: number) => { setImageProgress({ loaded, total }); setReady(loaded === total); }, []);
   const [ready, setReady] = useState(false);
@@ -70,6 +72,7 @@ export default function App() {
   const stage = useRef<HTMLElement>(null);
   const collection = useRef<HTMLElement>(null);
   const search = useRef<HTMLInputElement>(null);
+  const filtersInitialized = useRef(false);
 
   const visible = useMemo(() => findProducts(products, query, color, sort).filter(p => (!onlyFavorites || savedIds.includes(p.id)) && (!occasion || productOccasions(p).includes(occasion))), [products, query, color, sort, onlyFavorites, savedIds, occasion]);
   const pageCount = Math.max(1, Math.ceil(visible.length / 12));
@@ -80,11 +83,19 @@ export default function App() {
   const bagCount = bag.reduce((count, item) => count + item.quantity, 0);
   const hoveredProduct = visible.find((product) => product.id === hovered);
   const selectedItems = bag.flatMap((item) => { const product = products.find((p) => p.id === item.id); return product ? [{ ...item, product }] : []; });
-  const interrupt = useCallback(() => setTouring(false), []);
+  const interrupt = useCallback(() => {setTouring(false);setWelcoming(false);}, []);
   const onReady = useCallback(() => setReady(true), []);
   const onError = useCallback(() => { setSceneError(true); setView('galerie'); setTouring(false); setNotice('La galerie est disponible sur cet appareil.'); }, []);
   const onSelect = useCallback((id: string) => { const product = products.find((p) => p.id === id); if (product) { setSelected(product); setTouring(false); } }, [products]);
 
+  useEffect(() => {
+    const preference=window.matchMedia('(prefers-reduced-motion: reduce)');
+    const changed=()=>{if(preference.matches)stopWelcome();};
+    const hidden=()=>{if(document.hidden)stopWelcome();};
+    window.addEventListener('scroll',stopWelcome,{passive:true});
+    document.addEventListener('visibilitychange',hidden);preference.addEventListener('change',changed);
+    return()=>{window.removeEventListener('scroll',stopWelcome);document.removeEventListener('visibilitychange',hidden);preference.removeEventListener('change',changed);};
+  },[stopWelcome]);
   useEffect(() => { try { localStorage.setItem(BAG_KEY, JSON.stringify(bag)); } catch { /* La sélection fonctionne aussi sans stockage local. */ } }, [bag]);
   useEffect(() => { if (!notice) return; const timer = setTimeout(() => setNotice(''), 4200); return () => clearTimeout(timer); }, [notice]);
   useEffect(() => {
@@ -92,7 +103,7 @@ export default function App() {
     document.addEventListener('fullscreenchange', update);
     return () => document.removeEventListener('fullscreenchange', update);
   }, []);
-  useEffect(() => { setTouring(false); setHovered(null); if (query || color) setIntro(false); scene.current?.reset(); setScenePage(0); }, [query, color, sort]);
+  useEffect(() => { if(!filtersInitialized.current){filtersInitialized.current=true;return;} stopWelcome(); setTouring(false); setHovered(null); if (query || color) setIntro(false); scene.current?.reset(); setScenePage(0); }, [query, color, sort]);
 
   function applyCatalogue(doc: CatalogueDocument) {
     const list=doc.products.filter(p=>p.published!==false); setProducts(list);
@@ -133,7 +144,7 @@ export default function App() {
   }
 
   if(adminOpen) return <Suspense fallback={<div className="scene-loading">Ouverture de la gestion…</div>}><CatalogueAdmin onSaved={applyCatalogue} onClose={()=>{setAdminOpen(false);history.replaceState(null,'',location.pathname);void fetchCatalogue().then(applyCatalogue).catch(()=>{});}} /></Suspense>;
-  return <>
+  return <div onPointerDownCapture={event=>{if(!(event.target as Element).closest('[data-welcome-pause]'))stopWelcome();}} onKeyDownCapture={event=>{if(!((event.target as Element).closest('[data-welcome-pause]')&&(event.key==='Enter'||event.key===' ')))stopWelcome();}} onWheelCapture={stopWelcome} onInputCapture={stopWelcome}>
     <div className="announcement"><span>Des motifs à découvrir. Des détails à aimer.</span><span className="announcement-end">Une boutique familiale <span aria-hidden="true">✦</span></span></div>
     <header className="site-header">
       <a className="brand-link" href="#" aria-label={`${shop.name}, accueil`} onClick={(event) => { event.preventDefault(); if (view !== 'boutique') setReady(false); setView(sceneError ? 'galerie' : 'boutique'); setIntro(true); clearFilters(); scene.current?.reset(); window.scrollTo({ top: 0, behavior: 'smooth' }); }}><Brand /></a>
@@ -158,13 +169,13 @@ export default function App() {
         {view === 'boutique' && <div className="scene-heading"><span className="room-badge"><i aria-hidden="true" />{query || color || occasion || onlyFavorites ? 'Votre collection' : 'Le salon des pagnes'}</span><button className="stage-icon" aria-label="Comment visiter la boutique" onClick={() => setHelpOpen(true)}><CircleHelp size={19} /></button></div>}
 
         {view === 'boutique' ? <section className={`shop-stage ${intro ? 'with-intro' : ''}`} ref={stage} aria-label="Boutique immersive">
-          <Suspense fallback={<div className="scene-loading"><span className="loading-ring" /><p>La boutique ouvre ses portes…</p></div>}><ShopScene key={safePage} ref={scene} products={sceneProducts} touring={touring} active={!selected && !bagOpen && !helpOpen && !orderOpen && !adminOpen} onSelect={onSelect} onHover={setHovered} onReady={onReady} onProgress={onProgress} onError={onError} onInterrupt={interrupt} /></Suspense>
+          <Suspense fallback={<div className="scene-loading"><span className="loading-ring" /><p>La boutique ouvre ses portes…</p></div>}><ShopScene key={safePage} ref={scene} products={sceneProducts} touring={touring} welcoming={welcoming} onWelcomeEnd={stopWelcome} active={!selected && !bagOpen && !helpOpen && !orderOpen && !adminOpen} onSelect={onSelect} onHover={setHovered} onReady={onReady} onProgress={onProgress} onError={onError} onInterrupt={interrupt} /></Suspense>
           {!ready && <div className="loading-label" role="status">Préparation de votre visite… {imageProgress.total > 0 && `${imageProgress.loaded} / ${imageProgress.total} pagnes`}</div>}
           {intro && <div className="intro-card"><p className="eyebrow">BIENVENUE CHEZ {shop.name.toUpperCase()}</p><h1>Le Faso Dan Fani.<br />Le plaisir<br /><em>de choisir.</em></h1><p className="intro-text">Entrez, prenez votre temps.<br />Votre prochain pagne vous attend.</p><button className="primary-button" onClick={() => { setIntro(false); scene.current?.reset(); }}>Explorer la boutique <ArrowRight size={18} /></button><button className="intro-secondary" onClick={showGallery}>Voir les pagnes en galerie <ChevronRight size={15} /></button><div className="intro-detail"><span>01 — REGARDER</span><span>02 — CHOISIR</span></div></div>}
           {!intro && <div className="stage-title"><span className="eyebrow">UNE AUTRE FAÇON DE CHOISIR</span><p>Promenez-vous.<br /><em>Laissez-vous inspirer.</em></p></div>}
           {visible.length === 0 && <div className="empty-scene"><Search size={24} /><h2>Aucun pagne ne correspond.</h2><p>Essayez une autre couleur ou un mot plus simple.</p><button className="primary-button" onClick={clearFilters}>Revoir la collection <ArrowRight size={16} /></button></div>}
           {hoveredProduct && !intro && <div className="hover-card"><strong>{hoveredProduct.name}</strong><small>Cliquez pour découvrir les {hoveredProduct.photos.length} vues <ArrowRight size={12} /></small></div>}
-          <div className="stage-bottomline"><span className="navigation-hint">Glissez pour regarder · cliquez sur un pagne</span><div className="stage-actions"><button className={`tour-button ${touring ? 'is-touring' : ''}`} onClick={() => { setIntro(false); setTouring((value) => !value); }} disabled={!ready || !visible.length} aria-pressed={touring}>{touring ? <Pause size={15} /> : <Play size={15} />}<span>{touring ? 'Pause' : 'Visite guidée'}</span></button><button className="stage-icon overview-button" aria-label="Retrouver la vue d’ensemble" onClick={sceneOverview}><RotateCcw size={16} /><span>Vue d’ensemble</span></button><button className="stage-icon" aria-label={fullscreen ? 'Quitter le plein écran' : 'Afficher en plein écran'} onClick={toggleFullscreen}><Maximize2 size={16} /></button></div></div>
+          <div className="stage-bottomline"><span className="navigation-hint">Glissez pour regarder · cliquez sur un pagne</span><div className="stage-actions"><button className={`tour-button ${touring || welcoming ? 'is-touring' : ''}`} data-welcome-pause={welcoming||undefined} onClick={() => { if(welcoming){stopWelcome();return;} setIntro(false); setTouring((value) => !value); }} disabled={!ready || !visible.length} aria-pressed={touring||welcoming}>{touring||welcoming ? <Pause size={15} /> : <Play size={15} />}<span>{touring||welcoming ? 'Pause' : 'Visite guidée'}</span></button><button className="stage-icon overview-button" aria-label="Retrouver la vue d’ensemble" onClick={sceneOverview}><RotateCcw size={16} /><span>Vue d’ensemble</span></button><button className="stage-icon" aria-label={fullscreen ? 'Quitter le plein écran' : 'Afficher en plein écran'} onClick={toggleFullscreen}><Maximize2 size={16} /></button></div></div>
           {!intro && <div className="movement-controls" aria-label="Déplacement dans la boutique"><div className="movement-pad"><button aria-label="Avancer" onClick={() => scene.current?.move('forward')}><ArrowUp size={16} /></button><div><button aria-label="Aller à gauche" onClick={() => scene.current?.move('left')}><ArrowLeft size={16} /></button><button aria-label="Reculer" onClick={() => scene.current?.move('back')}><ArrowDown size={16} /></button><button aria-label="Aller à droite" onClick={() => scene.current?.move('right')}><ArrowRight size={16} /></button></div></div><div className="scene-zoom"><button aria-label="Zoomer dans la boutique" onClick={() => scene.current?.zoom(-8)}><Plus size={17} /></button><button aria-label="Dézoomer dans la boutique" onClick={() => scene.current?.zoom(8)}><Minus size={17} /></button></div></div>}
         </section> : <div className="gallery-heading"><div><p className="eyebrow">LA COLLECTION</p><h1>Un motif.<br /><em>Votre histoire.</em></h1></div><p>Regardez les couleurs. Approchez les détails.<br />Choisissez le pagne qui vous ressemble.</p></div>}
 
@@ -194,5 +205,5 @@ export default function App() {
     <Dialog.Root open={helpOpen} onOpenChange={setHelpOpen}><Dialog.Portal><Dialog.Overlay className="modal-overlay" /><Dialog.Content className="help-dialog"><Dialog.Close className="dialog-close" aria-label="Fermer le guide"><X size={20} /></Dialog.Close><p className="eyebrow">BIENVENUE DANS LA MAISON</p><Dialog.Title>Une visite toute simple.</Dialog.Title><Dialog.Description>Choisissez la façon de découvrir les pagnes qui vous convient.</Dialog.Description><ol><li><span>01</span><div><strong>Regardez autour de vous.</strong><p>Glissez dans la boutique. Sur téléphone, utilisez Précédent et Suivant pour approcher les pagnes. Vue d’ensemble retrouve votre point de départ. Vous pouvez aussi lancer la visite guidée.</p></div></li><li><span>02</span><div><strong>Approchez un pagne.</strong><p>Cliquez sur sa photo dans la boutique ou dans la galerie. Parcourez les vues, zoomez et glissez pour regarder les détails.</p></div></li><li><span>03</span><div><strong>Gardez vos coups de cœur.</strong><p>Ajoutez des pagnes à votre sélection. Vous pourrez copier la liste et la partager avec la boutique.</p></div></li></ol><p className="keyboard-note">Au clavier dans la boutique : flèches pour avancer et tourner, ZQSD ou WASD pour se déplacer. Sur téléphone : glissez pour regarder et pincez pour zoomer.</p><Dialog.Close className="primary-button">C’est parti <ArrowRight size={17} /></Dialog.Close></Dialog.Content></Dialog.Portal></Dialog.Root>
 
     <div className={`toast ${notice ? 'is-visible' : ''}`} role="status" aria-live="polite">{notice && <><Check size={16} /><span>{notice}</span></>}</div>
-  </>;
+  </div>;
 }

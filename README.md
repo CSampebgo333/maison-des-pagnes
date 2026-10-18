@@ -174,3 +174,5 @@ L’espace `?gestion=1` propose une vue d’ensemble, commandes avec recherche/s
 Les quantités initiales entre 2 et 5 sont explicitement des données de démonstration et n’écrasent aucun stock existant. L’administration doit renseigner les stocks réels avant ouverture publique. Les nouveaux pagnes ne reçoivent aucun stock inventé.
 
 Le futur déploiement indépendant, les transferts de données, la connexion Access, les sauvegardes et les limites de cette version sont documentés dans `deployment/cloudflare/README.md`. Aucun compte Cloudflare personnel ni abonnement n’est configuré par le seul ajout de ces fichiers. Le code demeure sur l’aperçu privé jusqu’au transfert autorisé et sécurisé des ressources.
+
+La rubrique Sauvegardes affiche la dernière copie vérifiée, les erreurs et l’état réel de planification. Le code prévoit une sauvegarde à 03:00 UTC avec rétention de 14 jours pour le futur hébergement Cloudflare. Ce cron n’est pas activé par le seul aperçu Sites. Les conditions de taille, restauration, secrets anti-abus et contrôles avant ouverture sont détaillées dans le guide Cloudflare.

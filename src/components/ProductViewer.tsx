@@ -1,3 +1,4 @@
+import {t,useLanguage,localeFor} from '../lib/i18n';
 import { useEffect, useRef, useState } from 'react';
 import { ChevronLeft, ChevronRight, Minus, Plus, RotateCcw, Move } from 'lucide-react';
 import type { Product } from '../lib/types';
@@ -8,6 +9,7 @@ import ProgressiveImage from './ProgressiveImage';
 const clamp = (value: number, min: number, max: number) => Math.max(min, Math.min(max, value));
 
 export default function ProductViewer({ product }: { product: Product }) {
+ useLanguage();
   const [index, setIndex] = useState(0);
   const [zoom, setZoom] = useState(1);
   const [pan, setPan] = useState({ x: 0, y: 0 });
@@ -84,17 +86,17 @@ export default function ProductViewer({ product }: { product: Product }) {
     </div>
     <div className="zoom-toolbar">
       <div className="zoom-group">
-        <button className="icon-button" aria-label="Dézoomer la photo" disabled={zoom <= 1} onClick={() => setZoom(clamp(zoom - .5, 1, 4))}><Minus size={16} /></button>
-        <label className="zoom-label"><span className="sr-only">Zoom de la photo</span><input type="range" min="1" max="4" step=".1" value={zoom} onChange={(event) => setZoom(Number(event.target.value))} /><span>{Math.round(zoom * 100)} %</span></label>
-        <button className="icon-button" aria-label="Zoomer la photo" disabled={zoom >= 4} onClick={() => setZoom(clamp(zoom + .5, 1, 4))}><Plus size={16} /></button>
-        <button className="icon-button" aria-label="Réinitialiser la photo" onClick={() => { setZoom(1); setPan({ x: 0, y: 0 }); }}><RotateCcw size={15} /></button>
+        <button className="icon-button" aria-label={t("Dézoomer la photo")} disabled={zoom <= 1} onClick={() => setZoom(clamp(zoom - .5, 1, 4))}><Minus size={16} /></button>
+        <label className="zoom-label"><span className="sr-only">{t("Zoom de la photo")}</span><input type="range" min="1" max="4" step=".1" value={zoom} onChange={(event) => setZoom(Number(event.target.value))} /><span>{Math.round(zoom * 100)} %</span></label>
+        <button className="icon-button" aria-label={t("Zoomer la photo")} disabled={zoom >= 4} onClick={() => setZoom(clamp(zoom + .5, 1, 4))}><Plus size={16} /></button>
+        <button className="icon-button" aria-label={t("Réinitialiser la photo")} onClick={() => { setZoom(1); setPan({ x: 0, y: 0 }); }}><RotateCcw size={15} /></button>
       </div>
-      <span className="zoom-hint"><Move size={13} /> Glissez la photo agrandie</span>
+      <span className="zoom-hint"><Move size={13} /> {t(" Glissez la photo agrandie")}</span>
     </div>
     <div className="photo-thumbnails">
-      <button className="icon-button" aria-label="Photo précédente" onClick={previous}><ChevronLeft size={18} /></button>
-      <div className="thumbnail-scroll">{product.photos.map((item, number) => <button key={item.src} className={`photo-thumbnail ${index === number ? 'is-current' : ''}`} aria-pressed={index === number} aria-label={`Afficher ${item.label.toLowerCase()}`} onPointerEnter={() => { if (canPrefetch()) void warmImage(imageVariant(item.src).display); }} onFocus={() => { if (canPrefetch()) void warmImage(imageVariant(item.src).display); }} onClick={() => setIndex(number)}><img src={asset(imageVariant(item.src).thumbnail)} alt="" decoding="async" /><span>{number + 1}</span></button>)}</div>
-      <button className="icon-button" aria-label="Photo suivante" onClick={next}><ChevronRight size={18} /></button>
+      <button className="icon-button" aria-label={t("Photo précédente")} onClick={previous}><ChevronLeft size={18} /></button>
+      <div className="thumbnail-scroll">{product.photos.map((item, number) => <button key={item.src} className={`photo-thumbnail ${index === number ? 'is-current' : ''}`} aria-pressed={index === number} aria-label={t("Afficher {0}",item.label)} onPointerEnter={() => { if (canPrefetch()) void warmImage(imageVariant(item.src).display); }} onFocus={() => { if (canPrefetch()) void warmImage(imageVariant(item.src).display); }} onClick={() => setIndex(number)}><img src={asset(imageVariant(item.src).thumbnail)} alt="" decoding="async" /><span>{number + 1}</span></button>)}</div>
+      <button className="icon-button" aria-label={t("Photo suivante")} onClick={next}><ChevronRight size={18} /></button>
     </div>
   </div>;
 }

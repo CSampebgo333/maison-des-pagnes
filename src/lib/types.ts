@@ -1,5 +1,7 @@
 export type Photo = { src: string; thumbnail: string; view: number; label: string };
 export type Product = {
+  translations?: {en?: Partial<Pick<Product,'name'|'description'|'pattern'|'composition'|'dimensions'|'unit'>>};
+  sourceText?: string;
   published?: boolean;
   availability?: 'available' | 'on-order' | 'unavailable' | 'confirm';
   occasions?: string[];

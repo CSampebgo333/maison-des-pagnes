@@ -21,7 +21,7 @@ export function validateOrder(d: OrderDetails, items: OrderItem[], today = local
 }
 export function orderTotal(items: OrderItem[]) { return items.reduce((total,i)=>total+(i.product.price ?? 0)*i.quantity,0); }
 export function dateLabel(date: string) { return new Intl.DateTimeFormat('fr-FR',{day:'numeric',month:'long',year:'numeric'}).format(new Date(`${date}T12:00:00`)); }
-// Le PDF contient des pages JPEG haute résolution ; aucune donnée personnelle n’est envoyée à un serveur.
+// Le PDF est rendu sur l’appareil, puis une copie est jointe à la demande enregistrée.
 export function jpegPagesToPdf(pages: Uint8Array[], width = 1240, height = 1754): Blob {
   const enc = new TextEncoder(); const chunks: Uint8Array[] = []; const offsets = [0]; let length = 0;
   const put = (value: string | Uint8Array) => { const bytes = typeof value === 'string' ? enc.encode(value) : value; chunks.push(bytes); length += bytes.length; };
@@ -67,6 +67,7 @@ export async function renderOrderPages(order: Order, photoUrl: (path: string) =>
   text(order.items.length?(order.custom?'SOUS-TOTAL DE LA GALERIE':'TOTAL DES ARTICLES'):'PRIX À CONFIRMER',95,y+50,24,'#ffffff',true);
   text(order.items.length?amount(orderTotal(order.items)):'À définir',790,y+50,30,'#ffffff',true);y+=120;
   if(order.custom && order.items.length)block('Pagne à rechercher','Son prix n’est pas compris dans le sous-total. La boutique vous proposera un prix avant toute confirmation.');
+  block('Paiement','Paiement intégral à la remise du produit, par Orange Money ou Wave. Aucun paiement sur le site.');
   block('Livraison et prix','Prix des pagnes hors livraison. Livraison à Ouagadougou et Bobo-Dioulasso ; autres villes du Burkina Faso selon la situation générale, après confirmation. Frais et délai à convenir avant votre accord.');
   block('À confirmer par la boutique',`${order.custom?'Prix et disponibilité du pagne recherché, ':''}disponibilité des articles, frais de livraison ou de retrait, lieu de retrait, délai et modalités de paiement. Cette demande ne vaut ni paiement ni confirmation de commande.`);
   return canvases.map((c,i)=>{ctx=c.getContext('2d')!;ctx.strokeStyle='#d8c1cc';ctx.beginPath();ctx.moveTo(70,1640);ctx.lineTo(1170,1640);ctx.stroke();text('WhatsApp : +226 77 54 07 92  |  Bobo-Dioulasso',70,1682,20);text(`${i+1} / ${canvases.length+(order.custom?1:0)}`,1100,1682,20);const binary=atob(c.toDataURL('image/jpeg',.9).split(',')[1]);return Uint8Array.from(binary,ch=>ch.charCodeAt(0));});

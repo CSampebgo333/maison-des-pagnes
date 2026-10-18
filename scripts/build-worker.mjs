@@ -4,7 +4,7 @@ for (const name of await fs.readdir('dist')) { if (!['client','server','.openai'
 await fs.mkdir('dist/server',{recursive:true});
 await fs.mkdir('dist/.openai',{recursive:true});
 await fs.copyFile('src/lib/pdf-service.js','dist/server/index.js');
-for(const file of ['catalogue-service.js','orders-service.js','order-management.js','admin-auth.js','initial-stock.js'])await fs.copyFile('src/lib/'+file,'dist/server/'+file);
+for(const file of ['catalogue-service.js','orders-service.js','order-management.js','admin-auth.js','initial-stock.js','security.js','backups.js'])await fs.copyFile('src/lib/'+file,'dist/server/'+file);
 await fs.cp('drizzle','dist/.openai/drizzle',{recursive:true});
 const products=JSON.parse(await fs.readFile('src/catalogue.json','utf8'));
 const variants=JSON.parse(await fs.readFile('src/image-manifest.json','utf8'));

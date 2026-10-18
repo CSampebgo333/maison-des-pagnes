@@ -176,3 +176,7 @@ Les quantités initiales entre 2 et 5 sont explicitement des données de démons
 Le futur déploiement indépendant, les transferts de données, la connexion Access, les sauvegardes et les limites de cette version sont documentés dans `deployment/cloudflare/README.md`. Aucun compte Cloudflare personnel ni abonnement n’est configuré par le seul ajout de ces fichiers. Le code demeure sur l’aperçu privé jusqu’au transfert autorisé et sécurisé des ressources.
 
 La rubrique Sauvegardes affiche la dernière copie vérifiée, les erreurs et l’état réel de planification. Le code prévoit une sauvegarde à 03:00 UTC avec rétention de 14 jours pour le futur hébergement Cloudflare. Ce cron n’est pas activé par le seul aperçu Sites. Les conditions de taille, restauration, secrets anti-abus et contrôles avant ouverture sont détaillées dans le guide Cloudflare.
+
+## Langues
+
+Français / English est disponible dans la boutique, les commandes, le suivi et la gestion. Les textes anglais sont chargés à la demande. Les produits conservent les mêmes photos, prix et stocks dans les deux langues ; les descriptions anglaises sont éditables dans la gestion. Les commandes mémorisent leur langue et les PDF sont générés dans cette langue. Voir `docs/LANGUAGES.md` pour les champs, le repli des anciennes entrées, le référencement et la maintenance.

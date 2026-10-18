@@ -11,7 +11,17 @@
     "price": 12000,
     "unit": "",
     "composition": "",
-    "dimensions": ""
+    "dimensions": "",
+    "translations": {
+      "en": {
+        "name": "Lavender stripes",
+        "description": "Faso Dan Fani · Lavender and white bands crossed by softly outlined motifs. A gentle contrast that highlights the design. A lovely idea for a traditional wedding outfit or family celebration.",
+        "pattern": "Bands with softly outlined motifs",
+        "composition": "",
+        "dimensions": "",
+        "unit": ""
+      }
+    }
   },
   "pagne2": {
     "name": "Lignes bleu profond",
@@ -25,7 +35,17 @@
     "price": 12000,
     "unit": "",
     "composition": "",
-    "dimensions": ""
+    "dimensions": "",
+    "translations": {
+      "en": {
+        "name": "Deep blue lines",
+        "description": "Faso Dan Fani · Deep blue accented by fine white lines and small horizontal dashes. A regular pattern for a polished look. Consider it for a ceremony, a business occasion or a celebration.",
+        "pattern": "Stripes and small dashes",
+        "composition": "",
+        "dimensions": "",
+        "unit": ""
+      }
+    }
   },
   "pagne3": {
     "name": "Rayures jaune et bleu",
@@ -40,7 +60,17 @@
     "unit": "",
     "composition": "",
     "dimensions": "",
-    "price": 12000
+    "price": 12000,
+    "translations": {
+      "en": {
+        "name": "Yellow and blue stripes",
+        "description": "Faso Dan Fani · Yellow, blue and white bands alternate with areas where the weave stands out. A bright combination that catches the eye. Beautiful for a traditional wedding outfit or cultural celebration.",
+        "pattern": "Multicoloured bands",
+        "composition": "",
+        "dimensions": "",
+        "unit": ""
+      }
+    }
   },
   "pagne4": {
     "name": "Rayures bleu, noir et blanc",
@@ -55,7 +85,17 @@
     "unit": "",
     "composition": "",
     "dimensions": "",
-    "price": 12000
+    "price": 12000,
+    "translations": {
+      "en": {
+        "name": "Blue, black and white stripes",
+        "description": "Faso Dan Fani · Wide white spaces separate groups of blue and black stripes. A balanced pattern, both understated and distinctive. A lovely option for a christening, family ceremony or dressy outfit.",
+        "pattern": "Groups of stripes",
+        "composition": "",
+        "dimensions": "",
+        "unit": ""
+      }
+    }
   },
   "pagne5": {
     "name": "Fines rayures noir et blanc",
@@ -69,7 +109,17 @@
     "unit": "",
     "composition": "",
     "dimensions": "",
-    "price": 12000
+    "price": 12000,
+    "translations": {
+      "en": {
+        "name": "Fine black and white stripes",
+        "description": "Faso Dan Fani · Very fine black and white stripes repeat across the pagne. The crisp contrast gives this design a quiet elegance. Consider it for a reception, business occasion or understated ceremonial outfit.",
+        "pattern": "Fine stripes",
+        "composition": "",
+        "dimensions": "",
+        "unit": ""
+      }
+    }
   },
   "pagne6": {
     "name": "Rayures vert et violet",
@@ -85,7 +135,17 @@
     "unit": "",
     "composition": "",
     "dimensions": "",
-    "price": 12000
+    "price": 12000,
+    "translations": {
+      "en": {
+        "name": "Green and purple stripes",
+        "description": "Faso Dan Fani · Bright green, purple, blue and black bands create a lively pattern. A design that adds character to an outfit. An idea for a party, cultural outing or a distinctive wedding look.",
+        "pattern": "Multicoloured stripes",
+        "composition": "",
+        "dimensions": "",
+        "unit": ""
+      }
+    }
   },
   "pagne7": {
     "name": "Bandes bleu et gris",
@@ -101,7 +161,17 @@
     "unit": "",
     "composition": "",
     "dimensions": "",
-    "price": 12000
+    "price": 12000,
+    "translations": {
+      "en": {
+        "name": "Blue and grey bands",
+        "description": "Faso Dan Fani · Deep blue bands alternate with grey and black motifs framed by white lines. The pattern deserves a closer look. A lovely starting point for a ceremonial outfit or family celebration.",
+        "pattern": "Bands with contrasting motifs",
+        "composition": "",
+        "dimensions": "",
+        "unit": ""
+      }
+    }
   },
   "pagne8": {
     "name": "Fines rayures bleu et jaune",
@@ -116,7 +186,17 @@
     "unit": "",
     "composition": "",
     "dimensions": "",
-    "price": 12000
+    "price": 12000,
+    "translations": {
+      "en": {
+        "name": "Fine blue and yellow stripes",
+        "description": "Faso Dan Fani · Fine blue, yellow and pale lines give this pagne a close, regular rhythm. Subtle from a distance and rich in detail up close. Consider it for a smart shirt, a professional outfit or a ceremony.",
+        "pattern": "Fine multicoloured stripes",
+        "composition": "",
+        "dimensions": "",
+        "unit": ""
+      }
+    }
   },
   "pagne9": {
     "name": "Nuances turquoise",
@@ -130,7 +210,17 @@
     "unit": "",
     "composition": "",
     "dimensions": "",
-    "price": 12000
+    "price": 12000,
+    "translations": {
+      "en": {
+        "name": "Turquoise shades",
+        "description": "Faso Dan Fani · A turquoise background carries white motifs with irregular outlines. The changing shades bring a fresh feel. A lovely idea for a daytime celebration, family ceremony or colourful wedding outfit.",
+        "pattern": "Softly outlined motifs",
+        "composition": "",
+        "dimensions": "",
+        "unit": ""
+      }
+    }
   },
   "pagne10": {
     "name": "Éclat orangé",
@@ -144,7 +234,17 @@
     "unit": "",
     "composition": "",
     "dimensions": "",
-    "price": 12000
+    "price": 12000,
+    "translations": {
+      "en": {
+        "name": "Orange glow",
+        "description": "Faso Dan Fani · A bright orange shade dotted with fine pale lines. Almost plain from a distance, with details that emerge up close. Consider it for a birthday, family party or cultural celebration.",
+        "pattern": "Fine pale lines",
+        "composition": "",
+        "dimensions": "",
+        "unit": ""
+      }
+    }
   },
   "pagne11": {
     "name": "Rayures brun et blanc",
@@ -159,7 +259,17 @@
     "unit": "",
     "composition": "",
     "dimensions": "",
-    "price": 12000
+    "price": 12000,
+    "translations": {
+      "en": {
+        "name": "Brown and white stripes",
+        "description": "Faso Dan Fani · Brown, dark and white lines blend into a close pattern with striking visual depth. A warm, understated palette. A lovely option for a traditional wedding outfit, a ceremony or a dressy outing.",
+        "pattern": "Stripes with visual depth",
+        "composition": "",
+        "dimensions": "",
+        "unit": ""
+      }
+    }
   },
   "pagne12": {
     "name": "Blanc sobre",
@@ -172,6 +282,16 @@
     "unit": "",
     "composition": "",
     "dimensions": "",
-    "price": 12000
+    "price": 12000,
+    "translations": {
+      "en": {
+        "name": "Understated white",
+        "description": "Faso Dan Fani · A white pagne with a subtle design that reveals fine lines and weaving. A clean base that highlights the cut of your outfit. Consider it for a christening, ceremony or wedding, depending on the outfit and family customs.",
+        "pattern": "Plain with subtle lines",
+        "composition": "",
+        "dimensions": "",
+        "unit": ""
+      }
+    }
   }
 }

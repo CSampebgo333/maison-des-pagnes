@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { Dialog } from 'radix-ui';
 import { ArrowRight, Download, FileText, ImagePlus, Share2, Trash2, X } from 'lucide-react';
 import { amount, createOrderPdf, localDate, orderTotal, validateOrder } from '../lib/order';
@@ -13,6 +13,9 @@ const initial: OrderDetails = { name:'',phone:'',city:'Bobo-Dioulasso',mode:'liv
 const LINK_LIMIT = 24 * 1024 * 1024;
 
 export default function OrderForm({ items, whatsapp, onClose, initialCustom = false }: { items: OrderItem[]; whatsapp: string; onClose: () => void; initialCustom?: boolean }) {
+  const credentials=useRef({requestKey:crypto.randomUUID(),token:crypto.randomUUID().replaceAll('-','')+crypto.randomUUID().replaceAll('-','')});
+  const [registered,setRegistered]=useState<{id:string;reference:string;created_at:string}|null>(null);
+  const trackingUrl=registered?`${location.origin}/#suivi/${registered.id}/${credentials.current.token}`:'';
   const [customEnabled,setCustomEnabled] = useState(initialCustom);
   const [photo,setPhoto] = useState<OrderPhoto|null>(null);
   const [photoUrl,setPhotoUrl] = useState('');
@@ -59,9 +62,18 @@ export default function OrderForm({ items, whatsapp, onClose, initialCustom = fa
         const latest=await fetchCatalogue();
         confirmedItems=items.map(item=>{const product=latest.products.find(p=>p.id===item.product.id);if(!product||product.availability==='unavailable')throw Error('Un pagne de la sélection n’est plus disponible. Fermez le formulaire et actualisez la collection.');if(product.price!==item.product.price)throw Error('Le prix d’un pagne a changé. Fermez le formulaire et vérifiez votre sélection actualisée.');return {...item,product};});
       }
-      const order: Order = { reference:`MP-${localDate().replaceAll('-','')}-${crypto.randomUUID().slice(0,8).toUpperCase()}`,created:new Date().toISOString(),details:{...details},items:confirmedItems,custom };
+      let saved=registered;
+      if(!saved){
+        const response=await fetch('/api/orders',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({...credentials.current,details,items:confirmedItems.map(i=>({id:i.product.id,quantity:i.quantity,expectedPrice:i.product.price})),custom:custom?{quantity:custom.quantity,description:custom.description}:undefined})});
+        const result=await response.json();if(!response.ok)throw Error(result.error||'La demande n’a pas pu être enregistrée.');saved=result;setRegistered(result);
+      }
+      if(!saved)throw Error('Enregistrement incomplet.');
+      if(custom?.photo){const r=await fetch(`/api/orders/${saved.id}/photo`,{method:'PUT',headers:{'Content-Type':custom.photo.type,Authorization:'Bearer '+credentials.current.token},body:new Blob([custom.photo.bytes as BlobPart],{type:custom.photo.type})});if(!r.ok)throw Error('Demande enregistrée, mais photo non jointe. Réessayez de préparer le PDF.');}
+      const order: Order = { reference:saved.reference,created:saved.created_at,details:{...details},items:confirmedItems,custom };
+
       const pdf=await createOrderPdf(order,asset);
-      setFile(new File([pdf],`${order.reference}.pdf`,{type:'application/pdf'}));
+      const generated=new File([pdf],`${order.reference}.pdf`,{type:'application/pdf'});setFile(generated);
+      if(generated.size<=LINK_LIMIT){const upload=await fetch(`/api/orders/${saved.id}/pdf`,{method:'PUT',headers:{'Content-Type':'application/pdf',Authorization:'Bearer '+credentials.current.token},body:generated});if(!upload.ok)setHint('Demande enregistrée. La copie PDF pour la boutique n’a pas pu être jointe ; vous pouvez réessayer ou la partager.');}
     } catch(e) { setError((e as Error).message||'Le PDF n’a pas pu être créé. Réessayez.'); }
     finally { setBusy(false); }
   }
@@ -87,7 +99,7 @@ export default function OrderForm({ items, whatsapp, onClose, initialCustom = fa
     } catch(e) { setError((e as Error).message||'Le lien n’a pas pu être créé. Le téléchargement reste disponible.'); }
     finally { setUploading(false); }
   }
-  const message=remoteUrl?`Bonjour, je vous envoie ma demande de pagnes. Vous trouverez les photos et tous les détails dans mon bon PDF : ${remoteUrl}`:'';
+  const message=remoteUrl?`Bonjour, voici ma demande ${registered?.reference??''}, à confirmer. Mon bon PDF : ${remoteUrl}`:'';
   return <Dialog.Root open onOpenChange={open=>{if(!open&&!working)onClose();}}><Dialog.Portal>
     <Dialog.Overlay className="modal-overlay"/>
     <Dialog.Content className="order-dialog">
@@ -100,7 +112,7 @@ export default function OrderForm({ items, whatsapp, onClose, initialCustom = fa
         <small>{customEnabled?'Le prix du pagne recherché sera proposé par la boutique. ':''}Prix des pagnes hors livraison. Les frais de livraison et le délai seront confirmés avant votre accord. Aucun paiement sur le site.</small>
       </div>}
       <form onSubmit={generate} className="order-form">
-        <fieldset disabled={working} className="custom-request-fields"><legend className="sr-only">Pagne à rechercher</legend>
+        <fieldset disabled={working||!!registered} className="custom-request-fields"><legend className="sr-only">Pagne à rechercher</legend>
           {!initialCustom&&<label className="custom-request-toggle order-wide"><input type="checkbox" checked={customEnabled} onChange={e=>{setCustomEnabled(e.target.checked);invalidate();}}/>Ajouter un pagne qui n’est pas dans la galerie</label>}
           {customEnabled&&<div className="custom-photo-section order-wide">
             <h3>Votre photo de référence</h3>
@@ -112,7 +124,7 @@ export default function OrderForm({ items, whatsapp, onClose, initialCustom = fa
             <p className="custom-price-note">Prix et disponibilité à confirmer. La demande n’engage aucun achat avant votre accord sur le prix.</p>
           </div>}
         </fieldset>
-        <fieldset disabled={working}><legend className="sr-only">Coordonnées et réception</legend>
+        <fieldset disabled={working||!!registered}><legend className="sr-only">Coordonnées et réception</legend>
           <label>Votre nom<input required maxLength={80} autoComplete="name" value={details.name} onChange={e=>change('name',e.target.value)}/></label>
           <label>Téléphone avec indicatif<input required type="tel" maxLength={25} autoComplete="tel" placeholder="+226 …" value={details.phone} onChange={e=>change('phone',e.target.value)}/></label>
           <label>Pays<input value="Burkina Faso" readOnly/></label>
@@ -123,10 +135,11 @@ export default function OrderForm({ items, whatsapp, onClose, initialCustom = fa
           <label className="order-wide">Remarques (facultatif)<textarea maxLength={500} placeholder="Disponibilités pour vous contacter, précisions utiles…" value={details.notes} onChange={e=>change('notes',e.target.value)}/></label>
         </fieldset>
         <p className="order-wide delivery-order-note">{details.mode==='retrait'?'Retrait à Bobo-Dioulasso, lieu et heure à convenir.': ['bobo-dioulasso','ouagadougou'].includes(normalize(details.city).trim())?'Livraison proposée dans votre ville. Frais et délai à confirmer sur WhatsApp.':'Autre ville du Burkina Faso : la livraison dépend de la situation générale et doit être confirmée par la boutique.'}</p>
-        <p className="order-note">Le PDF, y compris votre éventuelle photo, est créé sur votre appareil. Si vous préparez un lien WhatsApp, une copie est enregistrée temporairement pour être consultée pendant sept jours par les personnes qui possèdent ce lien.</p>
+        <p className="order-note">En enregistrant votre demande, vos coordonnées, votre sélection et votre éventuelle photo sont transmises à la boutique pour traiter la commande. Le bon PDF est conservé avec votre demande. Paiement intégral à la remise du produit par Orange Money ou Wave. Aucun paiement sur le site. Le lien PDF partagé sur WhatsApp reste accessible sept jours à toute personne qui le possède.</p>
         {error&&<p role="alert" className="order-error">{error}</p>}
-        <button disabled={working} className="primary-button" type="submit"><FileText size={18}/>{busy?'Préparation du PDF…':reading?'Lecture de la photo…':file?'Regénérer le bon PDF':'Préparer mon bon PDF'}</button>
+        <button disabled={working} className="primary-button" type="submit"><FileText size={18}/>{busy?'Enregistrement et préparation…':reading?'Lecture de la photo…':file?'Regénérer le bon PDF':'Enregistrer ma demande et préparer le PDF'}</button>
       </form>
+      {registered&&<section className="order-ready" aria-label="Demande enregistrée"><h3>Demande {registered.reference} enregistrée</h3><p>Elle attend la confirmation de la boutique. Aucun stock n’est réservé et aucun paiement n’est demandé à cette étape.</p><a className="underlined-button" href={trackingUrl} target="_blank" rel="noopener noreferrer">Ouvrir mon suivi privé <ArrowRight size={17}/></a><p>Conservez ce lien privé pour retrouver votre suivi. Les informations envoyées sont figées ; contactez la boutique pour une correction.</p></section>}
       {file&&url&&<section className="order-ready" aria-label="Envoyer le bon PDF"><h3>Votre bon est prêt</h3>
         <p>Vérifiez votre PDF. Vous pouvez le télécharger pour garder une copie, ou préparer un lien pour l’envoyer à la boutique sans joindre le fichier manuellement.</p>
         <a className="primary-button" href={url} download={file.name}><Download size={18}/>Télécharger le PDF</a>

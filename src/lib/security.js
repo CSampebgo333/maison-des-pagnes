@@ -23,6 +23,7 @@ function deny(message,status){return new Response(JSON.stringify({error:message}
 export function secureResponse(response,request,env){
  const h=new Headers(response.headers),url=new URL(request.url);h.set('X-Content-Type-Options','nosniff');h.set('Referrer-Policy','no-referrer');h.set('Permissions-Policy','camera=(), microphone=(), geolocation=(), payment=()');
  h.set('Content-Security-Policy',"default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' blob: data:; font-src 'self'; connect-src 'self'; frame-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'");
+ if(h.get('Content-Type')?.includes('text/html'))h.set('Content-Language',url.searchParams.get('lang')==='en'?'en':'fr');
  if(env.AUTH_MODE==='cloudflare'&&url.protocol==='https:')h.set('Strict-Transport-Security','max-age=31536000');
  if(url.pathname.startsWith('/api/')||url.pathname.startsWith('/order-pdfs/')){h.set('Cache-Control','private, no-store');h.set('X-Robots-Tag','noindex, nofollow, noarchive');}
  return new Response(response.body,{status:response.status,statusText:response.statusText,headers:h});

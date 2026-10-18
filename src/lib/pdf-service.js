@@ -1,3 +1,5 @@
+import {requestGuard,secureResponse} from './security.js';
+import {backupRoute,scheduledBackup} from './backups.js';
 import {ordersRoute} from './orders-service.js';
 import { catalogueRoute } from './catalogue-service.js';
 const TTL = 7 * 24 * 60 * 60 * 1000;
@@ -7,8 +9,9 @@ async function cleanup(bucket) {
  const page = await bucket.list({prefix:'orders/',limit:100,include:['customMetadata']});
  await Promise.all(page.objects.filter(o=>Number(o.customMetadata?.expiresAt)<=Date.now()).map(o=>bucket.delete(o.key)));
 }
-export default {
+const application={
  async fetch(request, env) {
+  const backup=await backupRoute(request,env);if(backup)return backup;
   const url=new URL(request.url);
   const orderResponse=await ordersRoute(request,env);if(orderResponse)return orderResponse;
   const catalogueResponse=await catalogueRoute(request,env);if(catalogueResponse)return catalogueResponse;
@@ -47,4 +50,12 @@ export default {
   }
   return new Response('Ressource introuvable',{status:404});
  }
+};
+
+export default {
+ async fetch(request,env){
+  try{const blocked=await requestGuard(request,env);return secureResponse(blocked??await application.fetch(request,env),request,env);}
+  catch{return secureResponse(json({error:'Le service est temporairement indisponible. Réessayez.'},503),request,env);}
+ },
+ async scheduled(controller,env,ctx){ctx.waitUntil(scheduledBackup(env));}
 };

@@ -1,14 +1,17 @@
+import {isAdmin} from './admin-auth.js';
 import seed from './catalogue-seed.js';
 const KEY='catalogue/current.json';
 const LIMIT=9*1024*1024;
 const STATES=['available','on-order','unavailable','confirm'];
 const OCCASIONS=['Mariage traditionnel','Cérémonie','Fête en famille','Quotidien','Rencontre professionnelle','Cadeau'];
 const json=(value,status=200)=>new Response(JSON.stringify(value),{status,headers:{'Content-Type':'application/json','Cache-Control':'no-store','X-Content-Type-Options':'nosniff'}});
-export function isCatalogueAdmin(request,env) {
- const email=request.headers.get('oai-authenticated-user-email');
- return Boolean(email&&env.CATALOGUE_ADMIN_EMAIL&&email.toLowerCase()===env.CATALOGUE_ADMIN_EMAIL.toLowerCase());
+export const isCatalogueAdmin=isAdmin;
+export async function getCatalogue(env){
+ if(env.DB){const saved=await env.DB.prepare('SELECT document FROM catalogue_documents WHERE id=1').first();if(saved)return {document:JSON.parse(saved.document)};}
+ const object=await env.BUCKET.get(KEY);const document=object?await object.json():seed;
+ if(env.DB){await env.DB.prepare('INSERT OR IGNORE INTO catalogue_documents(id,revision,document) VALUES(1,?,?)').bind(document.revision,JSON.stringify(document)).run();const saved=await env.DB.prepare('SELECT document FROM catalogue_documents WHERE id=1').first();return {document:JSON.parse(saved.document)};}
+ return {document,etag:object?.etag};
 }
-async function current(bucket){const object=await bucket.get(KEY);return {document:object?await object.json():seed,etag:object?.etag};}
 async function bounded(request,limit){
  if(Number(request.headers.get('Content-Length'))>limit)throw Error('Fichier trop volumineux.');
  const reader=request.body?.getReader();if(!reader)throw Error('Contenu manquant.');
@@ -35,19 +38,19 @@ const text=(value,max,required=false)=>{if(typeof value!=='string'||value.length
 export async function catalogueRoute(request,env) {
  const url=new URL(request.url),path=url.pathname;
  const admin=path.startsWith('/api/admin/');
- if(path==='/api/admin/session')return json({allowed:isCatalogueAdmin(request,env)},isCatalogueAdmin(request,env)?200:403);
+ if(path==='/api/admin/session')return json({allowed:await isCatalogueAdmin(request,env)},await isCatalogueAdmin(request,env)?200:403);
  const photoPath=/^\/catalogue-images\/([a-f0-9-]{36})\.(jpg|png)$/.test(path)||/^\/media\/catalogue-(thumbnail|scene|display)-[a-f0-9]{12}\.webp$/.test(path);
  if(photoPath&&['GET','HEAD'].includes(request.method)){
   if(!env.BUCKET)return new Response('Indisponible',{status:503});const photo=await env.BUCKET.get('catalogue-assets/'+path.slice(1));if(!photo)return new Response('Photo introuvable',{status:404});
   return new Response(request.method==='HEAD'?null:photo.body,{headers:{'Content-Type':photo.httpMetadata?.contentType??'image/webp','Cache-Control':'public, max-age=31536000, immutable','X-Content-Type-Options':'nosniff'}});
  }
  if(path!=='/api/catalogue'&&!admin)return null;
- if(admin&&!isCatalogueAdmin(request,env))return json({error:'Connectez-vous avec le compte autorisé pour gérer la boutique.'},403);
+ if(admin&&!await isCatalogueAdmin(request,env))return json({error:'Connectez-vous avec le compte autorisé pour gérer la boutique.'},403);
  if(!env.BUCKET)return json({error:'Le catalogue est temporairement indisponible.'},503);
  if(!['GET','HEAD'].includes(request.method)&&request.headers.get('Origin')!==url.origin)return json({error:'Origine non autorisée.'},403);
  try {
   if((path==='/api/catalogue'||path==='/api/admin/catalogue')&&request.method==='GET'){
-   const {document}=await current(env.BUCKET);return json(path==='/api/catalogue'?{...document,products:document.products.filter(p=>p.published!==false)}:document);
+   const {document}=await getCatalogue(env);return json(path==='/api/catalogue'?{...document,products:document.products.filter(p=>p.published!==false)}:document);
   }
   if(path==='/api/admin/photos'&&request.method==='POST'){
    const data=await bounded(request,LIMIT);const form=await new Response(data,{headers:{'Content-Type':request.headers.get('Content-Type')??''}}).formData();
@@ -66,7 +69,7 @@ export async function catalogueRoute(request,env) {
    return json({photo:{src,thumbnail:variant.thumbnail,view:1,label:'Vue d’ensemble'},variant},201);
   }
   if(path==='/api/admin/catalogue'&&request.method==='PUT'){
-   const body=JSON.parse(new TextDecoder().decode(await bounded(request,1024*1024))),{document,etag}=await current(env.BUCKET);
+   const body=JSON.parse(new TextDecoder().decode(await bounded(request,1024*1024))),{document,etag}=await getCatalogue(env);
    if(body.revision!==document.revision)return json({error:'La collection a changé ailleurs. Rechargez-la avant d’enregistrer.'},409);
    if(!Array.isArray(body.products)||body.products.length>200)throw Error('La collection accepte jusqu’à 200 pagnes.');
    const ids=new Set(),numbers=new Set(),variants={};
@@ -88,7 +91,7 @@ export async function catalogueRoute(request,env) {
    const next={products,variants,revision:crypto.randomUUID(),updatedAt:new Date().toISOString()};
    // Keep recoverable snapshots; optimistic concurrency prevents overwriting another edit.
    await env.BUCKET.put('catalogue/history/'+document.revision+'.json',JSON.stringify(document));
-   const saved=await env.BUCKET.put(KEY,JSON.stringify(next),{onlyIf:etag?{etagMatches:etag}:{etagDoesNotMatch:'*'},httpMetadata:{contentType:'application/json'}});
+   const saved=env.DB?(await env.DB.prepare('UPDATE catalogue_documents SET revision=?,document=? WHERE id=1 AND revision=?').bind(next.revision,JSON.stringify(next),document.revision).run()).meta.changes>0:await env.BUCKET.put(KEY,JSON.stringify(next),{onlyIf:etag?{etagMatches:etag}:{etagDoesNotMatch:'*'},httpMetadata:{contentType:'application/json'}});
    if(!saved)return json({error:'Une autre modification vient d’être enregistrée. Rechargez la collection.'},409);
    return json(next);
   }

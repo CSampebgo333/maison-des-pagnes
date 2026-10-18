@@ -1,3 +1,4 @@
+import {t,useLanguage,localeFor} from '../lib/i18n';
 import { forwardRef, useEffect, useImperativeHandle, useRef } from "react";
 import * as THREE from "three";
 import type { Product } from "../lib/types";
@@ -18,6 +19,7 @@ type Props = {products: Product[]; touring: boolean; welcoming:boolean; onWelcom
 type Fixture = {group: THREE.Group; photo: THREE.Mesh; label: THREE.Mesh; slot: number; photoWidth: number; photoHeight: number; texture?: THREE.Texture};
 
 const ShopScene = forwardRef<SceneHandle,Props>(function ShopScene(props,ref) {
+ const language=useLanguage();
   const host = useRef<HTMLDivElement>(null);
   const current = useRef(props);
   current.current = props;
@@ -63,7 +65,7 @@ const ShopScene = forwardRef<SceneHandle,Props>(function ShopScene(props,ref) {
     renderer.shadowMap.needsUpdate = true;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     element.appendChild(renderer.domElement);
-    renderer.domElement.setAttribute("aria-label","Intérieur de la boutique en trois dimensions. Faites glisser pour regarder autour de vous.");
+    renderer.domElement.setAttribute("aria-label",t("Intérieur de la boutique en trois dimensions. Faites glisser pour regarder autour de vous."));
     renderer.domElement.setAttribute("tabindex","0");
     const materials: THREE.Material[] = [];
     const textures = new Set<THREE.Texture>();
@@ -110,7 +112,7 @@ const ShopScene = forwardRef<SceneHandle,Props>(function ShopScene(props,ref) {
       if(detail){ctx.font="24px Arial, sans-serif";ctx.fillText(detail,512,179,930);}
       const texture=new THREE.CanvasTexture(canvas); texture.colorSpace=THREE.SRGBColorSpace; textures.add(texture); return texture;
     }
-    const signMaterial = new THREE.MeshBasicMaterial({map:textTexture(shop.name,"LE SALON DES PAGNES"),transparent:true,depthWrite:false}); materials.push(signMaterial);
+    const signMaterial = new THREE.MeshBasicMaterial({map:textTexture(shop.name,t("LE SALON DES PAGNES")),transparent:true,depthWrite:false}); materials.push(signMaterial);
     box(scene,8.8,.08,.4,0,.95,-6.03,wood);
     box(scene,4.8,.018,4.2,0,.006,.8,material("#f3eade",0,1));
     const sign = new THREE.Mesh(new THREE.PlaneGeometry(3.8,.95),signMaterial); sign.position.set(0,5,-6.36); scene.add(sign);
@@ -154,6 +156,11 @@ const ShopScene = forwardRef<SceneHandle,Props>(function ShopScene(props,ref) {
     }
     let generation=0;
     refresh.current=()=> {
+      const previousSign=signMaterial.map;
+      signMaterial.map=textTexture(shop.name,t("LE SALON DES PAGNES"));signMaterial.needsUpdate=true;
+      if(previousSign){textures.delete(previousSign);previousSign.dispose();}
+      renderer.domElement.setAttribute('aria-label',t('Intérieur de la boutique en trois dimensions. Faites glisser pour regarder autour de vous.'));
+
       cancelApproach();
       sceneLoaded=false;
       const version=++generation;
@@ -165,7 +172,7 @@ const ShopScene = forwardRef<SceneHandle,Props>(function ShopScene(props,ref) {
         const article=current.current.products[displayOrder.indexOf(f.slot)];
         const lm=f.label.material as THREE.MeshBasicMaterial;
         const old=lm.map;
-        lm.map=textTexture(article?.name??"",article?`${article.photos.length} VUES · DÉCOUVRIR`:""); lm.needsUpdate=true;
+        lm.map=textTexture(article?.name??"",article?t("{0} VUES · DÉCOUVRIR",article.photos.length):""); lm.needsUpdate=true;
         if(old){textures.delete(old);old.dispose();}
         f.photo.visible=false;f.texture=undefined;dirty=true;
         if(article?.photos[0]) void loadPhoto(imageVariant(article.photos[0].src).scene).then(texture=> {
@@ -287,7 +294,7 @@ const ShopScene = forwardRef<SceneHandle,Props>(function ShopScene(props,ref) {
       scene.traverse(o=>{if(o instanceof THREE.Mesh)o.geometry.dispose();});materials.forEach(m=>m.dispose());textures.forEach(t=>t.dispose());renderer.dispose();canvas.remove();fixtures.current=[];
     };
   },[]);
-  useEffect(()=>refresh.current(),[props.products]);
+  useEffect(()=>refresh.current(),[props.products,language]);
   return <div className="scene-canvas" ref={host}/>;
 });
 export default ShopScene;

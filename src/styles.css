@@ -627,3 +627,8 @@ html, body, #root { background: #ffffff; }
 .management-tabs button.is-active { background: #8a6079; border-color: #8a6079; }
 .header-search { border-color: #e7e1e5; }
 .header-search:focus-within { border-color: #a07d91; box-shadow: 0 0 0 3px #8a607910; }
+
+.language-switcher{display:flex;justify-content:flex-end;align-items:center;padding:7px 4%;min-height:48px;background:#fff;border-bottom:1px solid var(--line);font-size:14px;color:#674956}
+.language-switcher select{font:inherit;color:inherit;background:#faf8fb;border:1px solid #ddd1e1;border-radius:6px;padding:8px 30px 8px 12px;min-height:36px;cursor:pointer}
+.bilingual-editor{padding:20px 0;border-top:1px solid var(--line);display:grid;grid-template-columns:1fr 1fr;gap:16px}.bilingual-editor h2,.bilingual-editor>p{grid-column:1/-1}.bilingual-editor h2{font:24px var(--serif)}.bilingual-editor>p{line-height:1.7;font-size:14px}.primary-button{white-space:normal;text-align:center}.management-tabs button{white-space:normal}
+@media(max-width:760px){.bilingual-editor{grid-template-columns:1fr}.header-actions{flex-wrap:wrap;justify-content:flex-end}.language-switcher{padding:6px 5%}.language-switcher select{font-size:16px}.intro-card h1{font-size:clamp(36px,9vw,54px)}}

@@ -1,5 +1,8 @@
 {
   "name": "maison-du-faso-dan-fani",
+  "routes": [
+    { "pattern": "fasodanfani.shop", "custom_domain": true }
+  ],
   "main": "../../dist/server/index.js",
   "compatibility_date": "2026-10-18",
   "assets": {

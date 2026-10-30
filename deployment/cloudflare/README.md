@@ -79,3 +79,11 @@ Les migrations ne sont pas appliquées automatiquement par cette configuration. 
 ## Notifications WhatsApp
 
 Voir [la configuration des notifications](../../docs/WHATSAPP.md). Appliquer la migration 0003_whatsapp_notifications.sql avant le déploiement du code qui l’utilise. Les envois sont désactivés par défaut et nécessitent un compte WhatsApp Business Platform connecté, un secret serveur et deux modèles approuvés. Le cron de notifications toutes les cinq minutes est distinct de la sauvegarde quotidienne.
+
+## Domaine personnalisé
+
+Le domaine racine `fasodanfani.shop` est déclaré comme Custom Domain dans `wrangler.jsonc` et dans la configuration exemple. Le build conserve cette route dans `dist/server/wrangler.json`, utilisé par les déploiements automatiques. Cloudflare gère son enregistrement DNS et son certificat. Une configuration locale créée avant cet ajout doit reprendre le même tableau `routes` avant tout déploiement manuel.
+
+Pendant le test privé, conserver `fasodanfani.shop` dans les destinations de l’application Access existante, avec la politique propriétaire. Vérifier en navigation privée que le domaine demande une authentification et que la gestion fonctionne après connexion. Le domaine `workers.dev` reste disponible avec sa protection existante.
+
+Laisser `PUBLIC_SITE_URL` vide pendant cette phase. L’ouverture publique nécessitera une protection Access limitée aux API de gestion, une validation du stock et la configuration SEO du domaine final. Le sous-domaine `www` nécessite son propre DNS et une redirection ; il n’est pas inclus dans la route du domaine racine.

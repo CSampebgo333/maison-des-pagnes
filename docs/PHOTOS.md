@@ -1,6 +1,6 @@
 # Photos et fiches des pagnes
 
-Le ZIP transmis contient `pagne1` et `pagne2`, cinq vues par pagne, plus deux copies identiques. Le projet affiche uniquement ces deux modèles. Il est prêt à recevoir les dix autres modèles sans créer de faux produits.
+Le catalogue initial contient douze modèles (`pagne1` à `pagne12`), avec cinq vues par modèle, soit soixante photos. Les fichiers et métadonnées du dépôt servent de catalogue initial ; les modifications enregistrées dans la gestion prennent ensuite priorité dans D1.
 
 ## Noms des fichiers
 
@@ -15,11 +15,11 @@ Le ZIP transmis contient `pagne1` et `pagne2`, cinq vues par pagne, plus deux co
 
 Les légendes sont définies dans `scripts/catalogue-core.mjs` et peuvent être adaptées. Les vues au-delà de 5 sont acceptées avec la légende « Vue N ». Au moins une photo est nécessaire pour afficher un pagne.
 
-Mettre les images dans `public/pagnes/`. Les aperçus facultatifs doivent conserver le même nom et la même extension dans `public/pagnes/apercus/`. Lorsqu’un aperçu manque, l’original est utilisé. Si une photo est remplacée manuellement, remplacer ou retirer son ancien aperçu également.
+Mettre les images dans `public/pagnes/`. Après un ajout ou remplacement, exécuter `pnpm catalogue`, puis `python scripts/optimize-images.py` (Pillow requis) et `pnpm build` pour régénérer le catalogue et les variantes versionnées. Les aperçus facultatifs doivent conserver le même nom et la même extension dans `public/pagnes/apercus/`. Lorsqu’un aperçu manque, l’original est utilisé. Si une photo est remplacée manuellement, remplacer ou retirer son ancien aperçu également.
 
 ## Fiche produit
 
-Exemple à ajouter dans `config/pagnes.json` :
+Exemple de fiche source dans `config/pagnes.json` (adapter la clé au modèle concerné) :
 
 ```json
 "pagne3": {

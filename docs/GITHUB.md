@@ -1,6 +1,6 @@
 # Préparer et pousser sur GitHub
 
-Le code peut être hébergé sur GitHub avant de choisir une base de données ou une plateforme de déploiement. Un dépôt privé vide convient pour cette phase.
+Le projet est versionné dans `CSampebgo333/maison-des-pagnes`, actuellement public, sur la branche `main`. Le backend est prévu pour Cloudflare Workers, D1 et R2. Les instructions de création ci-dessous concernent uniquement une nouvelle copie du projet ; ne pas réinitialiser le dépôt existant.
 
 ## Avec l’assistant
 

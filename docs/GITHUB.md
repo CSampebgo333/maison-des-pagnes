@@ -37,7 +37,7 @@ Si le dépôt contient déjà des commits, le cloner et intégrer les fichiers d
 
 ## La suite
 
-Le push sauvegarde et versionne le code. Le déploiement met l’application en ligne : c’est une étape distincte, qui reste à faire après validation du rendu. Ce projet ne contient pas de workflow de déploiement automatique.
+Le push sauvegarde et versionne le code. Le déploiement met l’application en ligne : c’est une étape distincte, qui reste à faire après validation du rendu. Le dépôt contient désormais la configuration pour Workers Builds : voir la section Déploiement automatique du guide Cloudflare. L’automatisation devient active uniquement après connexion du Worker existant au dépôt dans le tableau de bord Cloudflare.
 
 Sources officielles :
 

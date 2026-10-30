@@ -18,12 +18,16 @@ const variants=JSON.parse(await fs.readFile('src/image-manifest.json','utf8'));
 await fs.writeFile('dist/server/catalogue-seed.js','export default '+JSON.stringify({products,variants,revision:'initial'})+';\n');
 const hosting=await fs.readFile('.openai/hosting.json','utf8').catch(()=>JSON.stringify({d1:null,r2:'BUCKET'}));
 await fs.writeFile('dist/.openai/hosting.json',hosting);
-// Keep the owner deployment template as the single source of configuration.
+// Keep the tracked production configuration as the source for generated output.
 // Paths are relative to each config file, so relocate them for dist/server.
-const workerConfig=JSON.parse(await fs.readFile('deployment/cloudflare/wrangler.example.jsonc','utf8'));
+const workerConfig=JSON.parse(await fs.readFile('wrangler.jsonc','utf8'));
 workerConfig.main='index.js';
 workerConfig.assets.directory='../client';
+workerConfig.d1_databases[0].migrations_dir='../../drizzle';
 workerConfig.d1_databases[0].database_id=process.env.CLOUDFLARE_D1_ID??workerConfig.d1_databases[0].database_id;
+for (const key of ['CATALOGUE_ADMIN_EMAIL','ACCESS_ISSUER','ACCESS_AUD']) {
+  if(process.env[key])workerConfig.vars[key]=process.env[key];
+}
 await fs.writeFile('dist/server/wrangler.json',JSON.stringify(workerConfig,null,2)+'\n');
 
 await prepareSeo();

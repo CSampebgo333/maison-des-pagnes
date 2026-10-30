@@ -16,7 +16,9 @@
     "preview": "vite preview --host 127.0.0.1",
     "check": "tsc --noEmit",
     "test": "node --experimental-strip-types --test tests/*.test.ts tests/*.test.mjs",
-    "import:photos": "node scripts/import-photos.mjs"
+    "import:photos": "node scripts/import-photos.mjs",
+    "ci:build": "pnpm check && pnpm test && pnpm build",
+    "deploy:cloudflare": "node scripts/validate-deployment.mjs && npx --yes wrangler@4.155.0 deploy --config dist/server/wrangler.json"
   },
   "dependencies": {
     "lucide-react": "1.31.0",

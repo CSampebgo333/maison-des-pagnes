@@ -640,3 +640,19 @@ html, body, #root { background: #ffffff; }
 
 /* White page surfaces; the warm 3D room and small controls retain their accents. */
 #root { min-height: 100vh; }
+
+/* Ordered warm-to-green progress, with dark text on pale backgrounds. */
+[data-order-status="pending"]{--stage-bg:#ffedd5;--stage-ink:#9a3412;--stage-dot:#c2410c}
+[data-order-status="confirmed"]{--stage-bg:#fef9c3;--stage-ink:#713f12;--stage-dot:#a16207}
+[data-order-status="preparing"]{--stage-bg:#ecfccb;--stage-ink:#3f6212;--stage-dot:#65a30d}
+[data-order-status="ready"]{--stage-bg:#dcfce7;--stage-ink:#166534;--stage-dot:#22c55e}
+[data-order-status="shipping"]{--stage-bg:#bbf7d0;--stage-ink:#14532d;--stage-dot:#16a34a}
+[data-order-status="completed"]{--stage-bg:#166534;--stage-ink:#fff;--stage-dot:#166534}
+[data-order-status="cancelled"]{--stage-bg:#fee2e2;--stage-ink:#991b1b;--stage-dot:#dc2626}
+.status-pill[data-order-status]{background:var(--stage-bg);color:var(--stage-ink);border:1px solid var(--stage-ink);font-weight:600}
+.order-progress{display:grid;grid-template-columns:repeat(auto-fit,minmax(105px,1fr));gap:10px;list-style:none;padding:0;margin:24px 0}
+.order-progress li{display:flex;align-items:center;gap:8px;padding:12px 10px;border-radius:8px;background:#f3f4f6;color:#4b5563;font-size:13px;border:1px solid #d1d5db}
+.order-progress li.is-reached{background:var(--stage-bg);color:var(--stage-ink);border-color:var(--stage-ink)}
+.order-progress li[aria-current="step"]{outline:2px solid var(--stage-ink);outline-offset:2px;font-weight:700}
+.progress-dot{width:10px;height:10px;border:1px solid currentColor;border-radius:50%;flex-shrink:0}
+.is-reached .progress-dot{background:currentColor}

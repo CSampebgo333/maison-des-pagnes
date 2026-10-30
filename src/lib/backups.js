@@ -1,5 +1,5 @@
 import {isAdmin} from './admin-auth.js';
-const TABLES=['catalogue_documents','inventory','orders','order_lines','order_events'];
+const TABLES=['catalogue_documents','inventory','orders','order_lines','order_events','order_notifications'];
 const encoder=new TextEncoder();
 const json=(value,status=200)=>new Response(JSON.stringify(value),{status,headers:{'Content-Type':'application/json','Cache-Control':'private, no-store','X-Robots-Tag':'noindex'}});
 export async function createBackup(env,now=new Date()){

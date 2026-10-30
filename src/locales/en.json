@@ -691,5 +691,19 @@
   "Ajouter {0} à mes favoris": "Add {0} to my favourites",
   "Date": "Date",
   "Mode": "Method",
-  "Total CFA": "Total CFA"
+  "Total CFA": "Total CFA",
+  "Étapes de la commande": "Order stages",
+  "Arrêter les notifications WhatsApp": "Stop WhatsApp notifications",
+  "Modification impossible. Réessayez.": "Unable to update. Please try again.",
+  "Je souhaite recevoir les mises à jour de ma commande par WhatsApp de Maison du Faso Dan Fani. Je peux les arrêter depuis mon lien de suivi.": "I would like to receive order updates from Maison du Faso Dan Fani on WhatsApp. I can stop them from my tracking link.",
+  "Notifications WhatsApp": "WhatsApp notifications",
+  "Soumis à WhatsApp ne signifie pas livré au client.": "Submitted to WhatsApp does not mean delivered to the customer.",
+  "Les notifications WhatsApp sont temporairement indisponibles.": "WhatsApp notifications are temporarily unavailable.",
+  "Vérifiez le numéro WhatsApp avec son indicatif international (+226…).": "Check the WhatsApp number including its international country code (+226…).",
+  "En attente d’envoi": "Queued",
+  "Envoi en cours": "Sending",
+  "Soumis à WhatsApp": "Submitted to WhatsApp",
+  "Échec de l’envoi": "Send failed",
+  "Envoi à vérifier": "Needs review",
+  "Notifications arrêtées": "Notifications stopped"
 }

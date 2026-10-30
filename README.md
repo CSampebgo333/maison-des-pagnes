@@ -20,7 +20,7 @@ pnpm check
 pnpm build
 ```
 
-Le build produit le frontend dans `dist/client/` et le Worker dans `dist/server/`. `pnpm dev` et `pnpm preview` servent uniquement le frontend : les API nécessitent le Worker et ses bindings D1/R2. Aucune publication automatique n’est configurée.
+Le build produit le frontend dans `dist/client/` et le Worker dans `dist/server/`. `pnpm dev` et `pnpm preview` servent uniquement le frontend : les API nécessitent le Worker et ses bindings D1/R2. La configuration du déploiement automatique est prête dans `wrangler.jsonc` ; connecter le Worker au dépôt avec Workers Builds pour l’activer (voir le guide Cloudflare).
 
 ## Le rendu
 

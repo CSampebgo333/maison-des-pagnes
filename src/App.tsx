@@ -1,4 +1,3 @@
-import InstallApp from './components/InstallApp';
 import {localizeProduct} from './lib/product-language';
 import {t,useLanguage,localeFor,shopFetch,LanguageSwitcher} from './lib/i18n';
 import { Suspense, lazy, useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -160,7 +159,7 @@ export default function App() {
         <Search size={18} aria-hidden="true" /><input ref={search} type="search" placeholder={t("Un motif, une couleur…")} aria-label={t("Rechercher un pagne")} value={query} onChange={(event) => setQuery(event.target.value)} />
         {query && <button type="button" aria-label={t("Effacer la recherche")} onClick={() => { setQuery(''); search.current?.focus(); }}><X size={16} /></button>}
       </form>
-      <nav className="header-actions" aria-label={t("Navigation principale")}><a className="text-button contact-nav" href="#contact">{t("Contact")}</a><button className="text-button collection-link" onClick={showGallery}>{t("La collection")}</button><button className="favorites-nav" aria-pressed={onlyFavorites} aria-label={t("Mes favoris, {0} pagnes",savedIds.filter(id=>products.some(p=>p.id===id)).length)} onClick={()=>{setOnlyFavorites(v=>!v);showGallery();}}><Heart size={19} fill={onlyFavorites?'currentColor':'none'}/><span>{t("Favoris")}</span><b>{savedIds.filter(id=>products.some(p=>p.id===id)).length}</b></button><button className="bag-button" onClick={() => { setBagOpen(true); setTouring(false); }} aria-label={t("Ma sélection, {0} pagne{1}",bagCount,bagCount !== 1 ? 's' : '')}><ShoppingBag size={19} /><span>{t("Ma sélection")}</span><b>{bagCount}</b></button><InstallApp/><LanguageSwitcher/></nav>
+      <nav className="header-actions" aria-label={t("Navigation principale")}><a className="text-button contact-nav" href="#contact">{t("Contact")}</a><button className="text-button collection-link" onClick={showGallery}>{t("La collection")}</button><button className="favorites-nav" aria-pressed={onlyFavorites} aria-label={t("Mes favoris, {0} pagnes",savedIds.filter(id=>products.some(p=>p.id===id)).length)} onClick={()=>{setOnlyFavorites(v=>!v);showGallery();}}><Heart size={19} fill={onlyFavorites?'currentColor':'none'}/><span>{t("Favoris")}</span><b>{savedIds.filter(id=>products.some(p=>p.id===id)).length}</b></button><button className="bag-button" onClick={() => { setBagOpen(true); setTouring(false); }} aria-label={t("Ma sélection, {0} pagne{1}",bagCount,bagCount !== 1 ? 's' : '')}><ShoppingBag size={19} /><span>{t("Ma sélection")}</span><b>{bagCount}</b></button><LanguageSwitcher/></nav>
     </header>
 
     <main>

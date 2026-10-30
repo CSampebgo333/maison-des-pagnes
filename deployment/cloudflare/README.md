@@ -35,7 +35,7 @@ Le catalogue migre automatiquement du document R2 vers D1 si la table `catalogue
 
 Le Worker expose un gestionnaire scheduled et la configuration Cloudflare prévoit le cron `0 3 * * *` (03:00 UTC / Burkina Faso). Cela ne signifie pas que le cron est déjà enregistré dans le compte : il ne le sera qu’après déploiement de cette configuration. Sur Sites, aucune planification n’est déclarée et la gestion l’indique explicitement.
 
-La sauvegarde logique des cinq tables métier est lue dans une seule transaction batch D1, relue et vérifiée SHA-256. Les fichiers R2 ajoutés par la gestion et les documents de commandes sont copiés sous un préfixe privé daté. Le pointeur « latest » n’est remplacé que lorsque l’ensemble réussit. Le dernier échec est visible dans la rubrique Sauvegardes. Les instantanés sont conservés 14 jours. Les fichiers statiques du catalogue initial restent dans GitHub et le build ; ils ne sont pas dupliqués dans ces copies R2.
+La sauvegarde logique des six tables métier est lue dans une seule transaction batch D1, relue et vérifiée SHA-256. Les fichiers R2 ajoutés par la gestion et les documents de commandes sont copiés sous un préfixe privé daté. Le pointeur « latest » n’est remplacé que lorsque l’ensemble réussit. Le dernier échec est visible dans la rubrique Sauvegardes. Les instantanés sont conservés 14 jours. Les fichiers statiques du catalogue initial restent dans GitHub et le build ; ils ne sont pas dupliqués dans ces copies R2.
 
 Ce mécanisme est volontairement borné : 10 000 lignes par table, 20 Mo de données et 400 fichiers par exécution. Il refuse de marquer une sauvegarde tronquée comme complète. Au-delà, passer à l’export D1 natif et à un mécanisme de copie incrémentale. Les sauvegardes sont dans le même compte R2 : ce n’est pas une protection contre la perte du compte ou la suppression du bucket. Garder une copie indépendante est nécessaire avant un usage critique. Le téléchargement de l’administration contient uniquement les données JSON ; les fichiers sont sous le préfixe du manifeste dans R2.
 
@@ -75,3 +75,7 @@ Désactiver les builds/déploiements des branches non productives dans le tablea
 Après connexion, vérifier un premier build de `main`, sa version déployée et les parcours protégés. Un échec des contrôles ou du build arrête la commande avant le déploiement. Les changements sur une branche de travail ne doivent être publiés qu’après fusion dans `main`.
 
 Les migrations ne sont pas appliquées automatiquement par cette configuration. Pour une version qui change le schéma, prévoir une sauvegarde puis appliquer explicitement les migrations compatibles avec la version en service avant la fusion ; ne pas fusionner une fonctionnalité dépendant d’un schéma absent. Un déploiement du code ne remplace pas le catalogue D1, les commandes, les stocks ou les fichiers R2. Les paramètres d’Access devront être réévalués lors de l’ouverture publique.
+
+## Notifications WhatsApp
+
+Voir [la configuration des notifications](../../docs/WHATSAPP.md). Appliquer la migration 0003_whatsapp_notifications.sql avant le déploiement du code qui l’utilise. Les envois sont désactivés par défaut et nécessitent un compte WhatsApp Business Platform connecté, un secret serveur et deux modèles approuvés. Le cron de notifications toutes les cinq minutes est distinct de la sauvegarde quotidienne.

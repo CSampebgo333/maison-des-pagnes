@@ -24,14 +24,16 @@
   ],
   "vars": {
     "AUTH_MODE": "cloudflare",
-    "CATALOGUE_ADMIN_EMAIL": "cl.sampebgo@gmail.com",
+    "CATALOGUE_ADMIN_EMAIL": "REPLACE_WITH_ADMIN_EMAIL",
     "ACCESS_ISSUER": "https://REPLACE.cloudflareaccess.com",
     "ACCESS_AUD": "REPLACE_WITH_ACCESS_APPLICATION_AUD",
-    "BACKUP_CRON_ENABLED": "1"
+    "BACKUP_CRON_ENABLED": "1",
+    "WHATSAPP_ENABLED": "0"
   },
   "triggers": {
     "crons": [
-      "0 3 * * *"
+      "0 3 * * *",
+      "*/5 * * * *"
     ]
   }
 }

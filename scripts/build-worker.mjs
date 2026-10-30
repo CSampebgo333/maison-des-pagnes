@@ -4,7 +4,7 @@ for (const name of await fs.readdir('dist')) { if (!['client','server','.openai'
 await fs.mkdir('dist/server',{recursive:true});
 await fs.mkdir('dist/.openai',{recursive:true});
 await fs.copyFile('src/lib/pdf-service.js','dist/server/index.js');
-for(const file of ['catalogue-service.js','orders-service.js','order-management.js','admin-auth.js','initial-stock.js','security.js','backups.js','i18n-core.js'])await fs.copyFile('src/lib/'+file,'dist/server/'+file);
+for(const file of ['catalogue-service.js','orders-service.js','order-management.js','admin-auth.js','initial-stock.js','security.js','backups.js','i18n-core.js','whatsapp.js'])await fs.copyFile('src/lib/'+file,'dist/server/'+file);
 await fs.mkdir('dist/locales',{recursive:true});
 await fs.writeFile('dist/server/english.js','export default '+await fs.readFile('src/locales/en.json','utf8')+';\n');
 for (const name of ['index.js','orders-service.js']) {
@@ -25,7 +25,7 @@ workerConfig.main='index.js';
 workerConfig.assets.directory='../client';
 workerConfig.d1_databases[0].migrations_dir='../../drizzle';
 workerConfig.d1_databases[0].database_id=process.env.CLOUDFLARE_D1_ID??workerConfig.d1_databases[0].database_id;
-for (const key of ['CATALOGUE_ADMIN_EMAIL','ACCESS_ISSUER','ACCESS_AUD']) {
+for (const key of ['CATALOGUE_ADMIN_EMAIL','ACCESS_ISSUER','ACCESS_AUD','WHATSAPP_ENABLED','WHATSAPP_PHONE_NUMBER_ID','WHATSAPP_API_VERSION','WHATSAPP_TEMPLATE_FR','WHATSAPP_TEMPLATE_EN']) {
   if(process.env[key])workerConfig.vars[key]=process.env[key];
 }
 await fs.writeFile('dist/server/wrangler.json',JSON.stringify(workerConfig,null,2)+'\n');

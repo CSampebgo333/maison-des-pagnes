@@ -1,3 +1,4 @@
+import {dispatchNotifications} from './whatsapp.js';
 import english from '../locales/en.json' with {type:'json'};
 import {tr,normalLanguage,installEnglish} from './i18n-core.js';
 import {requestGuard,secureResponse} from './security.js';
@@ -57,12 +58,14 @@ const application={
 };
 
 export default {
- async fetch(request,env){
+ async fetch(request,env,ctx){
   try{const blocked=await requestGuard(request,env);let response=blocked??await application.fetch(request,env);
    const language=normalLanguage(request.headers.get('X-Shop-Language')??new URL(request.url).searchParams.get('lang')??request.headers.get('Accept-Language')?.split(',')[0]);
    if(language==='en'&&response.headers.get('Content-Type')?.includes('application/json')&&response.status>=400){const body=await response.json();if(typeof body.error==='string')body.error=tr(body.error,'en');response=new Response(JSON.stringify(body),{status:response.status,headers:response.headers});}
+   if(!blocked&&response.ok&&['POST','PATCH'].includes(request.method)&&/^\/api\/(admin\/)?orders(?:\/|$)/.test(new URL(request.url).pathname))ctx?.waitUntil(dispatchNotifications(env).catch(()=>console.error('WhatsApp dispatch failed; check notification configuration.')));
    return secureResponse(response,request,env);}
   catch{return secureResponse(json({error:'Le service est temporairement indisponible. Réessayez.'},503),request,env);}
  },
- async scheduled(controller,env,ctx){ctx.waitUntil(scheduledBackup(env));}
+ async scheduled(controller,env,ctx){if(controller.cron==='*/5 * * * *')ctx.waitUntil(dispatchNotifications(env).catch(()=>console.error('WhatsApp dispatch failed; check notification configuration.')));
+  else ctx.waitUntil(scheduledBackup(env));}
 };

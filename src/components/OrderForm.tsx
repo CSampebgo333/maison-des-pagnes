@@ -16,6 +16,9 @@ const LINK_LIMIT = 24 * 1024 * 1024;
 
 export default function OrderForm({ items, whatsapp, onClose, initialCustom = false }: { items: OrderItem[]; whatsapp: string; onClose: () => void; initialCustom?: boolean }) {
  const language=useLanguage();
+ const [whatsappEnabled,setWhatsappEnabled]=useState(false),[whatsappOptIn,setWhatsappOptIn]=useState(false);
+ useEffect(()=>{void shopFetch('/api/orders/notification-settings').then(r=>r.ok?r.json():null).then(d=>setWhatsappEnabled(d?.enabled===true)).catch(()=>{});},[]);
+
   const submittedLanguage=useRef<'fr'|'en'|null>(null);
   const credentials=useRef({requestKey:crypto.randomUUID(),token:crypto.randomUUID().replaceAll('-','')+crypto.randomUUID().replaceAll('-','')});
   const [registered,setRegistered]=useState<{id:string;reference:string;created_at:string;language?:'fr'|'en'}|null>(null);
@@ -69,7 +72,7 @@ export default function OrderForm({ items, whatsapp, onClose, initialCustom = fa
       submittedLanguage.current??=language;
       let saved=registered;
       if(!saved){
-        const response=await shopFetch('/api/orders',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({...credentials.current,language:submittedLanguage.current,details,items:confirmedItems.map(i=>({id:i.product.id,quantity:i.quantity,expectedPrice:i.product.price})),custom:custom?{quantity:custom.quantity,description:custom.description}:undefined})});
+        const response=await shopFetch('/api/orders',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({...credentials.current,language:submittedLanguage.current,details,whatsappOptIn,items:confirmedItems.map(i=>({id:i.product.id,quantity:i.quantity,expectedPrice:i.product.price})),custom:custom?{quantity:custom.quantity,description:custom.description}:undefined})});
         const result=await response.json();if(!response.ok)throw Error(result.error||t("La demande n’a pas pu être enregistrée."));saved=result;setRegistered(result);
       }
       if(!saved)throw Error(t("Enregistrement incomplet."));
@@ -131,7 +134,7 @@ export default function OrderForm({ items, whatsapp, onClose, initialCustom = fa
         </fieldset>
         <fieldset disabled={working||!!registered}><legend className="sr-only">{t("Coordonnées et réception")}</legend>
           <label>{t("Votre nom")}<input required maxLength={80} autoComplete="name" value={details.name} onChange={e=>change('name',e.target.value)}/></label>
-          <label>{t("Téléphone avec indicatif")}<input required type="tel" maxLength={25} autoComplete="tel" placeholder="+226 …" value={details.phone} onChange={e=>change('phone',e.target.value)}/></label>
+          {whatsappEnabled&&<label className="order-wide custom-request-toggle"><input type="checkbox" checked={whatsappOptIn} onChange={e=>setWhatsappOptIn(e.target.checked)}/>{t("Je souhaite recevoir les mises à jour de ma commande par WhatsApp de Maison du Faso Dan Fani. Je peux les arrêter depuis mon lien de suivi.")}</label>}<label>{t("Téléphone avec indicatif")}<input required type="tel" maxLength={25} autoComplete="tel" placeholder="+226 …" value={details.phone} onChange={e=>change('phone',e.target.value)}/></label>
           <label>{t("Pays")}<input value="Burkina Faso" readOnly/></label>
           <label>{t("Ville")}<input required maxLength={80} list="delivery-cities" autoComplete="address-level2" value={details.city} onChange={e=>change('city',e.target.value)}/></label>
           <datalist id="delivery-cities"><option value="Bobo-Dioulasso"/><option value="Ouagadougou"/></datalist><label>{t("Mode de réception")}<select value={details.mode} onChange={e=>change('mode',e.target.value)}><option value="livraison">{t("Livraison")}</option><option value="retrait">{t("Retrait à Bobo-Dioulasso")}</option></select></label>

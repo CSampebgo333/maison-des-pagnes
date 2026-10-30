@@ -1,3 +1,4 @@
+import {whatsappConfigured,recipientNumber} from './whatsapp.js';
 import english from '../locales/en.json' with {type:'json'};
 import {tr,normalLanguage,installEnglish} from './i18n-core.js';
 import initialStock from './initial-stock.js';
@@ -7,7 +8,7 @@ import {customerDetails,validateUpdate,totalOf,orderStatuses} from './order-mana
 installEnglish(english);
 const json=(v,status=200)=>new Response(JSON.stringify(v),{status,headers:{'Content-Type':'application/json','Cache-Control':'private, no-store','X-Robots-Tag':'noindex, nofollow','Referrer-Policy':'no-referrer'}});
 export async function hash(value){return [...new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(value)))].map(n=>n.toString(16).padStart(2,'0')).join('');}
-const publicOrder=row=>({language:row.language,reference:row.reference,created_at:row.created_at,status:row.status,items:JSON.parse(row.items),custom:row.custom?JSON.parse(row.custom):null,delivery_fee:row.delivery_fee,custom_price:row.custom_price,agreed_date:row.agreed_date,paid_amount:row.paid_amount,total:totalOf(row),mode:JSON.parse(row.customer).mode});
+const publicOrder=row=>({language:row.language,reference:row.reference,created_at:row.created_at,status:row.status,items:JSON.parse(row.items),custom:row.custom?JSON.parse(row.custom):null,delivery_fee:row.delivery_fee,custom_price:row.custom_price,agreed_date:row.agreed_date,paid_amount:row.paid_amount,total:totalOf(row),whatsapp_opt_in:row.whatsapp_opt_in===1,mode:JSON.parse(row.customer).mode});
 const adminOrder=row=>({...row,customer:JSON.parse(row.customer),items:JSON.parse(row.items),custom:row.custom?JSON.parse(row.custom):null,token_hash:undefined,request_key:undefined,request_hash:undefined,pdf_key:undefined,photo_key:undefined,total:totalOf(row)});
 async function readJson(request,max=20000){if(Number(request.headers.get('Content-Length'))>max)throw Error('Demande trop volumineuse.');const reader=request.body?.getReader();if(!reader)throw Error('Demande manquante.');let size=0,chunks=[];for(;;){const r=await reader.read();if(r.done)break;size+=r.value.length;if(size>max){await reader.cancel();throw Error('Demande trop volumineuse.');}chunks.push(r.value);}const all=new Uint8Array(size);let at=0;for(const c of chunks){all.set(c,at);at+=c.length;}return JSON.parse(new TextDecoder().decode(all));}
 const validId=s=>/^[a-f0-9-]{36}$/.test(s??'');
@@ -19,23 +20,28 @@ export async function ordersRoute(request,env){
  if(!['GET','HEAD'].includes(request.method)&&request.headers.get('Origin')!==url.origin)return json({error:'Origine non autorisée.'},403);
  if(!env.DB)return json({error:'Le service de commandes est en cours de configuration.'},503);
  try{
+  if(p==='/api/orders/notification-settings'&&request.method==='GET')return json({enabled:whatsappConfigured(env)});
   if(p==='/api/orders'&&request.method==='POST'){
    const b=await readJson(request),details=customerDetails(b.details);const language=b.language==='en'?'en':'fr';if(!/^[a-f0-9-]{36}$/.test(b.requestKey??'')||!/^[a-f0-9]{64}$/.test(b.token??''))throw Error('Identifiant de demande invalide.');
-   const requestHash=await hash(JSON.stringify({details,items:b.items,custom:b.custom,language}));const previous=await env.DB.prepare('SELECT * FROM orders WHERE request_key=?').bind(b.requestKey).first();
+   const wantsNotifications=b.whatsappOptIn===true;
+   if(wantsNotifications&&!whatsappConfigured(env))throw Error('Les notifications WhatsApp sont temporairement indisponibles.');
+   if(wantsNotifications)recipientNumber(details.phone);
+   const requestHash=await hash(JSON.stringify({details,items:b.items,custom:b.custom,language,...(wantsNotifications?{whatsappOptIn:true}:{})}));const previous=await env.DB.prepare('SELECT * FROM orders WHERE request_key=?').bind(b.requestKey).first();
    if(previous){if(previous.request_hash!==requestHash||previous.token_hash!==await hash(b.token))return json({error:'Cette demande existe déjà avec un autre contenu.'},409);return json({id:previous.id,...publicOrder(previous)},200);}
    if(!Array.isArray(b.items)||b.items.length>50||!b.items.length&&!b.custom)throw Error('Choisissez au moins un pagne.');
    const catalogue=await getCatalogue(env);const items=[],seen=new Set();
    for(const i of b.items){if(seen.has(i.id)||!Number.isInteger(i.quantity)||i.quantity<1||i.quantity>99)throw Error('Quantités invalides.');seen.add(i.id);const product=catalogue.document.products.find(x=>x.id===i.id&&x.published!==false&&x.availability!=='unavailable');if(!product||!Number.isInteger(product.price))throw Error('Un pagne n’est plus disponible.');if(i.expectedPrice!==product.price)throw Error('Un prix a changé. Actualisez votre sélection.');items.push({id:product.id,name:product.name,price:product.price,quantity:i.quantity,photo:product.photos[0].src,name_en:englishFor(product)?.name??null});}
    let custom=null;if(b.custom){if(typeof b.custom.description!=='string'||b.custom.description.length>300||!Number.isInteger(b.custom.quantity)||b.custom.quantity<1||b.custom.quantity>99)throw Error('Vérifiez la demande personnalisée.');custom={description:b.custom.description,quantity:b.custom.quantity};}
    const id=crypto.randomUUID(),now=new Date().toISOString(),reference='FDF-'+now.slice(0,10).replaceAll('-','')+'-'+id.slice(0,8).toUpperCase();
-   const statements=[env.DB.prepare('INSERT INTO orders(id,reference,token_hash,request_key,request_hash,created_at,updated_at,customer,items,custom,language) VALUES(?,?,?,?,?,?,?,?,?,?,?)').bind(id,reference,await hash(b.token),b.requestKey,requestHash,now,now,JSON.stringify(details),JSON.stringify(items),custom?JSON.stringify(custom):null,language),...items.map(i=>env.DB.prepare('INSERT INTO order_lines(order_id,product_id,quantity) VALUES(?,?,?)').bind(id,i.id,i.quantity)),env.DB.prepare('INSERT INTO order_events(order_id,created_at,actor,summary) VALUES(?,?,?,?)').bind(id,now,await isAdmin(request,env)?'gestion':'client',await isAdmin(request,env)?'Demande saisie par la gestion — à confirmer':'Demande reçue — en attente de confirmation')];
+   const statements=[env.DB.prepare('INSERT INTO orders(id,reference,token_hash,request_key,request_hash,created_at,updated_at,customer,items,custom,language,whatsapp_opt_in,whatsapp_consent_at) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)').bind(id,reference,await hash(b.token),b.requestKey,requestHash,now,now,JSON.stringify(details),JSON.stringify(items),custom?JSON.stringify(custom):null,language,wantsNotifications?1:0,wantsNotifications?now:null),...items.map(i=>env.DB.prepare('INSERT INTO order_lines(order_id,product_id,quantity) VALUES(?,?,?)').bind(id,i.id,i.quantity)),env.DB.prepare('INSERT INTO order_events(order_id,created_at,actor,summary) VALUES(?,?,?,?)').bind(id,now,await isAdmin(request,env)?'gestion':'client',await isAdmin(request,env)?'Demande saisie par la gestion — à confirmer':'Demande reçue — en attente de confirmation')];
    try{await env.DB.batch(statements);}catch(e){const old=await env.DB.prepare('SELECT * FROM orders WHERE request_key=?').bind(b.requestKey).first();if(old&&old.request_hash===requestHash&&old.token_hash===await hash(b.token))return json({id:old.id,...publicOrder(old)});throw e;}
    return json({id,reference,created_at:now,status:'pending',language},201);
   }
-  const match=p.match(/^\/api\/orders\/([a-f0-9-]{36})(?:\/(pdf|photo))?$/);
+  const match=p.match(/^\/api\/orders\/([a-f0-9-]{36})(?:\/(pdf|photo|notifications))?$/);
   if(match){const row=await env.DB.prepare('SELECT * FROM orders WHERE id=?').bind(match[1]).first();const token=request.headers.get('Authorization')?.replace(/^Bearer /,'');if(!row||!token||row.token_hash!==await hash(token))return json({error:'Lien de suivi invalide.'},404);
+   if(match[2]==='notifications'&&request.method==='POST'){await env.DB.prepare('UPDATE orders SET whatsapp_opt_in=0 WHERE id=?').bind(row.id).run();return json({saved:true});}
    if(!match[2]&&request.method==='GET')return json(publicOrder(row));
-   if(match[2]&&request.method==='PUT'){
+   if(['pdf','photo'].includes(match[2])&&request.method==='PUT'){
     if(row.status!=='pending')return json({error:'Cette demande est déjà traitée.'},409);
     const role=match[2],limit=role==='pdf'?24*1024*1024:6*1024*1024,type=request.headers.get('Content-Type');if(role==='pdf'?type!=='application/pdf':!['image/jpeg','image/png'].includes(type))throw Error('Format de fichier invalide.');
     const reader=request.body?.getReader();if(!reader)throw Error('Fichier manquant.');const chunks=[];let length=0;for(;;){const r=await reader.read();if(r.done)break;length+=r.value.length;if(length>limit){await reader.cancel();throw Error('Fichier trop volumineux.');}chunks.push(r.value);}const bytes=new Uint8Array(length);let offset=0;for(const c of chunks){bytes.set(c,offset);offset+=c.length;}
@@ -72,10 +78,11 @@ export async function ordersRoute(request,env){
    const cell=v=>'"'+String(v??'').replace(/^[=+@\-\t\r]/,"'$&").replaceAll('"','""')+'"';
    const csv=[['Référence','Date','Statut','Client','Téléphone','Ville','Mode','Date souhaitée','Date convenue','Total CFA','Encaissé CFA','Paiement'].map(v=>tr(v,language)),...rows.results.map(r=>{const d=JSON.parse(r.customer);return [r.reference,r.created_at,tr(orderStatuses[r.status],language),d.name,d.phone,d.city,tr(d.mode,language),d.deadline,r.agreed_date,totalOf(r),r.paid_amount,r.payment_method];})].map(row=>row.map(cell).join(';')).join('\r\n');return new Response('\uFEFF'+csv,{headers:{'Content-Type':'text/csv;charset=utf-8','Content-Disposition':'attachment; filename="commandes.csv"','Cache-Control':'private, no-store'}});
   }
-  const detail=p.match(/^\/api\/admin\/orders\/([a-f0-9-]{36})(?:\/(pdf|photo))?$/);
+  const detail=p.match(/^\/api\/admin\/orders\/([a-f0-9-]{36})(?:\/(pdf|photo|notifications))?$/);
   if(detail){const row=await env.DB.prepare('SELECT * FROM orders WHERE id=?').bind(detail[1]).first();if(!row)return json({error:'Commande introuvable.'},404);
-   if(detail[2]&&request.method==='GET'){const key=detail[2]==='pdf'?row.pdf_key:row.photo_key;if(!key)return json({error:'Document non joint.'},404);const o=await env.BUCKET.get(key);if(!o)return json({error:'Document introuvable.'},404);return new Response(o.body,{headers:{'Content-Type':o.httpMetadata.contentType,'Cache-Control':'private, no-store','X-Robots-Tag':'noindex','X-Content-Type-Options':'nosniff'}});}
-   if(request.method==='GET'){const history=await env.DB.prepare('SELECT created_at,actor,summary FROM order_events WHERE order_id=? ORDER BY id DESC').bind(row.id).all();return json({...adminOrder(row),history:history.results,has_pdf:!!row.pdf_key,has_photo:!!row.photo_key});}
+   if(detail[2]==='notifications'&&request.method==='POST'){await env.DB.prepare('UPDATE orders SET whatsapp_opt_in=0 WHERE id=?').bind(row.id).run();return json({saved:true});}
+   if(['pdf','photo'].includes(detail[2])&&request.method==='GET'){const key=detail[2]==='pdf'?row.pdf_key:row.photo_key;if(!key)return json({error:'Document non joint.'},404);const o=await env.BUCKET.get(key);if(!o)return json({error:'Document introuvable.'},404);return new Response(o.body,{headers:{'Content-Type':o.httpMetadata.contentType,'Cache-Control':'private, no-store','X-Robots-Tag':'noindex','X-Content-Type-Options':'nosniff'}});}
+   if(request.method==='GET'){const notifications=await env.DB.prepare('SELECT id,created_at,state,error_code FROM order_notifications WHERE order_id=? ORDER BY id DESC LIMIT 30').bind(row.id).all();const history=await env.DB.prepare('SELECT created_at,actor,summary FROM order_events WHERE order_id=? ORDER BY id DESC').bind(row.id).all();return json({...adminOrder(row),notifications:notifications.results,history:history.results,has_pdf:!!row.pdf_key,has_photo:!!row.photo_key});}
    if(request.method==='PATCH'){
     const b=await readJson(request);if(b.version!==row.version)return json({error:'La commande a changé. Rechargez-la.'},409);
     const patch={};for(const k of ['status','delivery_fee','custom_price','agreed_date','customer_agreed','internal_note','cancellation_reason','paid_amount','payment_method'])if(Object.hasOwn(b,k))patch[k]=b[k];

@@ -5,7 +5,7 @@ Le site privé Sites utilise déjà les bindings DB et BUCKET. Le futur héberge
 ## Configuration requise avant ouverture publique
 
 1. Activer Workers, D1 et R2 dans le compte du propriétaire en vérifiant les conditions de facturation R2. Créer `maison-faso` (D1) et `maison-faso-files` (R2). Conserver les identifiants de ressources dans une configuration de déploiement, jamais les secrets dans Git.
-2. Copier `wrangler.example.jsonc` vers un fichier local ignoré. Remplacer l’identifiant de la base et les paramètres Cloudflare Access.
+2. Copier `deployment/cloudflare/wrangler.example.jsonc` vers `deployment/cloudflare/wrangler.local.jsonc` (ignoré par Git). Remplacer l’identifiant de la base et les paramètres Cloudflare Access. Conserver ce fichier dans ce dossier pour que ses chemins relatifs restent valides.
 3. Créer une application Cloudflare Access protégeant `/api/admin/*` et le chemin de connexion d’administration. Autoriser uniquement `cl.sampebgo@gmail.com` après authentification. Fournir issuer et audience de cette application au Worker. `AUTH_MODE=cloudflare` est obligatoire : les en-têtes ChatGPT ne sont jamais fiables sur l’hébergement indépendant. Le Worker vérifie la signature, l’expiration, l’émetteur, l’audience et l’e-mail du JWT Access.
 4. Construire avec la version Node du projet et le gestionnaire indiqué dans package.json. Déployer d’abord sur une adresse de recette privée. Appliquer les migrations SQL de `drizzle/` avec Wrangler avant le Worker. Les migrations sont uniquement structurelles.
 5. **Transférer les données réelles**, pas seulement le code : exporter le document catalogue courant, l’inventaire, les commandes et événements depuis la base Sites ; importer dans la nouvelle D1. Copier les objets R2 `catalogue-assets/`, `catalogue/photos/`, `catalogue/history/`, `managed-orders/` et les PDF temporaires encore valides si nécessaire. Les nouvelles photos ajoutées par l’administration ne sont pas dans GitHub. Suspendre les écritures pendant le transfert final et contrôler comptages et échantillons.
@@ -44,3 +44,20 @@ Vérification de restauration, sans toucher à la production : `python scripts/v
 Avant déploiement indépendant, ajouter un secret SECURITY_SALT aléatoire (32 octets minimum) dans les secrets du Worker. Ne pas le mettre dans Git. Les créations de demandes/liens sont limitées à 30 tentatives par heure et par IP ; le suivi et ses uploads à 90 par minute. D1 assure le compteur atomique. Seule une empreinte salée temporaire est stockée, jamais l’IP brute. Le cron nettoie les compteurs expirés. En mode Cloudflare, les opérations publiques concernées refusent de fonctionner si cette configuration manque.
 
 Des en-têtes limitent les sources de scripts, bloquent l’intégration d’objets actifs, désactivent caméra/micro/localisation/paiement navigateur et empêchent la mise en cache des API/documents privés. HSTS est activé sur l’hébergement indépendant HTTPS. Cloudflare Access et la vérification cryptographique du JWT restent nécessaires pour l’administration. Aucun service ne garantit une sécurité absolue : vérifier Access, les chemins alternatifs, les quotas et une sauvegarde réelle après connexion du compte.
+
+## Configuration de référence et commandes
+
+`deployment/cloudflare/wrangler.example.jsonc` est la source unique des valeurs communes. Le build génère `dist/server/wrangler.json` à partir de ce fichier et adapte seulement les chemins du Worker et des assets. `CLOUDFLARE_D1_ID`, si fourni au build, remplace l’identifiant D1 dans la configuration générée. Les deux configurations utilisent le même nom de Worker, la date de compatibilité, le bucket, le mode Cloudflare Access, le repli SPA et le cron. Le fichier exemple reste du JSON strict malgré son extension `.jsonc`, car le build le lit avec `JSON.parse`.
+
+Pour le compte du propriétaire, utiliser explicitement la configuration locale à chaque commande Wrangler. Le build ne lit pas ce fichier local et ne remplace pas ses paramètres :
+
+```sh
+pnpm build
+pnpm exec wrangler d1 migrations apply maison-faso --remote --config deployment/cloudflare/wrangler.local.jsonc
+pnpm exec wrangler secret put SECURITY_SALT --config deployment/cloudflare/wrangler.local.jsonc
+pnpm exec wrangler deploy --config deployment/cloudflare/wrangler.local.jsonc
+```
+
+Ces commandes nécessitent Wrangler installé dans l’environnement et une connexion au compte Cloudflare du propriétaire. Wrangler n’est pas une dépendance du dépôt. Générer un secret aléatoire d’au moins 32 octets et le saisir à l’invite dédiée ; ne jamais le placer dans un fichier versionné. Les commandes ci-dessus sont à exécuter après création des ressources, configuration Access et validation du transfert de données. Pour le build public, fournir également `PUBLIC_SITE_URL` avec l’origine HTTPS réelle.
+
+Ne pas déployer directement la configuration générée avec ses valeurs d’exemple : elle contient des paramètres Access et D1 à compléter et ne contient pas le secret. Le build ne crée aucune ressource, n’applique aucune migration et n’active aucun cron dans un compte à lui seul.

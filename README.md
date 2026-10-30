@@ -1,6 +1,6 @@
 # Maison du Faso Dan Fani
 
-Une boutique de pagnes en français, avec une visite en 3D et une galerie classique. Cette première version se concentre sur le rendu et les interactions. Elle utilise les douze pagnes et soixante photos uniques des deux ZIP fournis.
+Une boutique de Faso Dan Fani en français et en anglais, avec une visite en 3D, une galerie, des demandes de commande et une gestion protégée du catalogue, du stock et des commandes. Le catalogue initial contient douze modèles et soixante photos. Le backend utilise Cloudflare Workers, D1 et R2.
 
 ## Démarrer
 
@@ -20,7 +20,7 @@ pnpm check
 pnpm build
 ```
 
-Le build de production se trouve dans `dist/`. Aucune publication automatique n’est configurée.
+Le build produit le frontend dans `dist/client/` et le Worker dans `dist/server/`. `pnpm dev` et `pnpm preview` servent uniquement le frontend : les API nécessitent le Worker et ses bindings D1/R2. Aucune publication automatique n’est configurée.
 
 ## Le rendu
 
@@ -31,7 +31,7 @@ Le build de production se trouve dans `dist/`. Aucune publication automatique n�
 - Galerie disponible directement et utilisée automatiquement si WebGL est indisponible.
 - Sélection des pagnes avec quantités, conservée sur l’appareil et partageable sous forme de texte.
 
-Les photos sont présentées dans un espace 3D ; elles ne sont pas des modèles volumétriques du tissu. Les noms des pagnes décrivent les motifs visibles sur leurs photos. Chaque pagne coûte 12 000 CFA (XOF), selon le prix fourni. Aucun matériau, longueur ou stock n’est inventé.
+Les photos sont présentées dans un espace 3D ; elles ne sont pas des modèles volumétriques du tissu. Les noms des pagnes décrivent les motifs visibles sur leurs photos. Chaque pagne coûte 12 000 CFA (XOF), selon le prix fourni. Les stocks de démonstration doivent être remplacés par les quantités réelles avant ouverture publique ; la composition et les dimensions restent à renseigner selon les produits.
 
 ## Ajouter de nouveaux pagnes
 
@@ -84,7 +84,7 @@ Les commandes et les encaissements saisis manuellement sont désormais enregistr
 
 ## Vérification de cette livraison
 
-Les contrôles TypeScript, les tests du catalogue/recherche/sélection et le build de production ont été exécutés. Les tests couvrent également une collection de douze pagnes à cinq vues. Les dépendances utilisées pour les contrôles étaient déjà installées dans l’environnement aux versions du projet ; une installation neuve n’a pas pu être vérifiée dans cet environnement.
+Les contrôles TypeScript, les tests du catalogue/recherche/sélection et le build de production ont été exécutés. Les tests couvrent également une collection de douze pagnes à cinq vues. Lors de la revue du dépôt, les 54 tests, le contrôle TypeScript et les étapes du build ont réussi sous Node 24.22.1. L’installation pnpm a téléchargé les dépendances mais a signalé le script de build esbuild non approuvé ; les vérifications ont donc été exécutées directement avec Node. Une installation pnpm sans erreur reste à valider dans l’environnement de déploiement.
 
 La navigation WebGL et le comportement tactile n’ont pas été vérifiés visuellement dans un navigateur ici. L’aperçu autonome permet cette revue sur les appareils qui serviront à la boutique.
 
@@ -133,9 +133,9 @@ clients ne sont pas enregistrées dans le catalogue ni dans son cache local.
 
 L’espace **Gérer la boutique** (en pied de page) ou `/?gestion=1` permet d’ajouter et modifier les pagnes : prix en CFA hors livraison, disponibilité, description, dimensions, contenu de l’achat, couleurs, occasions et de 1 à 8 photos. La première photo est toujours l’image principale. Un pagne peut être masqué puis réaffiché sans suppression de ses données.
 
-La gestion vérifie côté serveur l’identité ChatGPT transmise par Sites et la variable secrète `CATALOGUE_ADMIN_EMAIL`. Elle reste interdite aux autres comptes et aux visiteurs anonymes, y compris après une future publication publique. Le compte propriétaire actuel est configuré. Le propriétaire gère seul la boutique ; configurer son compte autorisé et l’accès au site lors de la mise en production ; ne jamais mettre un mot de passe ou cette configuration dans le code client. Sur un autre hébergement, remplacer cette vérification par une authentification serveur fiable : les en-têtes d’identité doivent provenir d’un proxy de confiance.
+Sur Sites, la gestion utilise l’identité ChatGPT transmise par son proxy de confiance et `CATALOGUE_ADMIN_EMAIL`. Sur le déploiement indépendant, définir impérativement `AUTH_MODE=cloudflare` : le serveur vérifie le JWT Cloudflare Access, son émetteur, son audience, son expiration et l’e-mail autorisé. Protéger `/api/admin/*` avec Access, y compris `/api/admin/login`. Ne jamais utiliser le mode Sites sur un hébergement public indépendant. Les paramètres à compléter sont décrits dans le guide Cloudflare ; aucun compte propriétaire n’est configuré par le dépôt seul.
 
-Les changements sont stockés durablement dans R2 sous `catalogue/current.json`, séparément des PDF de commande. Chaque sauvegarde conserve une version précédente sous `catalogue/history/`. La révision et l’ETag empêchent d’écraser une modification concurrente : si un conflit apparaît, recharger la gestion avant de réessayer. Les fichiers retirés d’une fiche sont conservés pour les versions précédentes. Les uploads abandonnés ne sont pas automatiquement purgés dans cette version.
+Avec le binding DB, le catalogue courant est stocké dans D1 (`catalogue_documents`). À la première lecture, le catalogue R2 existant (`catalogue/current.json`) est repris si D1 est vide ; sinon le catalogue initial sert de source. Sans DB, le catalogue utilise R2. Chaque enregistrement conserve la version précédente sous `catalogue/history/` dans R2. La révision et la mise à jour conditionnelle D1 (ou l’ETag R2 sans DB) empêchent d’écraser une modification concurrente : si un conflit apparaît, recharger la gestion avant de réessayer. Les fichiers retirés d’une fiche sont conservés pour les versions précédentes. Les uploads abandonnés ne sont pas automatiquement purgés dans cette version.
 
 Chaque upload JPEG/PNG (6 Mo, 24 mégapixels maximum) conserve son original et produit automatiquement trois WebP : miniature 200 px / 100 Ko maximum, boutique 3D 650 px / 300 Ko, galerie 1000 px / 600 Ko. Le traitement est séquentiel sur l’appareil et l’envoi est validé côté serveur. Les variantes portent une empreinte de contenu et bénéficient du cache d’images existant ; le zoom et les PDF utilisent l’original. Les nouvelles photos rejoignent tous les parcours existants. La galerie comprend toute la collection ; la 3D propose des salons de 12 articles. La limite actuelle est de 200 pagnes.
 
@@ -167,7 +167,7 @@ Le bouton Pause interrompt l’accueil ; toute action tactile, frappe, recherche
 
 ## Gestion des commandes (D1)
 
-Le catalogue courant, les commandes et le stock résident désormais dans D1 lorsque le binding DB est disponible. Le catalogue existant en R2 est repris une seule fois, sans écraser ses modifications. R2 conserve les photos originales, variantes et bons PDF. La migration structurelle est dans `drizzle/0000_orders.sql` ; elle ne contient aucune commande ni donnée client.
+Le catalogue courant, les commandes et le stock résident désormais dans D1 lorsque le binding DB est disponible. Le catalogue existant en R2 est repris une seule fois, sans écraser ses modifications. R2 conserve les photos originales, variantes et bons PDF. Appliquer les trois migrations de `drizzle/` dans l’ordre : `0000_orders.sql` (tables et stock), `0001_security.sql` (limitation des requêtes), `0002_order_language.sql` (langue des commandes). Elles ne contiennent aucune commande ni donnée client.
 
 L’espace `?gestion=1` propose une vue d’ensemble, commandes avec recherche/statuts/historique, stock et collection. Une demande client est enregistrée avant son PDF et reçoit un suivi privé. La confirmation exige l’accord du client, les frais, la date convenue et le prix personnalisé éventuel ; elle réserve les unités disponibles par une transaction SQL. Une annulation avant remise restitue les unités. Livraison et encaissement restent distincts ; Orange Money ou Wave sont saisis manuellement à la remise. Les requêtes répétées utilisent une clé d’idempotence.
 

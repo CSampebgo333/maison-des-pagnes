@@ -20,7 +20,7 @@
   --serif: 'Lora', Georgia, serif;
 }
 * { box-sizing: border-box; }
-body { margin: 0; }
+body { margin: 0; min-height: 100vh; background: #ffffff; }
 button, input, select, textarea { font: inherit; }
 button, a, input, select, textarea { -webkit-tap-highlight-color: transparent; }
 button, a { touch-action: manipulation; }
@@ -176,7 +176,7 @@ em { font-weight: 400; }
 .values-strip span { position: absolute; left: 0; top: 2px; font-size: 11px; color: #ad9193; }
 .values-strip strong { font-size: 14px; font-weight: 500; color: #785866; }
 .values-strip p { margin-top: 8px; font-size: 13px; color: #75616d; line-height: 1.6; }
-.site-footer { display: flex; align-items: center; justify-content: space-between; padding: 30px 5%; gap: 30px; background: #f7f5f7; border-top: 1px solid #e3d8d9; }
+.site-footer { display: flex; align-items: center; justify-content: space-between; padding: 30px 5%; gap: 30px; background: #ffffff; border-top: 1px solid #e3d8d9; }
 .brand-small { font-size: 19px; }
 .brand-small svg { width: 34px; height: 34px; }
 .brand-small small { font-size: 11px; }
@@ -525,7 +525,7 @@ button, input, select, textarea { line-height: 1.45; }
 .image-load-status button { pointer-events: auto; color: inherit; text-decoration: underline; border: 0; background: transparent; }
 @media(prefers-reduced-motion:reduce) { .progressive-full { transition: none !important; } .image-load-status i { animation: none; } }
 
-.custom-request-banner { display: flex; align-items: center; justify-content: space-between; gap: 28px; margin: 24px 4% 42px; padding: 28px 32px; border: 1px solid #dbc9d2; background: #f2e8ed; border-radius: 10px; }
+.custom-request-banner { display: flex; align-items: center; justify-content: space-between; gap: 28px; margin: 24px 4% 42px; padding: 28px 32px; border: 1px solid #dbc9d2; background: #ffffff; border-radius: 10px; }
 .custom-request-banner h2 { font: 30px/1.25 var(--serif); margin: 8px 0 12px; color: var(--plum); }
 .custom-request-banner p:not(.eyebrow) { max-width: 650px; font-size: 16px; line-height: 1.7; }
 .custom-request-banner > button { flex-shrink: 0; }
@@ -559,7 +559,7 @@ button, input, select, textarea { line-height: 1.45; }
 .stock-label { display:inline-flex;margin-top:9px;font-size:13px;border-radius:20px;background:#eee6ed;color:#674956;padding:5px 10px; }
 .stock-available { background:#e5efe6;color:#35634b; }.stock-unavailable { background:#eee8e2;color:#665956; }.stock-on-order { background:#f3ead5;color:#785712; }
 .detail-delivery { font-size:14px;color:#75616d;line-height:1.65;margin:14px 0; }
-.delivery-info { margin:50px 8%;padding:30px;border:1px solid #e2d7c9;border-radius:10px;background:#faf9fb; }
+.delivery-info { margin:50px 8%;padding:30px;border:1px solid #e2d7c9;border-radius:10px;background:#ffffff; }
 .delivery-info h2 { font:34px/1.25 var(--serif);margin:10px 0 24px;color:var(--plum); }
 .delivery-info > div { display:grid;grid-template-columns:repeat(3,1fr);gap:28px; }
 .delivery-info p { font-size:15px;line-height:1.75; }.delivery-info strong { display:block;margin-bottom:9px;color:#674956; }
@@ -637,3 +637,12 @@ html, body, #root { background: #ffffff; }
 .utility-language{display:flex;justify-content:flex-end;padding:10px 4%;background:#fff;border-top:4px solid var(--plum)}
 .bilingual-editor{padding:20px 0;border-top:1px solid var(--line);display:grid;grid-template-columns:1fr 1fr;gap:16px}.bilingual-editor h2,.bilingual-editor>p{grid-column:1/-1}.bilingual-editor h2{font:24px var(--serif)}.bilingual-editor>p{line-height:1.7;font-size:14px}.primary-button{white-space:normal;text-align:center}.management-tabs button{white-space:normal}
 @media(max-width:760px){.bilingual-editor{grid-template-columns:1fr}.header-actions{flex-wrap:wrap;justify-content:flex-end}.header-actions .language-switcher{margin-left:4px}.language-switcher select{font-size:16px;max-width:116px}.header-actions{row-gap:10px}.utility-language{padding:10px 5%}.intro-card h1{font-size:clamp(36px,9vw,54px)}}
+
+/* White page surfaces; the warm 3D room and small controls retain their accents. */
+#root { min-height: 100vh; }
+.install-app-button { display:inline-flex;align-items:center;justify-content:center;gap:7px;min-width:44px;min-height:44px;padding:8px 11px;border:1px solid var(--line);border-radius:6px;color:var(--plum);flex-shrink:0; }
+.install-app-button:hover { background:#f5f3f5; }
+.install-dialog { position:fixed;z-index:50;left:50%;top:50%;transform:translate(-50%,-50%);width:min(460px,calc(100% - 32px));max-height:calc(100dvh - 32px);overflow:auto;padding:32px;background:#fff;border-radius:12px;box-shadow:0 20px 90px #1f10283d; }
+.install-dialog h2 { font:28px var(--serif);color:var(--plum);padding-right:22px;margin-bottom:18px; }
+.install-dialog p { margin:12px 0;line-height:1.7; }
+@media(max-width:1100px) { .install-app-button span { display:none; } }

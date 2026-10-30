@@ -691,5 +691,13 @@
   "Ajouter {0} à mes favoris": "Add {0} to my favourites",
   "Date": "Date",
   "Mode": "Method",
-  "Total CFA": "Total CFA"
+  "Total CFA": "Total CFA",
+  "Installer l’application": "Install app",
+  "Installer Maison du Faso Dan Fani": "Install Maison du Faso Dan Fani",
+  "Fermer les instructions d’installation": "Close installation instructions",
+  "Gardez la boutique à portée de main, dans une fenêtre dédiée ou sur votre écran d’accueil.": "Keep the shop close at hand, in its own window or on your home screen.",
+  "Sur iPhone ou iPad, ouvrez le menu Partager, puis choisissez « Sur l’écran d’accueil ».": "On iPhone or iPad, open the Share menu, then choose “Add to Home Screen”.",
+  "Sur ordinateur ou Android, cherchez « Installer l’application » ou « Ajouter à l’écran d’accueil » dans le menu de votre navigateur.": "On desktop or Android, look for “Install app” or “Add to Home Screen” in your browser menu.",
+  "Une connexion Internet reste nécessaire pour consulter le catalogue actuel, envoyer une commande ou gérer la boutique.": "An internet connection is still required to view the current catalogue, submit an order or manage the shop.",
+  "L’installation dépend de votre navigateur. Si l’application est déjà installée, ouvrez-la depuis votre appareil.": "Installation depends on your browser. If the app is already installed, open it from your device."
 }

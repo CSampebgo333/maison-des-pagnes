@@ -438,9 +438,10 @@ em { font-weight: 400; }
 .photo-thumbnails > .icon-button { flex-shrink: 0; transform: rotate(90deg); }
 .product-viewer .thumbnail-scroll { flex: 1; min-height: 0; width: 100%; display: flex; flex-direction: column; justify-content: center; gap: 7px; overflow: hidden; padding: 3px; }
 .product-viewer .photo-thumbnail { width: 100%; height: auto; min-height: 0; max-height: 86px; flex: 1; }
-@media (max-width: 700px) {
+/* On mobile, devote two thirds of the visible viewport to photos and controls. */
+@media (max-width: 760px) {
   .product-dialog { height: auto; overflow-y: auto; }
-  .product-viewer { position: sticky; top: 0; z-index: 4; height: min(430px, 62dvh); grid-template-columns: 50px minmax(0, 1fr); gap: 4px 8px; }
+  .product-viewer { position: sticky; top: 0; z-index: 4; height: 66.6667dvh; grid-template-columns: 50px minmax(0, 1fr); gap: 4px 8px; }
   .product-viewer .thumbnail-scroll { gap: 4px; }
   .product-viewer .photo-thumbnail { max-height: 64px; }
   .product-viewer .zoom-toolbar { padding: 4px 0 0; }

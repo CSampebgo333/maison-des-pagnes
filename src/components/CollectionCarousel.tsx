@@ -3,7 +3,7 @@ import { ArrowLeft, ArrowRight } from 'lucide-react';
 import { t } from '../lib/i18n';
 import { collectionPosition, collectionPageTarget, collectionDrag, type CollectionGeometry } from '../lib/collection-scroll';
 
-export default function CollectionCarousel({ children, resetKey }: { children: ReactNode; resetKey: string }) {
+export default function CollectionCarousel({ children, resetKey, label }: { children: ReactNode; resetKey: string; label?: string }) {
   const items = Children.toArray(children), count = items.length;
   const track = useRef<HTMLDivElement>(null);
   const id = useId();
@@ -53,12 +53,12 @@ export default function CollectionCarousel({ children, resetKey }: { children: R
     return () => { row.removeEventListener('scroll', refresh); observer?.disconnect(); window.removeEventListener('resize', refresh); clearTimeout(unblock.current); };
   }, [count, resetKey]);
 
-  return <div className="collection-carousel" role="region" aria-roledescription={t('Carrousel')} aria-label={t('Parcourir la collection')}>
+  return <div className="collection-carousel" role="region" aria-roledescription={t('Carrousel')} aria-label={label ?? t('Parcourir la collection')}>
     <div className="collection-carousel-heading"><p id={id + '-hint'}>{t('Faites glisser pour découvrir les autres pagnes.')}</p><div className="collection-arrows">
       <button onClick={() => move(-1)} disabled={!position.previous} aria-label={t('Pagnes précédents')} aria-controls={id}><ArrowLeft size={20}/></button>
       <button onClick={() => move(1)} disabled={!position.next} aria-label={t('Pagnes suivants')} aria-controls={id}><ArrowRight size={20}/></button>
     </div></div>
-    <div id={id} ref={track} className={`product-grid collection-track${dragging ? ' is-dragging' : ''}`} role="list" tabIndex={0} aria-label={t('Collection de pagnes')} aria-describedby={id + '-hint'}
+    <div id={id} ref={track} className={`product-grid collection-track${dragging ? ' is-dragging' : ''}`} role="list" tabIndex={0} aria-label={label ?? t('Collection de pagnes')} aria-describedby={id + '-hint'}
       onKeyDown={event => {
         if (event.target !== event.currentTarget) return;
         if (['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) {

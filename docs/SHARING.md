@@ -4,13 +4,11 @@ L’accueil photographique remplace le salon 3D. Il utilise la vraie photo `publ
 
 ## Image de partage
 
-`public/social/maison-faso-cover-v1.jpg` est une image 1200 × 630 (environ 126 Ko), référencée dans les métadonnées Open Graph et Twitter des pages françaises et anglaises. Le build ajoute l’origine absolue depuis `PUBLIC_SITE_URL`. La page et l’image doivent être accessibles publiquement aux plateformes de partage.
+`public/social/rayures-lavande-v2.jpg` reprend exactement la cinquième photo du groupe « Rayures lavande » (`public/pagnes/pagne1-5.webp`). L’image complète conserve ses dimensions 1254 × 1254, sans recadrage, texte ajouté ni génération d’image. Seul le format est exporté en JPEG léger pour les messageries.
 
-Après déploiement, partager un nouveau message avec `https://fasodanfani.shop/`. WhatsApp et les autres plateformes décident du rendu et peuvent conserver un ancien aperçu en cache. Le fonctionnement ne nécessite pas WhatsApp Business ni l’activation des notifications de commande.
+Les métadonnées Open Graph et Twitter des pages françaises et anglaises référencent cette photo, avec ses dimensions réelles et un texte alternatif localisé. Le build ajoute l’origine absolue depuis `PUBLIC_SITE_URL`. La page et l’image doivent être accessibles publiquement aux plateformes de partage.
 
-L’image a été créée avec l’outil intégré de génération d’images à partir de la photo réelle du pagne orange, puis exportée en JPEG pour limiter son poids. Instruction utilisée :
-
-> Create a polished wide social-sharing cover image for Maison du Faso Dan Fani, a family textile shop in Burkina Faso. Landscape 1200:630 aspect ratio. Use the attached orange-and-white finely striped woven pagne as the exact product reference: retain its colour, weave and folded arrangement, no new motifs, no invented products. Place it on the right half of a refined plum and warm ivory editorial composition; left half strong beautifully legible Garamond serif lettering. Exact text: 'Maison du Faso' on one line, 'Dan Fani' on next line; smaller subtitle 'Des pagnes. Une histoire.'; small footer 'fasodanfani.shop'. Keep all letters comfortably inside safe margins, no other text, no badges or unverified claims, no people, no watermark. Elegant restrained family-brand introduction, rich fabric texture and good contrast at WhatsApp preview size.
+Après déploiement, partager un nouveau message avec `https://fasodanfani.shop/`. WhatsApp et les autres plateformes décident du rendu et peuvent conserver un ancien aperçu en cache. Le nouveau nom de fichier distingue cette photo de l’ancien visuel orange. Le fonctionnement ne nécessite pas WhatsApp Business ni l’activation des notifications de commande.
 
 ## Garamond
 

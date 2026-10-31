@@ -6,12 +6,12 @@ export function seoFiles(publicUrl,language='fr'){
  const origin=url?.origin;
  const schema={'@context':'https://schema.org','@type':'Organization',name:shop.name,description:'Boutique familiale de pagnes Faso Dan Fani au Burkina Faso.',telephone:'+22667196556',areaServed:[{'@type':'City',name:'Bobo-Dioulasso'},{'@type':'City',name:'Ouagadougou'}],contactPoint:[{'@type':'ContactPoint',telephone:'+22677540792',contactType:'customer service',availableLanguage:['fr','en']}],...(origin?{url:origin+'/'}:{})};
  const escape=s=>s.replaceAll('&','&amp;').replaceAll('"','&quot;').replaceAll('<','&lt;');
- const shareAlt=language==='en'?'Maison du Faso Dan Fani — Beautiful fabrics. A shared story.':'Maison du Faso Dan Fani — Des pagnes. Une histoire.';
- const head=`<script type="application/ld+json">${JSON.stringify(schema).replaceAll('<','\\u003c')}</script>`+(origin?`\n<link rel="canonical" href="${escape(origin)}/${language==='en'?'?lang=en':''}" />\n<link rel="alternate" hreflang="fr" href="${escape(origin)}/" />\n<link rel="alternate" hreflang="en" href="${escape(origin)}/?lang=en" />\n<link rel="alternate" hreflang="x-default" href="${escape(origin)}/" />\n<meta property="og:url" content="${escape(origin)}/${language==='en'?'?lang=en':''}" />\n<meta property="og:image" content="${escape(origin)}/social/maison-faso-cover-v1.jpg" />\n<meta property="og:image:alt" content="${shareAlt}" />
-<meta property="og:image:width" content="1200" />
-<meta property="og:image:height" content="630" />
+ const shareAlt=language==='en'?'Lavender stripes — folded purple and white Faso Dan Fani pagne, fifth photo':'Rayures lavande — pagne Faso Dan Fani violet et blanc plié, cinquième photo';
+ const head=`<script type="application/ld+json">${JSON.stringify(schema).replaceAll('<','\\u003c')}</script>`+(origin?`\n<link rel="canonical" href="${escape(origin)}/${language==='en'?'?lang=en':''}" />\n<link rel="alternate" hreflang="fr" href="${escape(origin)}/" />\n<link rel="alternate" hreflang="en" href="${escape(origin)}/?lang=en" />\n<link rel="alternate" hreflang="x-default" href="${escape(origin)}/" />\n<meta property="og:url" content="${escape(origin)}/${language==='en'?'?lang=en':''}" />\n<meta property="og:image" content="${escape(origin)}/social/rayures-lavande-v2.jpg" />\n<meta property="og:image:alt" content="${shareAlt}" />
+<meta property="og:image:width" content="1254" />
+<meta property="og:image:height" content="1254" />
 <meta property="og:image:type" content="image/jpeg" />
-<meta name="twitter:image" content="${escape(origin)}/social/maison-faso-cover-v1.jpg" />
+<meta name="twitter:image" content="${escape(origin)}/social/rayures-lavande-v2.jpg" />
 <meta name="twitter:image:alt" content="${shareAlt}" />`:'');
  const robots=origin?`User-agent: *\nAllow: /\nDisallow: /api/\nDisallow: /order-pdfs/\nDisallow: /?gestion=\nSitemap: ${origin}/sitemap.xml\n`:'User-agent: *\nDisallow: /\n';
  const sitemap=`<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${origin?`<url><loc>${escape(origin)}/</loc></url><url><loc>${escape(origin)}/?lang=en</loc></url>`:''}</urlset>`;

@@ -1,0 +1,21 @@
+/* The main navigation overlays the opening image, hides on the way down and
+   reappears on white when scrolling up, as on the reference storefront. */
+.storefront-header-container { position:sticky; top:0; height:0; z-index:30; }
+.storefront .storefront-header-container .site-header {
+ position:absolute; inset:0 0 auto; width:100%; margin:0;
+ background:linear-gradient(180deg,#fffffff2,#ffffffbf); border-color:#55374720;
+ transition:transform 240ms ease,background-color 200ms ease,box-shadow 200ms ease;
+}
+.storefront .storefront-header-container.is-solid .site-header,
+.storefront .storefront-header-container .site-header:focus-within { background:#fff; box-shadow:0 3px 15px #342b2e14; }
+@media(hover:hover) { .storefront .storefront-header-container .site-header:hover { background:#fffffff5; } }
+.storefront .storefront-header-container.is-hidden .site-header { transform:translateY(-110%); }
+.storefront .storefront-header-container:focus-within .site-header { transform:none; }
+/* The pale hero background supports the shop's dark lettering at the top. */
+.storefront .hero-copy { padding-top:calc(var(--storefront-header-height,110px) + 52px); }
+.storefront #collection,.storefront #contact { scroll-margin-top:calc(var(--storefront-header-height,110px) + 20px); }
+@media(max-width:760px) {
+ .storefront .hero-copy { padding-top:max(230px,calc(var(--storefront-header-height,200px) + 140px)); }
+ .storefront .storefront-header-container .header-search { background:#ffffffd9; }
+}
+@media(prefers-reduced-motion:reduce) { .storefront .storefront-header-container .site-header { transition:none; } }

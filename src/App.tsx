@@ -10,6 +10,7 @@ import type { Product, BagItem } from './lib/types';
 import ProductViewer from './components/ProductViewer';
 import HeroCarousel from './components/HeroCarousel';
 import CollectionCarousel from './components/CollectionCarousel';
+import StorefrontHeader from './components/StorefrontHeader';
 import OrderForm from './components/OrderForm';
 import { asset } from './lib/assets';
 import { imageVariant, warmImage, canPrefetch } from './lib/images';
@@ -96,15 +97,14 @@ export default function App() {
   if(location.hash.startsWith('#suivi/'))return <><div className="utility-language"><LanguageSwitcher/></div><Suspense fallback={<p>{t("Chargement du suivi…")}</p>}><OrderTracking/></Suspense></>;
   if(adminOpen) return <><div className="utility-language"><LanguageSwitcher/></div><Suspense fallback={<div className="management-loading">{t("Ouverture de la gestion…")}</div>}><CatalogueAdmin onSaved={applyCatalogue} onClose={()=>{setAdminOpen(false);history.replaceState(null,'',location.pathname);void fetchCatalogue().then(applyCatalogue).catch(()=>{});}} /></Suspense></>;
   return <div className="storefront">
-    <div className="announcement"><span>{t("Des motifs à découvrir. Des détails à aimer.")}</span><span className="announcement-end">{t("Une boutique familiale ")}<span aria-hidden="true">✦</span></span></div>
-    <header className="site-header">
+    <StorefrontHeader>
       <a className="brand-link" href="#" aria-label={t("{0}, accueil",shop.name)} onClick={(event) => { event.preventDefault(); clearFilters(); window.scrollTo({ top: 0, behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' }); }}><Brand /></a>
       <form className="header-search" role="search" onSubmit={(event) => { event.preventDefault(); showGallery(); }}>
         <Search size={18} aria-hidden="true" /><input ref={search} type="search" placeholder={t("Un motif, une couleur…")} aria-label={t("Rechercher un pagne")} value={query} onChange={(event) => setQuery(event.target.value)} />
         {query && <button type="button" aria-label={t("Effacer la recherche")} onClick={() => { setQuery(''); search.current?.focus(); }}><X size={16} /></button>}
       </form>
       <nav className="header-actions" aria-label={t("Navigation principale")}><a className="text-button contact-nav" href="#contact">{t("Contact")}</a><button className="text-button collection-link" onClick={showGallery}>{t("La collection")}</button><button className="favorites-nav" aria-pressed={onlyFavorites} aria-label={t("Mes favoris, {0} pagnes",savedIds.filter(id=>products.some(p=>p.id===id)).length)} onClick={()=>{setOnlyFavorites(v=>!v);showGallery();}}><Heart size={19} fill={onlyFavorites?'currentColor':'none'}/><span>{t("Favoris")}</span><b>{savedIds.filter(id=>products.some(p=>p.id===id)).length}</b></button><button className="bag-button" onClick={() => { setBagOpen(true); }} aria-label={t("Ma sélection, {0} pagne{1}",bagCount,bagCount !== 1 ? 's' : '')}><ShoppingBag size={19} /><span>{t("Ma sélection")}</span><b>{bagCount}</b></button><LanguageSwitcher/></nav>
-    </header>
+    </StorefrontHeader>
 
     <main>
       <HeroCarousel products={products}/>

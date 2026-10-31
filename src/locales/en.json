@@ -731,5 +731,12 @@
   "Animation automatique désactivée : mouvement réduit": "Automatic animation disabled: reduced motion",
   "Reprendre le défilement des photos": "Resume the slideshow",
   "Mettre les photos en pause": "Pause the slideshow",
-  "Vue rapide de {0}": "Quick view of {0}"
+  "Vue rapide de {0}": "Quick view of {0}",
+  "Parcourir la collection": "Browse the collection",
+  "Faites glisser pour découvrir les autres pagnes.": "Swipe to discover the other fabrics.",
+  "Pagnes précédents": "Previous fabrics",
+  "Pagnes suivants": "Next fabrics",
+  "Pagnes {0} à {1} sur {2}": "Fabrics {0}–{1} of {2}",
+  "Pages de la collection": "Collection pages",
+  "Afficher la page {0} de la collection": "Show collection page {0}"
 }

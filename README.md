@@ -172,7 +172,7 @@ Français / English est disponible dans la boutique, les commandes, le suivi et 
 
 ## Accueil et partage des liens
 
-L’accueil alterne quatre photos du catalogue courant toutes les huit secondes, par fondu de 400 ms et zoom arrière lent de dix secondes. Les flèches, points et gestes tactiles permettent de changer de photo. Le bouton Pause suspend le défilement et le zoom ; le survol, le focus, la sortie de l’écran et les onglets masqués suspendent le défilement. La réduction des animations désactive le défilement automatique et le zoom. Le bouton « Découvrir la collection » mène directement aux produits. Le survol de la zone photo agrandit doucement l’image de 5 % sur deux secondes, sans changer le produit. Une icône de vue rapide ouvre sa fiche ; elle reste accessible au clavier et sur écran tactile. La transition s’applique aussi à la photo pleine résolution après son chargement.
+L’accueil alterne les cinq pagnes sélectionnés (lavande, bleu profond, jaune et bleu, vert et violet, bleu et gris), à partir de leur première photo dans le catalogue courant, toutes les huit secondes, par fondu de 400 ms et zoom arrière lent de dix secondes. Les flèches, points et gestes tactiles permettent de changer de photo. Le bouton Pause suspend le défilement et le zoom ; le survol, le focus, les clics et le défilement de la page laissent l’accueil tourner. Seuls le bouton Pause, la réduction des animations et un onglet masqué peuvent suspendre le défilement. La réduction des animations désactive le défilement automatique et le zoom. Le bouton « Découvrir la collection » mène directement aux produits. Le survol de la zone photo agrandit doucement l’image de 5 % sur deux secondes, sans changer le produit. Une icône de vue rapide ouvre sa fiche ; elle reste accessible au clavier et sur écran tactile. La transition s’applique aussi à la photo pleine résolution après son chargement.
 
 EB Garamond normal et italique est servi localement (licence SIL OFL dans `public/eb-garamond-OFL.txt`). Les noms de variantes internes `scene` restent conservés pour la compatibilité des photos existantes ; aucun moteur 3D n’est chargé.
 
@@ -181,3 +181,7 @@ Le build public (`PUBLIC_SITE_URL`) inclut les balises Open Graph et Twitter poi
 ## Navigation de la collection
 
 La collection utilise une rangée horizontale avec alignement automatique sur les photos. Les flèches avancent d’un article ; les points accèdent aux groupes suivants. Le compteur suit la position et les boutons sont désactivés aux extrémités. Un changement de recherche, de tri ou de filtres ramène au début des résultats. Le redimensionnement recalcule les groupes. La préférence de réduction du mouvement désactive le défilement animé.
+
+## Barre de navigation
+
+Le bandeau violet d’annonce est retiré. La navigation principale se superpose à l’accueil, devient blanche après le début du défilement, s’efface en descendant et réapparaît en remontant. Elle reste visible au clavier lorsqu’un de ses contrôles a le focus. Les liens vers la collection et le contact conservent une marge pour ne pas cacher les titres derrière la navigation.

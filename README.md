@@ -171,7 +171,7 @@ Français / English est disponible dans la boutique, les commandes, le suivi et 
 
 ## Accueil et partage des liens
 
-L’accueil utilise une photo du catalogue initial (pagne orange, vue 2), sans animation automatique. Le bouton « Découvrir la collection » mène directement aux produits. Le survol agrandit doucement la photo de 5 %, sans changer le produit ; le lien de découverte reste accessible au clavier et sur écran tactile.
+L’accueil alterne quatre photos du catalogue courant toutes les huit secondes, par fondu de 400 ms et zoom arrière lent de dix secondes. Les flèches, points et gestes tactiles permettent de changer de photo. Le bouton Pause suspend le défilement et le zoom ; le survol, le focus, la sortie de l’écran et les onglets masqués suspendent le défilement. La réduction des animations désactive le défilement automatique et le zoom. Le bouton « Découvrir la collection » mène directement aux produits. Le survol de la zone photo agrandit doucement l’image de 5 % sur deux secondes, sans changer le produit. Une icône de vue rapide ouvre sa fiche ; elle reste accessible au clavier et sur écran tactile. La transition s’applique aussi à la photo pleine résolution après son chargement.
 
 EB Garamond normal et italique est servi localement (licence SIL OFL dans `public/eb-garamond-OFL.txt`). Les noms de variantes internes `scene` restent conservés pour la compatibilité des photos existantes ; aucun moteur 3D n’est chargé.
 

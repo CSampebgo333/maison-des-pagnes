@@ -10,4 +10,4 @@ L’installation est liée à l’origine. Tester de préférence sur le domaine
 
 Vérification : tester Chrome/Edge en navigation normale sur HTTPS, ouvrir le manifeste et ses icônes, installer, lancer depuis le raccourci, vérifier l’accueil en mode autonome. Sur iOS, vérifier le parcours Partager → Sur l’écran d’accueil. Les tests automatiques vérifient le manifeste, les URL de lancement et les dimensions des icônes. Ils ne remplacent pas l’installation réelle sur chaque appareil.
 
-Le fond de page, le pied de page, la section de demande personnalisée et la section de livraison sont blancs. Le salon 3D conserve ses murs crème et son bois clair pour mettre en valeur les tissus ; les petits contrôles et badges gardent leurs accents de couleur.
+Le fond de page, le pied de page, la section de demande personnalisée et la section de livraison sont blancs. L’accueil photographique présente un pagne orange avec un accès direct à la collection ; les petits contrôles et badges gardent leurs accents de couleur. La police EB Garamond est servie localement.

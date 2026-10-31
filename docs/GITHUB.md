@@ -17,7 +17,7 @@ Décompresser le projet, installer les dépendances et exécuter les contrôles 
 ```sh
 git init -b main
 git add .
-git commit -m "Crée la boutique immersive de pagnes"
+git commit -m "Crée la boutique de pagnes"
 ```
 
 Avec GitHub CLI, après `gh auth login` :

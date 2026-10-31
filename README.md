@@ -26,6 +26,7 @@ Le build produit le frontend dans `dist/client/` et le Worker dans `dist/server/
 
 - Accueil photographique avec accès direct à la collection, sans navigation en 3D.
 - Typographie EB Garamond auto-hébergée, en français et en anglais.
+- Collection à défilement horizontal : trois pagnes visibles, quatre à partir de 1600 px, deux sur téléphone (un sur les écrans de moins de 351 px). Glissement tactile, glissement à la souris, flèches, points et navigation au clavier, sans défilement automatique.
 - Recherche, filtres couleur/occasion et favoris ; léger zoom de 5 % au survol des photos (désactivé avec la réduction des animations).
 - Fiches avec plusieurs photos, zoom de 100 à 400 %, déplacement de la photo et pincement tactile. Sur téléphone, la galerie occupe deux tiers de la hauteur visible.
 - Aperçu social avec image de marque dédiée pour WhatsApp et les réseaux sociaux.
@@ -176,3 +177,7 @@ L’accueil alterne quatre photos du catalogue courant toutes les huit secondes,
 EB Garamond normal et italique est servi localement (licence SIL OFL dans `public/eb-garamond-OFL.txt`). Les noms de variantes internes `scene` restent conservés pour la compatibilité des photos existantes ; aucun moteur 3D n’est chargé.
 
 Le build public (`PUBLIC_SITE_URL`) inclut les balises Open Graph et Twitter pointant vers `public/social/rayures-lavande-v2.jpg`. Cette image doit rester accessible sans authentification sur le domaine public. Les plateformes peuvent conserver un ancien aperçu en cache après un déploiement.
+
+## Navigation de la collection
+
+La collection utilise une rangée horizontale avec alignement automatique sur les photos. Les flèches avancent d’un article ; les points accèdent aux groupes suivants. Le compteur suit la position et les boutons sont désactivés aux extrémités. Un changement de recherche, de tri ou de filtres ramène au début des résultats. Le redimensionnement recalcule les groupes. La préférence de réduction du mouvement désactive le défilement animé.

@@ -1,0 +1,33 @@
+/* Reference motion: 8-second slides, 400 ms fade, 10-second zoom-out. */
+.storefront-hero { touch-action:pan-y; }
+.hero-slide { position:absolute; inset:0; opacity:0; transition:opacity 400ms ease; pointer-events:none; overflow:hidden; }
+.hero-slide.is-current { opacity:1; }
+.hero-slide.is-current img { animation:hero-zoom-out 10s ease both; }
+.storefront-hero.is-paused .hero-slide.is-current img { animation-play-state:paused; }
+@keyframes hero-zoom-out { from { transform:scale(1.1); } to { transform:scale(1); } }
+.hero-carousel-controls { position:absolute; right:4%; bottom:20px; display:flex; align-items:center; gap:4px; padding:3px 6px; color:#442c39; background:#fffffff2; border:1px solid #e7e3e6; border-radius:30px; }
+.hero-carousel-controls button { display:grid; place-items:center; width:40px; height:40px; padding:0; border-radius:50%; }
+.hero-carousel-controls button:hover { background:#f0e9ed; }
+.hero-pagination { display:flex; }
+.hero-pagination button { width:30px; }
+.hero-pagination span { display:block; width:7px; height:7px; border-radius:50%; background:#b7a5ae; }
+.hero-pagination button[aria-current="true"] span { background:#553747; transform:scale(1.4); }
+/* This rule includes the full-resolution layer: its loading fade used to
+   overwrite the transform transition, producing an abrupt hover jump. */
+@media(hover:hover) and (pointer:fine) {
+ .storefront .product-image > .product-cover { transition:opacity .4s ease-in-out, transform 2s; }
+ .storefront .product-image-wrap:hover .product-cover { transform:scale3d(1.05,1.05,1.05); }
+}
+.storefront .product-quick-view { position:absolute; right:12px; bottom:14px; display:grid; place-items:center; width:44px; height:44px; padding:0; background:white; border:1px solid #eee8ec; border-radius:3px; color:#442c39; box-shadow:0 0 4px #342b2e26; }
+.quick-view-plus { position:absolute; right:8px; bottom:6px; background:white; font:16px/1 var(--sans); padding:0 1px; }
+@media(hover:hover) and (pointer:fine) {
+ .storefront .product-quick-view { opacity:0; transition:opacity .2s ease-in-out; }
+ .storefront .product-image-wrap:hover .product-quick-view,
+ .storefront .product-image-wrap:focus-within .product-quick-view { opacity:1; }
+}
+@media(max-width:760px) { .hero-copy { padding-bottom:88px; } .hero-carousel-controls { right:6%; bottom:16px; } }
+@media(prefers-reduced-motion:reduce) {
+ .hero-slide,.storefront .product-image > .product-cover,.storefront .product-quick-view { transition:none; }
+ .hero-slide.is-current img { animation:none; }
+ .storefront .product-image-wrap:hover .product-cover { transform:none; }
+}

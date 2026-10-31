@@ -1,6 +1,6 @@
 # Accueil et aperçu des liens
 
-L’accueil photographique remplace le salon 3D. Il utilise la vraie photo `public/pagnes/pagne10-2.webp` et ses variantes existantes. La collection, les favoris, les commandes et la gestion gardent leurs données et leurs API.
+L’accueil photographique remplace le salon 3D. Son carrousel utilise quatre photos réelles du catalogue courant et leurs variantes existantes. Son défilement est indépendant de la photo choisie pour les aperçus de liens. La collection, les favoris, les commandes et la gestion gardent leurs données et leurs API.
 
 ## Image de partage
 

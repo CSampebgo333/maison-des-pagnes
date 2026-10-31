@@ -1,0 +1,23 @@
+/* Portrait catalogue photos need their own frame: cover was cutting away
+   the fabric when the wide banner changed shape. Keep every selected view. */
+.storefront .storefront-hero {
+ display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);
+ gap:4%; align-items:center; min-height:660px;
+ padding:calc(var(--storefront-header-height,110px) + 28px) 5% 40px;
+}
+.storefront .hero-photograph {
+ position:relative; inset:auto; z-index:-2; grid-column:2; grid-row:1;
+ width:100%; height:clamp(480px,48vw,680px); min-width:0;
+}
+.storefront .hero-photograph img {
+ display:block; width:100%; height:100%; object-fit:contain;
+ object-position:center; user-select:none;
+}
+.storefront .hero-copy { grid-column:1; grid-row:1; max-width:none; min-width:0; padding:24px 0; }
+.storefront .storefront-hero::before { background:linear-gradient(90deg,#f0edeb 0%,#f0edeb00 68%); }
+@media(max-width:760px) {
+ .storefront .storefront-hero { grid-template-columns:minmax(0,1fr); gap:20px; padding:calc(var(--storefront-header-height,200px) + 20px) 5% 32px; min-height:0; }
+ .storefront .hero-photograph { grid-column:1; grid-row:1; height:clamp(320px,115vw,640px); }
+ .storefront .hero-copy { grid-column:1; grid-row:2; padding:0; }
+ .storefront .storefront-hero::before { background:none; }
+}

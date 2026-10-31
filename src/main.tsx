@@ -6,6 +6,7 @@ import './styles.css';
 import './motion.css';
 import './collection.css';
 import './header.css';
+import './hero.css';
 
 await initializeLanguage();
 ReactDOM.createRoot(document.getElementById('root')!).render(<React.StrictMode><App /></React.StrictMode>);

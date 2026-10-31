@@ -175,4 +175,4 @@ L’accueil utilise une photo du catalogue initial (pagne orange, vue 2), sans a
 
 EB Garamond normal et italique est servi localement (licence SIL OFL dans `public/eb-garamond-OFL.txt`). Les noms de variantes internes `scene` restent conservés pour la compatibilité des photos existantes ; aucun moteur 3D n’est chargé.
 
-Le build public (`PUBLIC_SITE_URL`) inclut les balises Open Graph et Twitter pointant vers `public/social/maison-faso-cover-v1.jpg`. Cette image doit rester accessible sans authentification sur le domaine public. Les plateformes peuvent conserver un ancien aperçu en cache après un déploiement.
+Le build public (`PUBLIC_SITE_URL`) inclut les balises Open Graph et Twitter pointant vers `public/social/rayures-lavande-v2.jpg`. Cette image doit rester accessible sans authentification sur le domaine public. Les plateformes peuvent conserver un ancien aperçu en cache après un déploiement.

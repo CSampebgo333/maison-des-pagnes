@@ -2,8 +2,9 @@
    Keep the whole portrait photograph inside its frame throughout the motion. */
 .hero-slide { position:absolute; inset:0; opacity:0; transition:opacity 400ms ease; pointer-events:none; }
 .hero-slide.is-current { opacity:1; }
-.hero-slide.is-current img { animation:hero-settle 10s ease both; }
-@keyframes hero-settle { from { transform:scale(.97); } to { transform:scale(1); } }
+.hero-slide.is-current img { animation:hero-fit-in var(--hero-slide-duration,8000ms) linear both; }
+.storefront-hero.is-motion-paused .hero-slide.is-current img { animation-play-state:paused; }
+@keyframes hero-fit-in { from { transform:scale(.9); } to { transform:scale(1); } }
 /* This rule includes the full-resolution layer: its loading fade used to
    overwrite the transform transition, producing an abrupt hover jump. */
 @media(hover:hover) and (pointer:fine) {

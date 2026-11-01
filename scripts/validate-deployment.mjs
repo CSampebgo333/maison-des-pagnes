@@ -1,4 +1,5 @@
 import fs from 'node:fs/promises';
+import {validatePublicSearchBuild} from './validate-search-build.mjs';
 const config=JSON.parse(await fs.readFile('dist/server/wrangler.json','utf8'));
 const id=config.d1_databases?.[0]?.database_id;
 const vars=config.vars??{};
@@ -9,4 +10,5 @@ if(values.some(value=>typeof value!=='string'||!value||value.includes('REPLACE')
  !/^[a-f0-9]{64}$/.test(vars.ACCESS_AUD) || vars.AUTH_MODE!=='cloudflare' || config.preview_urls!==false){
  throw new Error('Deployment settings are missing or invalid. Set CLOUDFLARE_D1_ID, CATALOGUE_ADMIN_EMAIL, ACCESS_ISSUER and ACCESS_AUD in the build environment.');
 }
+if(config.routes?.some(route=>route.custom_domain))validatePublicSearchBuild(config,{french:await fs.readFile('dist/client/index.html','utf8'),english:await fs.readFile('dist/client/index.en.html','utf8'),robots:await fs.readFile('dist/client/robots.txt','utf8')});
 console.log('Deployment configuration validated.');

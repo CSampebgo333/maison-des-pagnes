@@ -64,6 +64,6 @@ test('Price and stock markup never fabricate missing values and deployment origi
 
 test('Rendering a built homepage template replaces all page-specific metadata without duplicates',()=>{
  const built=template.replace('<!-- PUBLIC_SEO -->',seoFiles(origin).head);const html=renderDocument(built,seed,origin,'en',seed.products[0]);
- for(const key of ['og:title','og:description','og:type','og:locale','og:url','og:image','og:image:secure_url','og:image:alt'])assert.equal((html.match(new RegExp('property="'+key+'"','g'))||[]).length,1,key);
+ for(const key of ['og:title','og:description','og:site_name','og:type','og:locale','og:url','og:image','og:image:secure_url','og:image:alt'])assert.equal((html.match(new RegExp('property="'+key+'"','g'))||[]).length,1,key);
  assert.equal((html.match(/rel="canonical"/g)||[]).length,1);assert.equal((html.match(/application\/ld\+json/g)||[]).length,1);assert.match(html,/BreadcrumbList/);assert.doesNotMatch(html,/og:image:width|og:image:height|og:image:type/);
 });

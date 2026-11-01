@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react';
 import { ArrowRight } from 'lucide-react';
-import { t } from '../lib/i18n';
+import { t, useLanguage } from '../lib/i18n';
+import {commerceCopy} from '../lib/commerce-copy.js';
 import { asset } from '../lib/assets';
 import { imageVariant } from '../lib/images';
 import { createSlideshow, observeSlideshow, SLIDE_INTERVAL } from '../lib/slideshow';
@@ -8,6 +9,7 @@ import { heroSlides } from '../lib/hero-slides';
 import type { Product } from '../lib/types';
 
 export default function HeroCarousel({ products }: { products: Product[] }) {
+  const language=useLanguage(),copy=commerceCopy(language);
   const slides = useMemo(() => {
     const selected = heroSlides(products);
     return selected.length ? selected : [{ id: 'maison', name: t('Faso Dan Fani'), src: 'pagnes/pagne1-1.webp' }];
@@ -36,6 +38,6 @@ export default function HeroCarousel({ products }: { products: Product[] }) {
     <div className="hero-photograph">{slides.map((slide, position) => <div className={`hero-slide${position === index ? ' is-current' : ''}`} key={slide.id + slide.src} aria-hidden={position !== index}>
       <img src={asset(imageVariant(failed.includes(slide.src) ? 'pagnes/pagne1-1.webp' : slide.src).display)} alt={position === index ? failed.includes(slide.src) ? t('Faso Dan Fani') : slide.name : ''} fetchPriority={position === 0 ? 'high' : 'auto'} loading={position === 0 ? 'eager' : 'lazy'} decoding="async" draggable={false} onAnimationEnd={event => { if (event.animationName === 'hero-fit-in' && position === index) controls.current?.finishAnimation(); }} width="1000" height="1333" onError={() => setFailed(old => old.includes(slide.src) ? old : [...old, slide.src])}/>
     </div>)}</div>
-    <div className="hero-copy"><p className="eyebrow">{t('LA MAISON DU FASO DAN FANI')}</p><h1 id="hero-title">{t('Des pagnes.')}<br/><em>{t('Une histoire.')}</em></h1><p>{t('Des couleurs qui vous ressemblent, un savoir-faire qui nous rassemble. Découvrez les pagnes de notre boutique familiale au Burkina Faso.')}</p><a className="primary-button" href="#collection">{t('Découvrir la collection ')}<ArrowRight size={18}/></a><span className="hero-signature">{t('Le Faso Dan Fani, une fierté à porter.')}</span></div>
+    <div className="hero-copy"><p className="eyebrow">{copy.eyebrow}</p><h1 id="hero-title">{copy.heading}<br/><em>{copy.highlight}</em></h1><p>{copy.intro}</p><a className="primary-button" href="#collection">{copy.cta}<ArrowRight size={18}/></a><span className="hero-signature">{t('Le Faso Dan Fani, une fierté à porter.')}</span></div>
   </section>;
 }

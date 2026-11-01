@@ -4,7 +4,7 @@ for (const name of await fs.readdir('dist')) { if (!['client','server','.openai'
 await fs.mkdir('dist/server',{recursive:true});
 await fs.mkdir('dist/.openai',{recursive:true});
 await fs.copyFile('src/lib/pdf-service.js','dist/server/index.js');
-for(const file of ['product-seo.js','public-pages.js','collection-rows.js','catalogue-service.js','orders-service.js','order-management.js','admin-auth.js','initial-stock.js','security.js','backups.js','i18n-core.js','whatsapp.js'])await fs.copyFile('src/lib/'+file,'dist/server/'+file);
+for(const file of ['commerce-copy.js','product-seo.js','public-pages.js','collection-rows.js','catalogue-service.js','orders-service.js','order-management.js','admin-auth.js','initial-stock.js','security.js','backups.js','i18n-core.js','whatsapp.js'])await fs.copyFile('src/lib/'+file,'dist/server/'+file);
 await fs.mkdir('dist/locales',{recursive:true});
 await fs.writeFile('dist/server/english.js','export default '+await fs.readFile('src/locales/en.json','utf8')+';\n');
 for (const name of ['index.js','orders-service.js']) {

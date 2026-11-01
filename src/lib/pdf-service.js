@@ -1,3 +1,4 @@
+import {publicPagesRoute} from './public-pages.js';
 import {dispatchNotifications} from './whatsapp.js';
 import english from '../locales/en.json' with {type:'json'};
 import {tr,normalLanguage,installEnglish} from './i18n-core.js';
@@ -43,6 +44,7 @@ const application={
    return new Response(request.method==='HEAD'?null:object.body,{headers:{'Content-Type':'application/pdf','Content-Disposition':'inline; filename="bon-de-commande.pdf"','Cache-Control':'private, no-store','X-Content-Type-Options':'nosniff','Referrer-Policy':'no-referrer','X-Robots-Tag':'noindex, nofollow, noarchive'}});
   }
   if(url.pathname.startsWith('/api/')||url.pathname.startsWith('/order-pdfs/'))return new Response('Introuvable',{status:404});
+  const publicPage=await publicPagesRoute(request,env);if(publicPage)return publicPage;
   if(env.ASSETS){
    const assetRequest=url.pathname==='/'&&url.searchParams.get('lang')==='en'?new Request(new URL('/index.en.html',url),request):request;
    const response=await env.ASSETS.fetch(assetRequest);

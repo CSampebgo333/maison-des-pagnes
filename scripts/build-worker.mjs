@@ -4,7 +4,7 @@ for (const name of await fs.readdir('dist')) { if (!['client','server','.openai'
 await fs.mkdir('dist/server',{recursive:true});
 await fs.mkdir('dist/.openai',{recursive:true});
 await fs.copyFile('src/lib/pdf-service.js','dist/server/index.js');
-for(const file of ['collection-rows.js','catalogue-service.js','orders-service.js','order-management.js','admin-auth.js','initial-stock.js','security.js','backups.js','i18n-core.js','whatsapp.js'])await fs.copyFile('src/lib/'+file,'dist/server/'+file);
+for(const file of ['product-seo.js','public-pages.js','collection-rows.js','catalogue-service.js','orders-service.js','order-management.js','admin-auth.js','initial-stock.js','security.js','backups.js','i18n-core.js','whatsapp.js'])await fs.copyFile('src/lib/'+file,'dist/server/'+file);
 await fs.mkdir('dist/locales',{recursive:true});
 await fs.writeFile('dist/server/english.js','export default '+await fs.readFile('src/locales/en.json','utf8')+';\n');
 for (const name of ['index.js','orders-service.js']) {
@@ -22,6 +22,7 @@ await fs.writeFile('dist/.openai/hosting.json',hosting);
 // Paths are relative to each config file, so relocate them for dist/server.
 const workerConfig=JSON.parse(await fs.readFile('wrangler.jsonc','utf8'));
 workerConfig.main='index.js';
+workerConfig.vars.PUBLIC_SITE_URL=process.env.PUBLIC_SITE_URL??'';
 workerConfig.assets.directory='../client';
 workerConfig.d1_databases[0].migrations_dir='../../drizzle';
 workerConfig.d1_databases[0].database_id=process.env.CLOUDFLARE_D1_ID??workerConfig.d1_databases[0].database_id;

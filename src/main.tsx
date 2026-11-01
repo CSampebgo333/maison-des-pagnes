@@ -7,6 +7,7 @@ import './motion.css';
 import './collection.css';
 import './header.css';
 import './hero.css';
+import './product-pages.css';
 
 await initializeLanguage();
 ReactDOM.createRoot(document.getElementById('root')!).render(<React.StrictMode><App /></React.StrictMode>);
@@ -17,3 +18,4 @@ if (import.meta.env.PROD && 'serviceWorker' in navigator && location.protocol ==
     scope: import.meta.env.BASE_URL, updateViaCache: 'none',
   }).catch(() => { /* Photos still load normally when local caching is blocked. */ });
 }
+

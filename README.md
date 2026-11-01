@@ -193,3 +193,9 @@ Pour vérifier un aperçu WhatsApp après déploiement, coller le lien HTTPS dan
 La collection commence par trois rangées indépendantes : « Nos coups de cœur » (pagnes 1, 2, 3 et 6), « Jeux de rayures » (4, 5, 7 et 8), puis « Nuances à découvrir » (9, 10, 11 et 12). Chaque rangée garde ses flèches, son glissement et sa pagination. Les filtres s’appliquent à toute la collection ; les rangées sans résultat ne sont pas affichées.
 
 Dans Gestion > Collection, sélectionner un pagne, choisir sa « Rangée de la collection », puis cliquer sur « Enregistrer le pagne ». Le même champ est présent à l’ajout d’un article ; la première rangée est proposée par défaut. Le choix est conservé dans le catalogue durable et reste identique en français et en anglais. Les anciens catalogues sans ce champ utilisent la répartition initiale, sans migration de base de données.
+
+## Visibilité dans les moteurs de recherche
+
+Chaque pagne publié possède une fiche publique sous `/pagnes/{id}/{nom-descriptif}`, disponible en français et en anglais. Les photos et les informations principales sont présentes dans la réponse HTML, avant JavaScript. La collection contient de vrais liens vers les fiches ; la vue rapide reste disponible. Le sitemap reflète le catalogue enregistré, y compris les nouveaux articles. Les articles masqués ou supprimés renvoient une réponse 404 et disparaissent du sitemap. Un changement de nom redirige les anciennes adresses vers la nouvelle fiche grâce à l’identifiant stable.
+
+Le build transmet `PUBLIC_SITE_URL` au Worker pour les adresses canoniques et les métadonnées. Les aperçus sans domaine public configuré restent non indexables. Les commandes privées et la gestion ne sont jamais ajoutées au sitemap. Les vérifications Search Console après déploiement sont décrites dans [docs/SEO.md](docs/SEO.md). Ces mesures facilitent la découverte des produits ; elles ne garantissent ni indexation ni position dans les résultats.

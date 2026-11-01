@@ -16,7 +16,7 @@ Avant un déploiement sur un Custom Domain public, le validateur exige `PUBLIC_S
 
 ## Pages et catalogue
 
-L’accueil conserve sa présentation et ajoute des conseils courts pour choisir, commander et se faire livrer. Chaque article publié dispose d’une fiche `/pagnes/{id}/{nom-descriptif}`. L’identifiant évite les collisions entre deux noms et permet une redirection 301 lorsqu’un nom change. L’anglais utilise le même chemin avec `?lang=en` ; le français et l’anglais ont chacun leur canonique, leurs balises hreflang, leur titre et leur description. Les anciennes adresses `/index.en` et `/index.en.html` redirigent vers `/?lang=en`.
+L’accueil présente clairement la vente de pagnes dès son titre, son introduction et son bouton vers les modèles et les prix. Ces textes commerciaux sont partagés entre le HTML initial et la boutique interactive, en français et en anglais. Il ajoute aussi des conseils courts pour choisir, commander et se faire livrer. Chaque article publié dispose d’une fiche `/pagnes/{id}/{nom-descriptif}`. L’identifiant évite les collisions entre deux noms et permet une redirection 301 lorsqu’un nom change. L’anglais utilise le même chemin avec `?lang=en` ; le français et l’anglais ont chacun leur canonique, leurs balises hreflang, leur titre et leur description. Les anciennes adresses `/index.en` et `/index.en.html` redirigent vers `/?lang=en`.
 
 Le Worker lit le catalogue enregistré pour générer les fiches, les liens HTML de l’accueil et `/sitemap.xml`. Un ajout dans la gestion devient donc découvrable sans nouveau build. Les prix et disponibilités proviennent du même catalogue que la boutique. Un article masqué ou supprimé est retiré des liens et du sitemap et renvoie 404. Une indisponibilité temporaire du stockage renvoie 503 avec `Retry-After`, sans publier un ancien catalogue à la place.
 
@@ -30,12 +30,22 @@ Chaque fiche possède des données structurées Product et BreadcrumbList. Le pr
 
 L’accueil conserve la cinquième photo lavande choisie pour les aperçus sociaux. Les fiches produit utilisent la photo principale de l’article. Les commandes, PDF, API et outils de gestion ne figurent jamais dans le sitemap. Les données du catalogue sont échappées avant insertion dans le HTML et le JSON-LD.
 
+## Descriptions et images dans Google
+
+Le titre français proposé est « Faso Dan Fani — Vente de pagnes au Burkina Faso ». La description invite à comparer les motifs, consulter les prix et préparer une commande, avec les villes de livraison réellement prises en charge. Les fiches indiquent le prix courant hors livraison et distinguent les articles indisponibles. Le paragraphe culturel reste visible, mais son conteneur porte `data-nosnippet` pour ne plus servir de description de résultat. Google choisit toutefois ses propres titres et extraits selon la requête ; une métadescription ne les impose pas.
+
+Le sitemap utilise l’extension image : chaque fiche liste ses photos publiques, et les accueils relient les photos principales du catalogue et l’image lavande choisie. Les données structurées ajoutent une CollectionPage et sa liste d’articles publiés, ainsi qu’un ImageObject représentatif ; les fiches relient leur image principale à leur WebPage. Les pages publiques autorisent `max-image-preview:large` pour Googlebot. Le favicon PNG carré complète le SVG. Le favicon, l’image de partage WhatsApp et la miniature de résultat Google remplissent des rôles différents ; aucune de ces balises ne garantit une miniature.
+
+Le catalogue en ligne reste la source des images, des prix et des liens. Aucun stock, avis, réduction, service de paiement ou détail commercial absent n’est inventé pour obtenir un résultat enrichi.
+
 ## Vérifier après fusion et déploiement
 
 1. Ouvrir une fiche depuis la collection, recharger son adresse, changer de langue et vérifier le prix, les photos et l’ajout à la sélection.
-2. Ouvrir `https://fasodanfani.shop/sitemap.xml`. Pour les douze pagnes initiaux publiés, il contient vingt-six adresses : deux accueils et vingt-quatre variantes de fiches. Le nombre évolue avec les articles publiés.
-3. Dans Search Console, inspecter quelques fiches représentatives puis lancer un test en direct. Vérifier le HTML rendu, l’accès Google, les variantes linguistiques et l’absence de blocage Cloudflare. Demander l’indexation des fiches représentatives et laisser Google traiter le sitemap existant.
+2. Ouvrir `https://fasodanfani.shop/sitemap.xml`. Pour les douze pagnes initiaux publiés, il contient vingt-six adresses : deux accueils et vingt-quatre variantes de fiches. Le nombre évolue avec les articles publiés. Vérifier aussi les entrées `image:image` et l’accès public aux photos.
+3. Dans Search Console, inspecter l’accueil français, sa variante anglaise et quelques fiches représentatives puis lancer un test en direct. Vérifier le HTML rendu, l’accès Google, les variantes linguistiques et l’absence de blocage Cloudflare. Demander l’indexation des fiches représentatives et laisser Google traiter le sitemap existant.
 4. Valider les données produit avec le test des résultats enrichis de Google. Une propriété facultative absente n’autorise pas à inventer sa valeur.
 5. Suivre les impressions, requêtes, clics et positions dans Performances. Comparer les tendances sur plusieurs semaines, pas uniquement une recherche personnelle. Les changements ne garantissent pas une position ni une date d’apparition.
 
 Pour développer ensuite la visibilité, publier des informations utiles et vérifiables sur la boutique, les modèles, les dimensions et l’entretien. Utiliser naturellement « Faso Dan Fani » dans les descriptions plutôt que répéter artificiellement toutes ses variantes orthographiques. Ajouter le lien de la boutique aux profils sociaux et aux partenaires pertinents. Aucun achat de liens ni fausse recommandation n’est nécessaire.
+
+Références : [extraits Google](https://developers.google.com/search/docs/appearance/snippet), [images Google](https://developers.google.com/search/docs/appearance/google-images), [sitemaps d’images](https://developers.google.com/search/docs/crawling-indexing/sitemaps/image-sitemaps).

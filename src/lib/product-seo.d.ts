@@ -19,4 +19,4 @@ export function jsonForHtml(value:unknown):string;
 export function metadataMarkup(meta:Metadata,origin:string|null,language?:string,product?:Product):string;
 export function catalogueSitemap(document:{products:Product[]},origin:string|null):string;
 
-export function pageStructuredData(product:Product|undefined,variants:Record<string,any>,origin:string|null,language?:string):Record<string,unknown>[];
+export function pageStructuredData(product:Product|undefined,variants:Record<string,any>,origin:string|null,language?:string,products?:Product[]):Record<string,unknown>[];

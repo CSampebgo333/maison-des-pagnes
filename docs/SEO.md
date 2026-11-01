@@ -1,5 +1,19 @@
 # Référencement de la boutique
 
+## Propriété Search Console et balise de vérification
+
+La propriété de domaine `fasodanfani.shop` se vérifie dans le DNS Cloudflare avec le TXT fourni par Google. Dans Search Console, ouvrir Paramètres > Validation de la propriété pour retrouver la méthode utilisée. Conserver la vraie valeur `google-site-verification=…` fournie par Google ; un texte d’exemple ou des points de suspension ne remplacent pas le code réel. Le changement de code du site ne supprime pas ce record DNS.
+
+Pour cette propriété de domaine déjà vérifiée, aucune balise HTML supplémentaire n’est nécessaire et aucune valeur Google n’est inventée dans le dépôt. La vérification prouve la propriété du site ; elle ne garantit pas sa position dans les résultats.
+
+La méthode « Balise HTML » concerne les propriétés de type préfixe d’URL, par exemple `https://fasodanfani.shop/`. Si elle est choisie pour une propriété distincte, copier la balise exacte depuis la procédure de vérification et la placer dans le `<head>` du fichier racine `index.html`, après la déclaration du jeu de caractères et avant `</head>`. Ne pas la mettre dans un composant React, le corps de page, la description ou `robots.txt`. Le générateur de pages conserve une balise de vérification existante. L’ajout d’un autre propriétaire nécessite son accord ; une balise fournie par un tiers ne doit pas être ajoutée sans comprendre à quel compte elle appartient.
+
+## Contrôles du head
+
+Les titres, descriptions, canoniques et hreflang identifient l’accueil et chaque fiche en français et en anglais. Le JSON-LD de l’accueil inclut le nom réel du site (WebSite), relié à l’organisation de la boutique. L’image de partage choisie conserve son adresse HTTPS, son texte alternatif, ses dimensions 800 × 800 et son format JPEG. Les fiches ne réutilisent pas à tort ces dimensions pour leurs autres photos. Les en-têtes HTTP de langue respectent la langue déclarée par la réponse HTML.
+
+Avant un déploiement sur un Custom Domain public, le validateur exige `PUBLIC_SITE_URL` avec le domaine réellement configuré, des canoniques FR/EN cohérentes, des pages indexables et un robots.txt ouvert au crawl. Il arrête le déploiement plutôt que publier par erreur un build d’aperçu privé marqué noindex. Les aperçus privés sans route de domaine public restent non indexables. Aucune balise de mots-clés artificiels ni code de suivi publicitaire n’est ajouté.
+
 ## Pages et catalogue
 
 L’accueil conserve sa présentation et ajoute des conseils courts pour choisir, commander et se faire livrer. Chaque article publié dispose d’une fiche `/pagnes/{id}/{nom-descriptif}`. L’identifiant évite les collisions entre deux noms et permet une redirection 301 lorsqu’un nom change. L’anglais utilise le même chemin avec `?lang=en` ; le français et l’anglais ont chacun leur canonique, leurs balises hreflang, leur titre et leur description. Les anciennes adresses `/index.en` et `/index.en.html` redirigent vers `/?lang=en`.

@@ -15,6 +15,7 @@ export function usePageMetadata(product:Product|undefined,language:'fr'|'en',pro
   if(productPage&&!product)tag('robots','noindex, follow');
   if(origin&&canonical){
    canonical.href=origin+meta.path;tag('og:url',origin+meta.path,true);tag('og:image',origin+meta.image,true);tag('og:image:secure_url',origin+meta.image,true);tag('og:image:alt',meta.imageAlt,true);tag('twitter:image',origin+meta.image);tag('twitter:image:alt',meta.imageAlt);
+   for(const [key,value] of [['og:image:width',meta.imageWidth],['og:image:height',meta.imageHeight],['og:image:type',meta.imageType]] as const){if(value)tag(key,String(value),true);else document.querySelector(`meta[property="${key}"]`)?.remove();}
    for(const link of document.querySelectorAll<HTMLLinkElement>('link[rel="alternate"][hreflang]'))link.href=origin+(product?productPath(product,link.hreflang==='en'?'en':'fr'):link.hreflang==='en'?'/?lang=en':'/');
    let data=document.querySelector<HTMLScriptElement>('#shop-structured-data');if(!data){data=document.createElement('script');data.type='application/ld+json';data.id='shop-structured-data';document.head.append(data);}
    data.textContent=JSON.stringify(pageStructuredData(product,variants,origin,language));

@@ -1,5 +1,5 @@
 import type {Product} from './types';
-export type Metadata={title:string;description:string;path:string;image:string;imageAlt:string;type:string};
+export type Metadata={title:string;description:string;path:string;image:string;imageAlt:string;type:string;imageWidth?:number;imageHeight?:number;imageType?:string};
 export const SHOP_NAME:string;
 export function publicOrigin(value?:string):string|null;
 export function pageLanguage(url:URL):'fr'|'en';

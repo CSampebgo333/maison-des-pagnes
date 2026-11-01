@@ -16,7 +16,7 @@ export function productContent(product,variants,l){
 }
 export function renderDocument(template,document,origin,l,product){
  const meta=product?productMetadata(product,document.variants,l):homeMetadata(l);
- let html=template.replace(/<title>[\s\S]*?<\/title>/gi,'').replace(/<meta\b[^>]*(?:name="(?:description|robots|twitter:(?:title|description|image(?::alt)?))"|property="og:(?:title|description|type|locale|url|image(?::[^" ]+)?))"?[^>]*>/gi,'');
+ let html=template.replace(/<title>[\s\S]*?<\/title>/gi,'').replace(/<meta\b[^>]*(?:name="(?:description|robots|twitter:(?:title|description|image(?::alt)?))"|property="og:(?:title|description|site_name|type|locale|url|image(?::[^" ]+)?))"?[^>]*>/gi,'');
  // Drop old canonical/alternate tags and JSON-LD before writing this page's own metadata.
  html=html.replace(/<meta\b[^>]*property="og:image:(?:width|height|type)"[^>]*>/gi,'');
  html=html.replace(/<link\b[^>]*rel="(?:canonical|alternate)"[^>]*>/gi,'').replace(/<script\b[^>]*type="application\/ld\+json"[^>]*>[\s\S]*?<\/script>/gi,'');

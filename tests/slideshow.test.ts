@@ -73,3 +73,24 @@ test('Le carrousel utilise les photos actuelles du catalogue, sans pagne masqué
   assert.equal(updated.find(s => s.id === 'pagne1')?.src, 'nouvelle-photo.jpg');
   assert.deepEqual(heroSlides([]), []);
 });
+
+test('Le mode animation attend la limite visible, sans changement prématuré imposé par un second minuteur', t => {
+ t.mock.timers.enable({apis:['setTimeout']});
+ const seen:number[]=[],slideshow=createSlideshow(3,index=>seen.push(index),'animation');
+ t.mock.timers.tick(80000);assert.deepEqual(seen,[]);
+ slideshow.finishAnimation();assert.deepEqual(seen,[1]);
+ slideshow.pause('hidden',true);slideshow.finishAnimation();assert.deepEqual(seen,[1]);
+ slideshow.pause('hidden',false);assert.deepEqual(seen,[1,2]);
+ slideshow.pause('motion',true);slideshow.finishAnimation();assert.deepEqual(seen,[1,2]);
+ slideshow.pause('motion',false);assert.deepEqual(seen,[1,2,0]);
+ slideshow.destroy();slideshow.finishAnimation();assert.deepEqual(seen,[1,2,0]);
+});
+test('La visibilité et la préférence de mouvement synchronisent la pause du zoom et du carrousel',()=>{
+ const page=Object.assign(new EventTarget(),{hidden:false}),motion=Object.assign(new EventTarget(),{matches:false});
+ const slideshow=createSlideshow(3,()=>{},'animation');let paused=false;
+ const stop=observeSlideshow(slideshow,page,motion,()=>{},value=>{paused=value;});
+ assert.equal(paused,false);page.hidden=true;page.dispatchEvent(new Event('visibilitychange'));assert.equal(paused,true);
+ motion.matches=true;motion.dispatchEvent(new Event('change'));page.hidden=false;page.dispatchEvent(new Event('visibilitychange'));assert.equal(paused,true);
+ motion.matches=false;motion.dispatchEvent(new Event('change'));assert.equal(paused,false);
+ stop();slideshow.destroy();
+});

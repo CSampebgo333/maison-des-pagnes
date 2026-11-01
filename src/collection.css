@@ -44,3 +44,7 @@
  .collection-pagination { width:100%; }
 }
 @media(max-width:350px) { .collection-carousel { --collection-columns:1; } }
+
+.collection-row { margin-top:34px; padding-top:22px; border-top:1px solid #e7e0e4; }
+.collection-row h3 { margin:0 0 14px; color:#553747; font:400 clamp(28px,3vw,38px)/1.15 var(--serif); }
+.admin-product .admin-row-label { color:#674956; margin-top:5px; }

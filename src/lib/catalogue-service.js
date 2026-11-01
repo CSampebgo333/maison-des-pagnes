@@ -1,5 +1,6 @@
 import {isAdmin} from './admin-auth.js';
 import seed from './catalogue-seed.js';
+import {productCollectionRow} from './collection-rows.js';
 const KEY='catalogue/current.json';
 const LIMIT=9*1024*1024;
 const STATES=['available','on-order','unavailable','confirm'];
@@ -52,7 +53,7 @@ export async function catalogueRoute(request,env) {
  if(!['GET','HEAD'].includes(request.method)&&request.headers.get('Origin')!==url.origin)return json({error:'Origine non autorisée.'},403);
  try {
   if((path==='/api/catalogue'||path==='/api/admin/catalogue')&&request.method==='GET'){
-   const {document}=await getCatalogue(env);const enriched={...document,products:document.products.map(p=>({...p,translations:{en:englishFor(p)}}))};return json(path==='/api/catalogue'?{...enriched,products:enriched.products.filter(p=>p.published!==false)}:enriched);
+   const {document}=await getCatalogue(env);const enriched={...document,products:document.products.map(p=>({...p,collectionRow:productCollectionRow(p),translations:{en:englishFor(p)}}))};return json(path==='/api/catalogue'?{...enriched,products:enriched.products.filter(p=>p.published!==false)}:enriched);
   }
   if(path==='/api/admin/photos'&&request.method==='POST'){
    const data=await bounded(request,LIMIT);const form=await new Response(data,{headers:{'Content-Type':request.headers.get('Content-Type')??''}}).formData();
@@ -78,6 +79,7 @@ export async function catalogueRoute(request,env) {
    const products=[];
    for(const p of body.products){
     if(!p||typeof p.id!=='string'||!/^[a-zA-Z0-9-]{1,80}$/.test(p.id)||ids.has(p.id)||!Number.isInteger(p.number)||p.number<1||numbers.has(p.number))throw Error('Identifiant de pagne invalide.');ids.add(p.id);numbers.add(p.number);
+    if(p.collectionRow!==undefined&&![1,2,3].includes(p.collectionRow))throw Error('Choisissez une rangée de la collection valide.');
     if(!Number.isInteger(p.price)||p.price<1||p.price>10000000)throw Error('Indiquez un prix positif en CFA.');
     if(!STATES.includes(p.availability)||!Array.isArray(p.occasions)||p.occasions.some(o=>!OCCASIONS.includes(o))||p.occasions.length>6)throw Error('Choisissez la disponibilité et les occasions.');
     if(!Array.isArray(p.photos)||p.photos.length<1||p.photos.length>8)throw Error('Ajoutez entre une et huit photos par pagne.');
@@ -89,7 +91,7 @@ export async function catalogueRoute(request,env) {
     }
     if(!Array.isArray(p.colors)||p.colors.length>8)throw Error('Vérifiez les couleurs.');
     const english=englishFor(p);const translations={en:english?Object.fromEntries(Object.entries({name:100,description:1000,pattern:100,unit:80,composition:120,dimensions:120}).map(([key,max])=>[key,text(english[key]??'',max)])):undefined};
-    products.push({translations,id:p.id,number:p.number,name:text(p.name,100,true),description:text(p.description,1000,true),colors:p.colors.map(c=>text(c,30,true)),pattern:text(p.pattern,100),accent:/^#[a-f0-9]{6}$/i.test(p.accent)?p.accent:'#aaa0c7',price:p.price,unit:text(p.unit,80),composition:text(p.composition,120),dimensions:text(p.dimensions,120),availability:p.availability,occasions:[...new Set(p.occasions)],published:p.published!==false,photos});
+    products.push({collectionRow:p.collectionRow??productCollectionRow(document.products.find(old=>old.id===p.id)??p),translations,id:p.id,number:p.number,name:text(p.name,100,true),description:text(p.description,1000,true),colors:p.colors.map(c=>text(c,30,true)),pattern:text(p.pattern,100),accent:/^#[a-f0-9]{6}$/i.test(p.accent)?p.accent:'#aaa0c7',price:p.price,unit:text(p.unit,80),composition:text(p.composition,120),dimensions:text(p.dimensions,120),availability:p.availability,occasions:[...new Set(p.occasions)],published:p.published!==false,photos});
    }
    const next={products,variants,revision:crypto.randomUUID(),updatedAt:new Date().toISOString()};
    // Keep recoverable snapshots; optimistic concurrency prevents overwriting another edit.

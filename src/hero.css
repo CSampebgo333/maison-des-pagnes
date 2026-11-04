@@ -63,7 +63,7 @@
 /* Desktop shares the white lettering and light CTA of the smaller views.
    A plum scrim protects contrast while fading away over the photograph. */
 @media(min-width:901px){
- .storefront .storefront-hero::before {background:linear-gradient(90deg,#211625f2 0%,#211625df 32%,#211625b3 52%,#21162529 76%,transparent 100%);}
+ .storefront .storefront-hero::before {background:linear-gradient(90deg,#211625ed 0%,#21162599 22%,transparent 65%);}
  .storefront .hero-copy,
  .storefront .hero-copy .eyebrow,
  .storefront .hero-copy h1,

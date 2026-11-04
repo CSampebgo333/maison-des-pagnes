@@ -199,3 +199,11 @@ Dans Gestion > Collection, sélectionner un pagne, choisir sa « Rangée de la c
 Chaque pagne publié possède une fiche publique sous `/pagnes/{id}/{nom-descriptif}`, disponible en français et en anglais. Les photos et les informations principales sont présentes dans la réponse HTML, avant JavaScript. La collection contient de vrais liens vers les fiches ; la vue rapide reste disponible. Le sitemap reflète le catalogue enregistré, y compris les nouveaux articles. Les articles masqués ou supprimés renvoient une réponse 404 et disparaissent du sitemap. Un changement de nom redirige les anciennes adresses vers la nouvelle fiche grâce à l’identifiant stable.
 
 Le build transmet `PUBLIC_SITE_URL` au Worker pour les adresses canoniques et les métadonnées. Les aperçus sans domaine public configuré restent non indexables. Les commandes privées et la gestion ne sont jamais ajoutées au sitemap. Les vérifications Search Console après déploiement sont décrites dans [docs/SEO.md](docs/SEO.md). Ces mesures facilitent la découverte des produits ; elles ne garantissent ni indexation ni position dans les résultats.
+
+## Accueil mobile, installation et collection complète
+
+L’accueil conserve les trois premières rangées avec navigation horizontale. Le lien « La collection », les recherches et les favoris ouvrent `/collection` (anglais : `?lang=en`), qui présente toutes les rangées dans une grille responsive. La gestion permet d’affecter un article à une rangée supplémentaire (jusqu’à 50) ; les anciens articles gardent leur répartition. Aucun compteur du nombre total de pagnes ou de photos n’encombre la collection ; les quantités du panier restent utiles à la commande.
+
+Sur téléphone et tablette étroite, la navigation devient compacte sur deux lignes, avec recherche et cibles tactiles adaptées. Le bandeau présente la photo entière au-dessus d’un texte court et du bouton de découverte. Les variantes d’image de 650 px sont utilisées jusqu’à 900 px de largeur. Les formats larges gardent leur présentation photographique.
+
+L’invitation d’installation est présentée au plus une fois par 24 heures sur le même navigateur, depuis sa dernière apparition réelle. Les visites intermédiaires ne changent pas cette heure. Voir [le guide d’installation](docs/INSTALLATION.md) pour les limites par navigateur et les instructions iOS.

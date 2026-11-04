@@ -11,6 +11,8 @@ export function productIdFromPath(path:string):string|null;
 export function translatedProduct(product:Product,language?:string):Product;
 export function publicProducts(document:{products:Product[]}):Product[];
 export function productImage(product:Product,variants?:Record<string,any>):string;
+export function collectionPath(language?:string):string;
+export function collectionMetadata(language?:string):Metadata;
 export function homeMetadata(language?:string):Metadata;
 export function productMetadata(product:Product,variants?:Record<string,any>,language?:string):Metadata;
 export function structuredProduct(product:Product,variants:Record<string,any>,origin:string,language?:string):Record<string,unknown>;
@@ -19,4 +21,4 @@ export function jsonForHtml(value:unknown):string;
 export function metadataMarkup(meta:Metadata,origin:string|null,language?:string,product?:Product):string;
 export function catalogueSitemap(document:{products:Product[]},origin:string|null):string;
 
-export function pageStructuredData(product:Product|undefined,variants:Record<string,any>,origin:string|null,language?:string,products?:Product[]):Record<string,unknown>[];
+export function pageStructuredData(product:Product|undefined,variants:Record<string,any>,origin:string|null,language?:string,products?:Product[],collectionPage?:boolean):Record<string,unknown>[];

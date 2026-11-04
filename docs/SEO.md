@@ -41,7 +41,7 @@ Le catalogue en ligne reste la source des images, des prix et des liens. Aucun s
 ## Vérifier après fusion et déploiement
 
 1. Ouvrir une fiche depuis la collection, recharger son adresse, changer de langue et vérifier le prix, les photos et l’ajout à la sélection.
-2. Ouvrir `https://fasodanfani.shop/sitemap.xml`. Pour les douze pagnes initiaux publiés, il contient vingt-six adresses : deux accueils et vingt-quatre variantes de fiches. Le nombre évolue avec les articles publiés. Vérifier aussi les entrées `image:image` et l’accès public aux photos.
+2. Ouvrir `https://fasodanfani.shop/sitemap.xml`. Pour les douze pagnes initiaux publiés, il contient vingt-huit adresses : deux accueils, deux pages Collection et vingt-quatre variantes de fiches. Le nombre évolue avec les articles publiés. Vérifier aussi les entrées `image:image` et l’accès public aux photos.
 3. Dans Search Console, inspecter l’accueil français, sa variante anglaise et quelques fiches représentatives puis lancer un test en direct. Vérifier le HTML rendu, l’accès Google, les variantes linguistiques et l’absence de blocage Cloudflare. Demander l’indexation des fiches représentatives et laisser Google traiter le sitemap existant.
 4. Valider les données produit avec le test des résultats enrichis de Google. Une propriété facultative absente n’autorise pas à inventer sa valeur.
 5. Suivre les impressions, requêtes, clics et positions dans Performances. Comparer les tendances sur plusieurs semaines, pas uniquement une recherche personnelle. Les changements ne garantissent pas une position ni une date d’apparition.
@@ -49,3 +49,7 @@ Le catalogue en ligne reste la source des images, des prix et des liens. Aucun s
 Pour développer ensuite la visibilité, publier des informations utiles et vérifiables sur la boutique, les modèles, les dimensions et l’entretien. Utiliser naturellement « Faso Dan Fani » dans les descriptions plutôt que répéter artificiellement toutes ses variantes orthographiques. Ajouter le lien de la boutique aux profils sociaux et aux partenaires pertinents. Aucun achat de liens ni fausse recommandation n’est nécessaire.
 
 Références : [extraits Google](https://developers.google.com/search/docs/appearance/snippet), [images Google](https://developers.google.com/search/docs/appearance/google-images), [sitemaps d’images](https://developers.google.com/search/docs/crawling-indexing/sitemaps/image-sitemaps).
+
+## Page Collection
+
+`/collection` et `/collection?lang=en` affichent le catalogue complet, y compris les rangées au-delà des trois de l’accueil. Les liens de navigation, les retours des fiches, les canoniques, les alternatives linguistiques et le sitemap pointent vers cette page. Le HTML serveur contient les produits avant JavaScript ; la version interactive ajoute recherche, filtres et grille responsive. Les rangées supplémentaires sont conservées dans le champ existant `collectionRow`, sans migration SQL.

@@ -1,3 +1,4 @@
+import {captureInstallPrompt} from './lib/install-prompt';
 import {initializeLanguage} from './lib/i18n';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
@@ -8,7 +9,9 @@ import './collection.css';
 import './header.css';
 import './hero.css';
 import './product-pages.css';
+import './mobile.css';
 
+captureInstallPrompt();
 await initializeLanguage();
 ReactDOM.createRoot(document.getElementById('root')!).render(<React.StrictMode><App /></React.StrictMode>);
 

@@ -17,7 +17,7 @@ const request=(path,method='GET')=>new Request(origin+path,{method});
 const get=(path,env=environment(),method='GET')=>publicPagesRoute(request(path,method),env);
 test('A direct product request contains readable product information and crawlable navigation before JavaScript',async()=>{
  const p=seed.products[0],r=await get(productPath(p));assert.equal(r.status,200);const html=await r.text();
- assert.match(html,/<h1>Rayures lavande<\/h1>/);assert.ok(html.includes(p.description));assert.match(html,/12[\s\u202f]000 CFA/);assert.match(html,/href="\/#collection"/);assert.match(html,/<img[^>]+src="\/media\//);assert.equal((html.match(/<title>/g)||[]).length,1);assert.equal((html.match(/name="description"/g)||[]).length,1);assert.equal((html.match(/id="root"/g)||[]).length,1);
+ assert.match(html,/<h1>Rayures lavande<\/h1>/);assert.ok(html.includes(p.description));assert.match(html,/12[\s\u202f]000 CFA/);assert.match(html,/href="\/collection"/);assert.match(html,/<img[^>]+src="\/media\//);assert.equal((html.match(/<title>/g)||[]).length,1);assert.equal((html.match(/name="description"/g)||[]).length,1);assert.equal((html.match(/id="root"/g)||[]).length,1);
  assert.match(html,/rel="canonical" href="https:\/\/fasodanfani.shop\/pagnes\/pagne1\/rayures-lavande"/);assert.doesNotMatch(html,/content="noindex/);
  const graph=JSON.parse(html.match(/<script id="shop-structured-data"[^>]*>(.*?)<\/script>/s)[1]);assert.equal(graph[0].name,p.name);assert.equal(graph[0].offers.price,12000);assert.equal(graph[0].offers.priceCurrency,'XOF');assert.equal(graph[0].offers.availability,undefined);assert.equal(graph[0].aggregateRating,undefined);
 });
@@ -29,7 +29,7 @@ test('Public homepage contains links to all products and useful ordering informa
 });
 test('Sitemap automatically includes a newly published product, both languages, and excludes hidden and private data',async()=>{
  const doc=structuredClone(seed),newP={...doc.products[0],id:'pagne-new',number:13,name:'Étoile dorée'};doc.products.push(newP);doc.products[1].published=false;
- const r=await get('/sitemap.xml',environment(doc)),xml=await r.text();assert.equal(r.status,200);assert.equal((xml.match(/<loc>/g)||[]).length,26);assert.ok(xml.includes(origin+productPath(newP)));assert.ok(xml.includes(origin+productPath(newP,'en')));assert.ok(!xml.includes(productPath(doc.products[1])));assert.doesNotMatch(xml,/gestion|orders|tracking|order-pdfs|admin/);
+ const r=await get('/sitemap.xml',environment(doc)),xml=await r.text();assert.equal(r.status,200);assert.equal((xml.match(/<loc>/g)||[]).length,28);assert.ok(xml.includes(origin+productPath(newP)));assert.ok(xml.includes(origin+productPath(newP,'en')));assert.ok(!xml.includes(productPath(doc.products[1])));assert.doesNotMatch(xml,/gestion|orders|tracking|order-pdfs|admin/);
  const page=await get(productPath(newP),environment(doc));assert.equal(page.status,200);assert.match(await page.text(),/<h1>Étoile dorée<\/h1>/);
 });
 test('Unpublishing or removing a product returns a real 404 and removes links from homepage and sitemap',async()=>{
@@ -66,4 +66,14 @@ test('Rendering a built homepage template replaces all page-specific metadata wi
  const built=template.replace('<!-- PUBLIC_SEO -->',seoFiles(origin).head);const html=renderDocument(built,seed,origin,'en',seed.products[0]);
  for(const key of ['og:title','og:description','og:site_name','og:type','og:locale','og:url','og:image','og:image:secure_url','og:image:alt'])assert.equal((html.match(new RegExp('property="'+key+'"','g'))||[]).length,1,key);
  assert.equal((html.match(/rel="canonical"/g)||[]).length,1);assert.equal((html.match(/application\/ld\+json/g)||[]).length,1);assert.match(html,/BreadcrumbList/);assert.doesNotMatch(html,/og:image:width|og:image:height|og:image:type/);
+});
+test('Dedicated collection serves all rows before JavaScript, has bilingual canonicals and a sitemap entry',async()=>{
+ const doc=structuredClone(seed),extra={...doc.products[0],id:'pagne-extra',number:13,name:'Nouveau modèle',collectionRow:4};doc.products.push(extra);
+ const env=environment(doc),home=await (await get('/',env)).text();assert.ok(home.includes('href="/collection"'));assert.ok(!home.includes('href="'+productPath(extra)+'"'));
+ for(const l of ['fr','en']){
+  const path='/collection'+(l==='en'?'?lang=en':''),r=await get(path,env),html=await r.text();assert.equal(r.status,200);assert.ok(html.includes('href="'+productPath(extra,l)+'"'));assert.ok(html.includes('rel="canonical" href="'+origin+path+'"'));assert.ok(html.includes('hreflang="fr" href="'+origin+'/collection"'));assert.ok(html.includes('hreflang="en" href="'+origin+'/collection?lang=en"'));
+  const graph=JSON.parse(html.match(/<script id="shop-structured-data"[^>]*>(.*?)<\/script>/s)[1]);assert.equal(graph.find((g)=>g['@type']==='CollectionPage').mainEntity.itemListElement.length,13);
+ }
+ assert.ok((await (await get('/sitemap.xml',env)).text()).includes(origin+'/collection'));
+ assert.equal((await get('/collection/?lang=en',env)).headers.get('Location'),origin+'/collection?lang=en');
 });

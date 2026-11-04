@@ -13,8 +13,15 @@ export function publicOrigin(value){
 }
 export const pageLanguage=url=>url.searchParams.get('lang')==='en'?'en':'fr';
 const slug=value=>String(value).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,100)||'faso-dan-fani';
+// The colour order is curated in the catalogue: first = dominant colour.
+// Keep the stable ID so two designs in the same colours never share a URL.
+export function productSeoName(product,language='fr'){
+ const colours=[...new Set((product.colors??[]).map(c=>String(c).trim()).filter(Boolean))].slice(0,2);
+ const english={Violet:'Purple',Blanc:'White',Bleu:'Blue',Jaune:'Yellow',Noir:'Black',Vert:'Green',Gris:'Grey',Turquoise:'Turquoise',Orange:'Orange',Marron:'Brown',Rose:'Pink',Rouge:'Red',Beige:'Beige',Doré:'Gold'};
+ return 'Faso Dan Fani'+(colours.length?' - '+colours.map(c=>language==='en'?(english[c]??c):c).join(' '):'');
+}
 export function productPath(product,language='fr'){
- const path='/pagnes/'+encodeURIComponent(product.id)+'/'+slug(product.name);
+ const path='/pagnes/'+encodeURIComponent(product.id)+'/'+slug(productSeoName(product));
  return path+(language==='en'?'?lang=en':'');
 }
 export function productIdFromPath(path){
@@ -22,9 +29,9 @@ export function productIdFromPath(path){
  return match?.[1]??null;
 }
 export function translatedProduct(product,language='fr'){
- if(language!=='en')return product;
+ if(language!=='en')return {...product,name:productSeoName(product,language)};
  const en=product.translations?.en;
- return {...product,name:en?.name||`Faso Dan Fani ${product.number}`,description:en?.description||'Contact our family shop in Burkina Faso for more information about this Faso Dan Fani pagne.',pattern:en?.pattern||'',composition:en?.composition||'',dimensions:en?.dimensions||product.dimensions,unit:en?.unit||''};
+ return {...product,name:productSeoName(product,language),description:en?.description||'Contact our family shop in Burkina Faso for more information about this Faso Dan Fani pagne.',pattern:en?.pattern||'',composition:en?.composition||'',dimensions:en?.dimensions||product.dimensions,unit:en?.unit||''};
 }
 export function publicProducts(document){return document.products.filter(p=>p.published!==false&&p.photos?.length>0);}
 export function productImage(product,variants={}){const photo=product.photos[0];return '/'+(variants[photo.src]?.display??photo.src).replace(/^\//,'');}
@@ -40,7 +47,7 @@ export function productMetadata(product,variants={},language='fr'){
  const p=translatedProduct(product,language),en=language==='en',unavailable=product.availability==='unavailable';
  const priced=Number.isFinite(product.price)?new Intl.NumberFormat(en?'en-GB':'fr-BF').format(product.price)+' CFA'+(en?' excluding delivery.':' hors livraison.'):(en?' Price on request.':' Prix sur demande.');
  const action=unavailable?(en?'Currently unavailable.':'Indisponible pour le moment.'):(en?'Browse the photos and prepare your order. Availability confirmed by the shop.':'Consultez les photos et préparez votre commande. Disponibilité confirmée par la boutique.');
- return {title:en?`${p.name} — ${unavailable?'Faso Dan Fani fabric':'Shop Faso Dan Fani'}`:`${p.name} — ${unavailable?'Pagne Faso Dan Fani':'Acheter un pagne Faso Dan Fani'}`,description:`${p.name} · Faso Dan Fani. ${priced} ${action}`,path:productPath(product,language),image:productImage(product,variants),imageAlt:p.name,type:'product'};
+ return {title:p.name,description:`${p.name}. ${priced} ${action}`,path:productPath(product,language),image:productImage(product,variants),imageAlt:p.name,type:'product'};
 }
 export function structuredProduct(product,variants,origin,language='fr'){
  const p=translatedProduct(product,language),url=origin+productPath(product,language);

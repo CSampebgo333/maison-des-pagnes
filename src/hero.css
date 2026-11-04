@@ -1,35 +1,46 @@
-/* Use the full banner as a photographic canvas. On wide screens the folded
-   fabric lies horizontally, so it can fill the width without being cropped. */
+/* One photographic canvas, filled in both orientations. Text overlays the
+   photograph; only the image is cropped, never the controls or the copy. */
 .storefront .storefront-hero {
- display:flex; align-items:center; min-height:calc(var(--storefront-header-height,110px) + 650px);
- padding:calc(var(--storefront-header-height,110px) + 52px) 6% 64px;
+ display:flex;align-items:flex-end;isolation:isolate;min-height:max(680px,100svh);
+ padding:calc(var(--storefront-header-height,110px) + 48px) 6% 7svh;
+ background:#4d3a51;
 }
 .storefront .hero-photograph {
- position:absolute; inset:var(--storefront-header-height,110px) 0 0;
- z-index:-2; width:auto; height:auto; min-width:0; overflow:hidden;
- max-height:max(1px,calc(100svh - var(--storefront-header-height,110px)));
- container-type:size; background:#e1e2df;
+ position:absolute;inset:0;z-index:-2;width:100%;height:100%;max-height:none;
+ min-width:0;overflow:hidden;container-type:size;border-radius:0;
 }
-.storefront .hero-photograph .hero-slide { display:block; }
+.storefront .hero-photograph .hero-slide {display:block;}
 .storefront .hero-photograph img {
- --fabric-width:min(133.333333cqh,100cqw);
- display:block; position:absolute; flex:none;
- width:min(100cqh,75cqw); height:var(--fabric-width); max-width:none; max-height:none;
- left:calc(100% - var(--fabric-width) / 2); top:50%;
- translate:-50% -50%; rotate:90deg;
- object-fit:contain; object-position:center; user-select:none;
- mask-image:linear-gradient(90deg,transparent,#000 3%,#000 97%,transparent),linear-gradient(0deg,transparent,#000 3%,#000 97%,transparent);
- mask-composite:intersect;
+ display:block;position:absolute;left:50%;top:50%;translate:-50% -50%;
+ width:100cqw;height:100cqh;max-width:none;max-height:none;
+ object-fit:cover;object-position:center;rotate:none;mask-image:none;
+ transform:scale(1.27);user-select:none;
 }
-.storefront .hero-copy { position:relative; width:56%; max-width:720px; min-width:0; padding:0; }
+@media(min-aspect-ratio:1/1){
+ .storefront .hero-photograph img {width:100cqh;height:100cqw;rotate:90deg;}
+}
 .storefront .storefront-hero::before {
- inset:var(--storefront-header-height,110px) 0 0;
- background:linear-gradient(90deg,#f0edebfa 0%,#f0edebed 18%,#f0edebbd 34%,#f0edeb40 54%,#f0edeb00 72%);
+ display:block;content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;
+ background:linear-gradient(0deg,#201322dc 0%,#25172a9c 23%,#25172a21 57%,transparent 78%);
 }
-@media(max-width:760px) {
- .storefront .storefront-hero { min-height:calc(var(--storefront-header-height,200px) + 620px); padding:calc(var(--storefront-header-height,200px) + 44px) 6% 48px; }
- .storefront .hero-copy { width:100%; max-width:540px; padding:0; }
- .storefront .hero-photograph { inset:var(--storefront-header-height,200px) 0 0; max-height:max(1px,calc(100svh - var(--storefront-header-height,200px))); }
- .storefront .hero-photograph img { width:100%; height:100%; left:50%; top:50%; rotate:none; object-fit:contain; object-position:center; }
- .storefront .storefront-hero::before { inset:var(--storefront-header-height,200px) 0 0; background:linear-gradient(90deg,#f0edebf5 0%,#f0edebe0 48%,#f0edeb70 100%); }
+.storefront .storefront-hero::after {display:block;}
+.storefront .hero-copy {position:relative;width:100%;max-width:650px;min-width:0;padding:0;color:#fff;}
+.storefront .hero-copy .eyebrow {color:#fff;font-size:12px;letter-spacing:.16em;line-height:1.5;text-shadow:0 1px 12px #20132280;}
+.storefront .hero-copy h1 {font-size:clamp(56px,6.5vw,98px);line-height:1;letter-spacing:-.035em;color:#fff;margin:16px 0 20px;text-shadow:0 2px 24px #20132240;}
+.storefront .hero-copy h1 em {color:#fff;}
+.storefront .hero-copy .hero-intro-desktop {display:none;}
+.storefront .hero-copy .hero-intro-mobile {display:block;max-width:36ch;color:#fff;font-size:21px;line-height:1.4;margin:0;}
+.storefront .hero-copy .primary-button {margin-top:24px;min-height:50px;background:#fff;color:#553747;border:1px solid #fff;padding:14px 24px;box-shadow:0 3px 24px #20132220;}
+.storefront .hero-copy .primary-button:hover {background:#f4edf5;color:#442c39;}
+.storefront .hero-signature {display:none;}
+@media(max-width:900px){
+ .storefront .storefront-hero {min-height:max(640px,100svh);padding:calc(var(--storefront-header-height,120px) + 40px) 24px max(32px,6svh);}
+ .storefront .hero-copy {max-width:540px;}
+ .storefront .hero-copy .eyebrow {font-size:10px;letter-spacing:.13em;}
+ .storefront .hero-copy h1 {font-size:clamp(40px,10.7vw,66px);margin:13px 0 16px;}
+ .storefront .hero-copy .hero-intro-mobile {font-size:18px;max-width:33ch;}
+ .storefront .hero-copy .primary-button {display:flex;justify-content:center;width:100%;font-size:18px;padding:13px 16px;margin-top:22px;}
+}
+@media(max-height:520px) and (orientation:landscape){
+ .storefront .storefront-hero {min-height:620px;}
 }

@@ -80,7 +80,7 @@ export default function ProductViewer({ product }: { product: Product }) {
       }}
       onPointerUp={(event) => { pointers.current.delete(event.pointerId); if (!pointers.current.size) setDragging(false); pinch.current = 0; }}
       onPointerCancel={(event) => { pointers.current.delete(event.pointerId); setDragging(false); pinch.current = 0; }}>
-      <ProgressiveImage key={displaySrc} src={displaySrc} preview={zoom > 1 ? variant.display : variant.thumbnail} alt={`Faso Dan Fani · ${product.name} — ${photo.label}`} draggable={false} fetchPriority="high" style={{ transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})` }} />
+      <ProgressiveImage key={displaySrc} src={displaySrc} preview={zoom > 1 ? variant.display : variant.thumbnail} alt={`${product.name} — ${photo.label}`} draggable={false} fetchPriority="high" style={{ transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})` }} />
       <span className="view-caption">{photo.label}</span>
       <span className="view-counter">{index + 1} / {product.photos.length}</span>
     </div>

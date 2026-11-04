@@ -60,9 +60,9 @@
 @keyframes hero-mobile-reveal {from{transform:scale(.9152);}to{transform:scale(1.04);}}
 @media(prefers-reduced-motion:reduce){.storefront .hero-slide.is-current img{animation:none;}}
 
-/* Desktop colour comparison: white lettering with no text-side scrim. */
+/* White desktop lettering over a softer, left-to-right plum gradient. */
 @media(min-width:901px){
- .storefront .storefront-hero::before {background:none;}
+ .storefront .storefront-hero::before {background:linear-gradient(90deg,rgba(33,22,37,.85) 0%,rgba(33,22,37,.5) 22%,transparent 65%);}
  .storefront .hero-copy,
  .storefront .hero-copy .eyebrow,
  .storefront .hero-copy h1,

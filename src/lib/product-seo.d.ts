@@ -6,6 +6,7 @@ export const SITE_ALTERNATE_NAMES:string[];
 export function websiteStructuredData(origin:string):Record<string,unknown>;
 export function publicOrigin(value?:string):string|null;
 export function pageLanguage(url:URL):'fr'|'en';
+export function productSeoName(product:Product,language?:string):string;
 export function productPath(product:Product,language?:string):string;
 export function productIdFromPath(path:string):string|null;
 export function translatedProduct(product:Product,language?:string):Product;

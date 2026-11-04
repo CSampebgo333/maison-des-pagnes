@@ -53,3 +53,11 @@ Références : [extraits Google](https://developers.google.com/search/docs/appea
 ## Page Collection
 
 `/collection` et `/collection?lang=en` affichent le catalogue complet, y compris les rangées au-delà des trois de l’accueil. Les liens de navigation, les retours des fiches, les canoniques, les alternatives linguistiques et le sitemap pointent vers cette page. Le HTML serveur contient les produits avant JavaScript ; la version interactive ajoute recherche, filtres et grille responsive. Les rangées supplémentaires sont conservées dans le champ existant `collectionRow`, sans migration SQL.
+
+### Noms discrets et URL par couleurs
+
+Le catalogue public utilise un nom descriptif généré : `Faso Dan Fani - Violet Blanc`, à partir des deux premières couleurs distinctes renseignées dans l’administration. L’ordre des couleurs doit donc refléter leur importance visuelle. Pour un pagne uni, une seule couleur suffit. Les anciens noms restent disponibles dans l’administration et dans l’index de recherche ; aucune donnée historique de commande n’est réécrite.
+
+Sur les écrans de 900 px ou moins, les titres ne prennent plus de place sur les cartes, fiches, choix à la une ou récapitulatifs de sélection. Les couleurs sous les cartes sont également masquées visuellement, sans être retirées de l’arbre d’accessibilité. Les photos, prix et descriptions restent visibles. Les grands écrans conservent leur présentation antérieure, dont les noms usuels des pagnes. Les lecteurs d’écran conservent des libellés explicites ; les fiches possèdent un H1 accessible mais visuellement masqué sur petit écran. Les métadonnées HTML et données Product utilisent les noms descriptifs, avec couleurs traduites en anglais ; les photos et commandes conservent des libellés accessibles.
+
+Les URL utilisent des tirets, par exemple `/pagnes/pagne1/faso-dan-fani-violet-blanc`. L’identifiant stable distingue les modèles qui partagent les mêmes couleurs. Les anciennes URL redirigent en HTTP 301 vers la version actuelle, sans perdre la langue. Le sitemap et les liens canoniques suivent automatiquement ces URL. Le référencement dépend aussi du contenu et des moteurs de recherche ; aucun classement n’est garanti.

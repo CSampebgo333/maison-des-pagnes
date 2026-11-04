@@ -3,7 +3,7 @@ import { ArrowLeft, ArrowRight } from 'lucide-react';
 import { t } from '../lib/i18n';
 import { collectionPosition, collectionPageTarget, collectionDrag, type CollectionGeometry } from '../lib/collection-scroll';
 
-export default function CollectionCarousel({ children, resetKey, label }: { children: ReactNode; resetKey: string; label?: string }) {
+export default function CollectionCarousel({ children, resetKey, label, grid=false }: { children: ReactNode; resetKey: string; label?: string; grid?:boolean }) {
   const items = Children.toArray(children), count = items.length;
   const track = useRef<HTMLDivElement>(null);
   const id = useId();
@@ -53,8 +53,9 @@ export default function CollectionCarousel({ children, resetKey, label }: { chil
     return () => { row.removeEventListener('scroll', refresh); observer?.disconnect(); window.removeEventListener('resize', refresh); clearTimeout(unblock.current); };
   }, [count, resetKey]);
 
+  if(grid)return <div className="collection-product-grid" role="list" aria-label={label}>{items.map((item,index)=><div role="listitem" key={(item as {key?:string}).key??index}>{item}</div>)}</div>;
   return <div className="collection-carousel" role="region" aria-roledescription={t('Carrousel')} aria-label={label ?? t('Parcourir la collection')}>
-    <div className="collection-carousel-heading"><p id={id + '-hint'}>{t('Faites glisser pour découvrir les autres pagnes.')}</p><div className="collection-arrows">
+    <div className="collection-carousel-heading"><span id={id + '-hint'} className="sr-only">{t('Faites glisser pour découvrir les autres pagnes.')}</span><div className="collection-arrows">
       <button onClick={() => move(-1)} disabled={!position.previous} aria-label={t('Pagnes précédents')} aria-controls={id}><ArrowLeft size={20}/></button>
       <button onClick={() => move(1)} disabled={!position.next} aria-label={t('Pagnes suivants')} aria-controls={id}><ArrowRight size={20}/></button>
     </div></div>
@@ -99,7 +100,7 @@ export default function CollectionCarousel({ children, resetKey, label }: { chil
       onClickCapture={event => { if (blockClick.current || drag.current?.active) { event.preventDefault(); event.stopPropagation(); } }}>
       {items.map((item, index) => <div className="collection-slide" role="listitem" key={(item as { key?: string }).key ?? index}>{item}</div>)}
     </div>
-    <div className="collection-carousel-footer"><p role="status" aria-live="polite">{t('Pagnes {0} à {1} sur {2}', position.first, position.last, count)}</p>
+    <div className="collection-carousel-footer">
       {position.pages > 1 && <div className="collection-pagination" role="group" aria-label={t('Pages de la collection')}>{Array.from({ length: position.pages }, (_, page) => <button key={page} aria-label={t('Afficher la page {0} de la collection', page + 1)} aria-current={page === position.page ? 'page' : undefined} aria-controls={id} onClick={() => scroll(collectionPageTarget(page, geometry()))}><span/></button>)}</div>}
     </div>
   </div>;

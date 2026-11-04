@@ -17,3 +17,10 @@ test('Déplacer un article conserve les filtres et le tri, sans modifier les aut
  assert.deepEqual(filtered[1].products.map(p=>p.id),['c','a']);
  assert.equal(products[0].collectionRow,undefined);
 });
+test('Additional rows remain visible in the full collection and never enter the three home rows',()=>{
+ const products=[{id:'a',number:1},{id:'extra',number:13,collectionRow:4},{id:'last',number:14,collectionRow:50}];
+ const rows=groupCollectionRows(products);
+ assert.deepEqual(rows.filter(r=>r.id<=3).flatMap(r=>r.products.map(p=>p.id)),['a']);
+ assert.deepEqual(rows.flatMap(r=>r.products.map(p=>p.id)),['a','extra','last']);
+ assert.equal(productCollectionRow({collectionRow:51}),1);
+});

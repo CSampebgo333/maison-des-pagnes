@@ -79,7 +79,7 @@ export async function catalogueRoute(request,env) {
    const products=[];
    for(const p of body.products){
     if(!p||typeof p.id!=='string'||!/^[a-zA-Z0-9-]{1,80}$/.test(p.id)||ids.has(p.id)||!Number.isInteger(p.number)||p.number<1||numbers.has(p.number))throw Error('Identifiant de pagne invalide.');ids.add(p.id);numbers.add(p.number);
-    if(p.collectionRow!==undefined&&![1,2,3].includes(p.collectionRow))throw Error('Choisissez une rangée de la collection valide.');
+    if(p.collectionRow!==undefined&&(!Number.isInteger(p.collectionRow)||p.collectionRow<1||p.collectionRow>50))throw Error('Choisissez une rangée de la collection valide.');
     if(!Number.isInteger(p.price)||p.price<1||p.price>10000000)throw Error('Indiquez un prix positif en CFA.');
     if(!STATES.includes(p.availability)||!Array.isArray(p.occasions)||p.occasions.some(o=>!OCCASIONS.includes(o))||p.occasions.length>6)throw Error('Choisissez la disponibilité et les occasions.');
     if(!Array.isArray(p.photos)||p.photos.length<1||p.photos.length>8)throw Error('Ajoutez entre une et huit photos par pagne.');

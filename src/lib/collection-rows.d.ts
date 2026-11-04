@@ -1,4 +1,4 @@
-export type CollectionRow = 1 | 2 | 3;
+export type CollectionRow = number;
 type RowProduct = {number?:number;collectionRow?:number};
 export const COLLECTION_ROWS: readonly {id:CollectionRow;title:string}[];
 export function productCollectionRow(product:RowProduct):CollectionRow;

@@ -28,7 +28,7 @@ test('Une rangée est conservée à la création, au déplacement et après rech
  assert.equal((await preserved.json()).products.find(p=>p.id===created.id).collectionRow,2);
 });
 test('Les rangées inconnues sont refusées sans écraser le catalogue',async()=>{
- for(const invalid of [0,4,-1,1.5,'2',null]){
+ for(const invalid of [0,51,-1,1.5,'2',null]){
   const e=env(),products=seed.products.map(enrich);products[0]={...products[0],collectionRow:invalid};
   const response=await catalogueRoute(request('/api/admin/catalogue','PUT',{revision:'initial',products}),e);
   assert.equal(response.status,400);assert.equal((await (await catalogueRoute(request('/api/catalogue'),e)).json()).revision,'initial');

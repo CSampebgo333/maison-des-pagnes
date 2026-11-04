@@ -59,17 +59,3 @@
 }
 @keyframes hero-mobile-reveal {from{transform:scale(.9152);}to{transform:scale(1.04);}}
 @media(prefers-reduced-motion:reduce){.storefront .hero-slide.is-current img{animation:none;}}
-
-/* White desktop lettering over a softer, left-to-right warm charcoal gradient. */
-@media(min-width:901px){
- .storefront .storefront-hero::before {top:0;background:linear-gradient(90deg,rgba(33,23,29,.85) 0%,rgba(33,23,29,.5) 22%,transparent 65%);}
- .storefront .hero-copy,
- .storefront .hero-copy .eyebrow,
- .storefront .hero-copy h1,
- .storefront .hero-copy h1 em,
- .storefront .hero-copy .hero-intro-desktop,
- .storefront .hero-copy .hero-signature {color:#fff;}
- .storefront .hero-copy .primary-button {background:#fff;color:#553747;border:1px solid #fff;}
- .storefront .hero-copy .primary-button:hover {background:#f4edf5;color:#553747;}
- .storefront .hero-copy .primary-button:focus-visible {outline:2px solid #fff;outline-offset:4px;}
-}

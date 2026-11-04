@@ -1,3 +1,4 @@
+import {bindPhotoGestures} from '../lib/photo-gestures';
 import {t,useLanguage,localeFor} from '../lib/i18n';
 import { useEffect, useRef, useState } from 'react';
 import { ChevronLeft, ChevronRight, Minus, Plus, RotateCcw, Move } from 'lucide-react';
@@ -14,6 +15,10 @@ export default function ProductViewer({ product }: { product: Product }) {
   const [zoom, setZoom] = useState(1);
   const [pan, setPan] = useState({ x: 0, y: 0 });
   const stage = useRef<HTMLDivElement>(null);
+  const thumbnails=useRef<HTMLDivElement>(null);
+  const zoomValue=useRef(zoom);zoomValue.current=zoom;
+  const lastTouch=useRef(-Infinity);
+  const mobile=()=>window.matchMedia('(max-width:900px)').matches;
   const pointers = useRef(new Map<number, { x: number; y: number }>());
   const pinch = useRef(0);
   const [dragging, setDragging] = useState(false);
@@ -39,6 +44,7 @@ export default function ProductViewer({ product }: { product: Product }) {
     const node = stage.current;
     if (!node) return;
     const wheel = (event: WheelEvent) => {
+      if(mobile()&&!event.ctrlKey)return;
       event.preventDefault();
       setZoom((value) => clamp(value * Math.exp(-event.deltaY * .0015), 1, 4));
     };
@@ -51,13 +57,30 @@ export default function ProductViewer({ product }: { product: Product }) {
     setPan((value) => ({ x: clamp(value.x, -rect.width * (zoom - 1) / 2, rect.width * (zoom - 1) / 2), y: clamp(value.y, -rect.height * (zoom - 1) / 2, rect.height * (zoom - 1) / 2) }));
   }, [zoom]);
 
+  useEffect(()=>{
+    const node=stage.current;if(!node)return;
+    return bindPhotoGestures(node,{
+      getZoom:()=>zoomValue.current,
+      setZoom:value=>{zoomValue.current=value;setZoom(value);},
+      pan:delta=>{const rect=node.getBoundingClientRect(),z=zoomValue.current;setPan(value=>({x:clamp(value.x+delta.x,-rect.width*(z-1)/2,rect.width*(z-1)/2),y:clamp(value.y+delta.y,-rect.height*(z-1)/2,rect.height*(z-1)/2)}));},
+      resetPan:()=>setPan({x:0,y:0}),activity:()=>{lastTouch.current=performance.now();}
+    },mobile);
+  },[index,product.id]);
+
+  useEffect(()=>{
+    if(!mobile())return;
+    const strip=thumbnails.current,active=strip?.children[index] as HTMLElement|undefined;
+    if(strip&&active)strip.scrollTo({left:Math.max(0,active.offsetLeft-(strip.clientWidth-active.offsetWidth)/2),behavior:'auto'});
+  },[index]);
+
   function previous() { setIndex((value) => (value - 1 + product.photos.length) % product.photos.length); }
   function next() { setIndex((value) => (value + 1) % product.photos.length); }
 
   return <div className="product-viewer">
     <div className="viewer-stage" ref={stage} style={{ cursor: zoom > 1 ? dragging ? 'grabbing' : 'grab' : 'zoom-in' }}
-      onDoubleClick={() => { setZoom(zoom > 1 ? 1 : 2); setPan({ x: 0, y: 0 }); }}
+      onDoubleClick={() => { if(performance.now()-lastTouch.current<700)return;setZoom(zoom > 1 ? 1 : 2); setPan({ x: 0, y: 0 }); }}
       onPointerDown={(event) => {
+        if(event.pointerType==='touch'&&mobile())return;
         stage.current?.setPointerCapture(event.pointerId);
         pointers.current.set(event.pointerId, { x: event.clientX, y: event.clientY });
         setDragging(true);
@@ -91,11 +114,11 @@ export default function ProductViewer({ product }: { product: Product }) {
         <button className="icon-button" aria-label={t("Zoomer la photo")} disabled={zoom >= 4} onClick={() => setZoom(clamp(zoom + .5, 1, 4))}><Plus size={16} /></button>
         <button className="icon-button" aria-label={t("Réinitialiser la photo")} onClick={() => { setZoom(1); setPan({ x: 0, y: 0 }); }}><RotateCcw size={15} /></button>
       </div>
-      <span className="zoom-hint"><Move size={13} /> {t(" Glissez la photo agrandie")}</span>
+      <span className="mobile-gesture-hint">{t("Un doigt pour défiler · Deux doigts ou double toucher pour zoomer")}</span><span className="zoom-hint"><Move size={13} /> {t(" Glissez la photo agrandie")}</span>
     </div>
-    <div className="photo-thumbnails">
+    <div className="photo-thumbnails" role="group" aria-label={t("Photos du pagne")}>
       <button className="icon-button" aria-label={t("Photo précédente")} onClick={previous}><ChevronLeft size={18} /></button>
-      <div className="thumbnail-scroll">{product.photos.map((item, number) => <button key={item.src} className={`photo-thumbnail ${index === number ? 'is-current' : ''}`} aria-pressed={index === number} aria-label={t("Afficher {0}",item.label)} onPointerEnter={() => { if (canPrefetch()) void warmImage(imageVariant(item.src).display); }} onFocus={() => { if (canPrefetch()) void warmImage(imageVariant(item.src).display); }} onClick={() => setIndex(number)}><img src={asset(imageVariant(item.src).thumbnail)} alt="" decoding="async" /><span>{number + 1}</span></button>)}</div>
+      <div className="thumbnail-scroll" ref={thumbnails}>{product.photos.map((item, number) => <button key={item.src} className={`photo-thumbnail ${index === number ? 'is-current' : ''}`} aria-pressed={index === number} aria-label={t("Afficher {0}",item.label)} onPointerEnter={() => { if (canPrefetch()) void warmImage(imageVariant(item.src).display); }} onFocus={() => { if (canPrefetch()) void warmImage(imageVariant(item.src).display); }} onClick={() => setIndex(number)}><img src={asset(imageVariant(item.src).thumbnail)} alt="" decoding="async" /><span>{number + 1}</span></button>)}</div>
       <button className="icon-button" aria-label={t("Photo suivante")} onClick={next}><ChevronRight size={18} /></button>
     </div>
   </div>;

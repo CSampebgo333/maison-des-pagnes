@@ -62,3 +62,19 @@
 
 /* Continue the light backdrop behind the navigation without a colour seam. */
 @media(min-width:901px){.storefront .storefront-hero::before{top:0;}}
+
+/* Keep the desktop heading and collection button within a compact opening. */
+@media(min-width:901px){
+ .storefront .storefront-hero {
+  min-height:min(calc(var(--storefront-header-height,110px) + 650px),100svh);
+  padding:calc(var(--storefront-header-height,110px) + clamp(16px,3svh,32px)) 6% clamp(20px,3svh,36px);
+ }
+ .storefront .hero-copy h1 {margin:0 0 clamp(16px,2.5svh,24px);}
+ .storefront .hero-copy .hero-intro-desktop {max-width:42ch;}
+ .storefront .hero-copy .primary-button {margin-top:20px;}
+ .storefront .hero-signature {margin-top:18px;}
+}
+@media(min-width:901px) and (max-height:800px){
+ .storefront .hero-copy h1 {font-size:clamp(46px,min(6.2vw,10svh),86px);}
+ .storefront .hero-copy .hero-intro-desktop {font-size:clamp(18px,2.65svh,22px);line-height:1.4;}
+}

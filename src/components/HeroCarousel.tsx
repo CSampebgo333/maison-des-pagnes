@@ -1,4 +1,3 @@
-import {useSmallScreen} from '../lib/use-small-screen';
 import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react';
 import { ArrowRight } from 'lucide-react';
 import { t, useLanguage } from '../lib/i18n';
@@ -11,7 +10,6 @@ import { heroSlides } from '../lib/hero-slides';
 import type { Product } from '../lib/types';
 
 export default function HeroCarousel({ products }: { products: Product[] }) {
-  const smallScreen=useSmallScreen();
   const language=useLanguage(),copy=commerceCopy(language);
   const slides = useMemo(() => {
     const selected = heroSlides(products);
@@ -41,6 +39,6 @@ export default function HeroCarousel({ products }: { products: Product[] }) {
     <div className="hero-photograph">{slides.map((slide, position) => <div className={`hero-slide${position === index ? ' is-current' : ''}`} key={slide.id + slide.src} aria-hidden={position !== index}>
       <picture><img src={asset(imageVariant(failed.includes(slide.src) ? 'pagnes/pagne1-1.webp' : slide.src).display)} alt={position === index ? failed.includes(slide.src) ? t('Faso Dan Fani') : slide.name : ''} fetchPriority={position === 0 ? 'high' : 'auto'} loading={position === 0 ? 'eager' : 'lazy'} decoding="async" draggable={false} onAnimationEnd={event => { if (['hero-fit-in','hero-mobile-reveal'].includes(event.animationName) && position === index) controls.current?.finishAnimation(); }} width="1000" height="1333" onError={() => setFailed(old => old.includes(slide.src) ? old : [...old, slide.src])}/></picture>
     </div>)}</div>
-    <div className="hero-copy">{!smallScreen&&<p className="eyebrow">{copy.eyebrow}</p>}<h1 id="hero-title">{copy.heading}<br/><em>{copy.highlight}</em></h1><p className="hero-intro-desktop">{copy.intro}</p><p className="hero-intro-mobile">{t("Des pagnes tissés au Burkina Faso, à choisir et à aimer. Trouvez le vôtre.")}</p><a className="primary-button" href={collectionPath(language)}>{copy.cta}<ArrowRight size={18}/></a><span className="hero-signature">{t('Le Faso Dan Fani, une fierté à porter.')}</span></div>
+    <div className="hero-copy"><h1 id="hero-title">{copy.heading}<br/><em>{copy.highlight}</em></h1><p className="hero-intro-desktop">{copy.intro}</p><p className="hero-intro-mobile">{t("Découvrez nos pagnes Faso Dan Fani, leurs motifs et leurs prix. Préparez votre commande auprès de notre boutique familiale à Bobo-Dioulasso.")}</p><a className="primary-button" href={collectionPath(language)}>{copy.cta}<ArrowRight size={18}/></a><span className="hero-signature">{t('Le Faso Dan Fani, une fierté à porter.')}</span></div>
   </section>;
 }

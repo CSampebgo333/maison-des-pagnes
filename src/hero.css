@@ -60,10 +60,9 @@
 @keyframes hero-mobile-reveal {from{transform:scale(.9152);}to{transform:scale(1.04);}}
 @media(prefers-reduced-motion:reduce){.storefront .hero-slide.is-current img{animation:none;}}
 
-/* Desktop shares the white lettering and light CTA of the smaller views.
-   A plum scrim protects contrast while fading away over the photograph. */
+/* Desktop colour comparison: white lettering with no text-side scrim. */
 @media(min-width:901px){
- .storefront .storefront-hero::before {background:linear-gradient(90deg,#211625ed 0%,#21162599 22%,transparent 65%);}
+ .storefront .storefront-hero::before {background:none;}
  .storefront .hero-copy,
  .storefront .hero-copy .eyebrow,
  .storefront .hero-copy h1,

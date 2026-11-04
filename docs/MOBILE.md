@@ -13,3 +13,7 @@ Un déplacement à un doigt laisse défiler la page, même après un zoom. Le pi
 Les noms restent accessibles mais visuellement masqués sur petit écran. Les lignes de couleurs sont retirées du rendu des cartes et des fiches sur tous les écrans. La rangée vide sous la photo est supprimée et le bouton d’ajout est aligné avec le prix. Les couleurs du catalogue restent disponibles aux filtres et au référencement. Les métadonnées et URL par couleurs restent communes aux deux présentations.
 
 Les tests automatisés couvrent les déplacements simples, le pincement borné, le déplacement à deux doigts, le double toucher, l’annulation et le nettoyage des écouteurs. Une vérification tactile sur un téléphone physique reste recommandée, car une simulation d’événements ne reproduit pas l’arbitrage des gestes de chaque navigateur.
+
+## Continuité avec la navigation desktop
+
+Au-delà de 900 px, le fond du hero s’étend derrière la navigation. La teinte prune du voile supérieur est la même que celle du hero et sa transition se prolonge progressivement sous la barre. La ligne claire de séparation disparaît à l’entrée. Le survol et le focus conservent une surface translucide, avec des bordures de contrôle plus visibles au focus, au lieu de blanchir toute la barre. Le champ de recherche reprend une forme arrondie cohérente avec le sélecteur de langue. Après défilement et sur les pages de collection ou de produit, la navigation conserve son panneau blanc et ses textes prune. Les petits écrans restent inchangés.

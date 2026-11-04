@@ -33,3 +33,25 @@
 }
 
 .storefront a.product-image {display:block;}
+
+/* Desktop photos use the whole left pane; controls stay below the image. */
+@media(min-width:901px){
+ .product-dialog {height:min(900px,calc(100dvh - 48px));}
+ .product-page-layout .product-viewer {height:min(900px,calc(100svh - var(--storefront-header-height,110px) - 60px));}
+ .product-dialog .product-viewer,.product-page-layout .product-viewer {
+  padding:0;grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(0,1fr) 84px auto;gap:0;
+ }
+ .product-viewer .viewer-stage {grid-column:1;grid-row:1;min-height:0;border:0;border-radius:0;}
+ .product-viewer .viewer-stage>img {object-fit:contain;object-position:center;}
+ .product-viewer .photo-thumbnails {
+  grid-column:1;grid-row:2;flex-direction:row;align-items:center;justify-content:flex-start;gap:4px;min-width:0;padding:8px;background:#fff;
+ }
+ .product-viewer .photo-thumbnails>.icon-button {transform:none;width:44px;height:44px;flex:0 0 44px;}
+ .product-viewer .thumbnail-scroll {
+  position:relative;flex:1;min-width:0;width:auto;flex-direction:row;justify-content:flex-start;align-items:center;gap:8px;overflow-x:auto;overflow-y:hidden;padding:4px;scroll-snap-type:x proximity;overscroll-behavior-x:contain;touch-action:pan-x pan-y;scrollbar-width:thin;
+ }
+ .product-viewer .photo-thumbnail {width:60px;height:60px;min-height:60px;max-height:none;flex:0 0 60px;scroll-snap-align:center;}
+ .product-viewer .photo-thumbnail img {object-fit:contain;}
+ .product-viewer .zoom-toolbar {grid-column:1;grid-row:3;padding:4px 12px;min-height:44px;background:#fff;}
+ .product-viewer .zoom-group>.icon-button {width:36px;height:36px;}
+}

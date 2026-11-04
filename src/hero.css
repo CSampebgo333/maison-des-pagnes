@@ -39,7 +39,7 @@
 @media(max-width:900px){
  .storefront .storefront-hero {display:flex;align-items:flex-end;height:auto;min-height:100svh;padding:calc(var(--storefront-header-height,120px) + 40px) 24px max(28px,5svh);background:#e1e2df;}
  .storefront .hero-photograph {position:absolute;inset:var(--storefront-header-height,120px) 0 0;width:100%;height:auto;max-height:none;min-height:0;z-index:-2;border-radius:0;}
- .storefront .hero-photograph img {width:100%;height:100%;left:50%;top:50%;translate:-50% -50%;rotate:none;object-fit:contain;object-position:center top;transform-origin:center top;mask-image:none;transform:scale(1);}
+ .storefront .hero-photograph img {width:100%;height:100%;left:50%;top:50%;translate:-50% -50%;rotate:none;object-fit:contain;object-position:center top;transform-origin:center top;mask-image:none;transform:scale(1.04);}
  .storefront .hero-slide.is-current img {animation-name:hero-mobile-reveal;}
  .storefront .storefront-hero::before {display:block;inset:var(--storefront-header-height,120px) 0 0;background:linear-gradient(0deg,#211625ed 0%,#21162599 22%,transparent 65%);}
  .storefront .storefront-hero::after {display:none;}
@@ -53,5 +53,9 @@
  .storefront .hero-copy .primary-button:hover {background:#f4edf5;}
  .storefront .hero-signature {display:none;}
 }
-@keyframes hero-mobile-reveal {from{transform:scale(.88);}to{transform:scale(1);}}
+/* Medium screens retain the full hero but present the pagne horizontally. */
+@media(min-width:600px) and (max-width:900px){
+ .storefront .hero-photograph img {width:100cqh;height:100cqw;rotate:90deg;object-position:center;transform-origin:center;}
+}
+@keyframes hero-mobile-reveal {from{transform:scale(.9152);}to{transform:scale(1.04);}}
 @media(prefers-reduced-motion:reduce){.storefront .hero-slide.is-current img{animation:none;}}

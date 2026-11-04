@@ -34,16 +34,16 @@
  .storefront .storefront-hero::before { inset:var(--storefront-header-height,200px) 0 0; background:linear-gradient(90deg,#f0edebf5 0%,#f0edebe0 48%,#f0edeb70 100%); }
 }
 
-/* Small screens: give the complete photograph its own frame, so neither
-   cropping nor the copy can hide a part of the pagne. Scale 1 is the limit. */
+/* Small screens: the full hero is the photo frame. Text overlays it and
+   never reserves a smaller box. The zoom ends at the contain-fit limit. */
 @media(max-width:900px){
- .storefront .storefront-hero {display:grid;grid-template-rows:minmax(240px,1fr) auto;align-items:stretch;height:100svh;min-height:720px;padding:var(--storefront-header-height,120px) 0 0;background:#e1e2df;}
- .storefront .hero-photograph {position:relative;grid-row:1;inset:auto;width:100%;height:100%;max-height:none;min-height:0;z-index:0;border-radius:0;}
- .storefront .hero-photograph img {width:100%;height:100%;left:50%;top:50%;translate:-50% -50%;rotate:none;object-fit:contain;object-position:center;mask-image:none;transform:scale(1);}
+ .storefront .storefront-hero {display:flex;align-items:flex-end;height:auto;min-height:100svh;padding:calc(var(--storefront-header-height,120px) + 40px) 24px max(28px,5svh);background:#e1e2df;}
+ .storefront .hero-photograph {position:absolute;inset:var(--storefront-header-height,120px) 0 0;width:100%;height:auto;max-height:none;min-height:0;z-index:-2;border-radius:0;}
+ .storefront .hero-photograph img {width:100%;height:100%;left:50%;top:50%;translate:-50% -50%;rotate:none;object-fit:contain;object-position:center top;transform-origin:center top;mask-image:none;transform:scale(1);}
  .storefront .hero-slide.is-current img {animation-name:hero-mobile-reveal;}
- .storefront .storefront-hero::before {display:none;}
+ .storefront .storefront-hero::before {display:block;inset:var(--storefront-header-height,120px) 0 0;background:linear-gradient(0deg,#211625ed 0%,#21162599 22%,transparent 65%);}
  .storefront .storefront-hero::after {display:none;}
- .storefront .hero-copy {grid-row:2;width:100%;max-width:none;padding:22px 24px max(28px,4svh);color:#fff;background:linear-gradient(135deg,#493043,#302235);min-width:0;}
+ .storefront .hero-copy {width:100%;max-width:540px;padding:0;color:#fff;background:none;min-width:0;}
  .storefront .hero-copy .eyebrow {font-size:10px;letter-spacing:.13em;line-height:1.5;color:#fff;}
  .storefront .hero-copy h1 {font-size:clamp(40px,10.7vw,66px);line-height:1.02;letter-spacing:-.035em;color:#fff;margin:12px 0 14px;}
  .storefront .hero-copy h1 em {color:#fff;}

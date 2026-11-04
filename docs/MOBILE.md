@@ -1,6 +1,6 @@
 # Affichage sur téléphone et tablette
 
-Les ajustements de présentation concernent les viewports de 900 px ou moins. Le hero des grands écrans conserve son cadrage, son texte et son animation précédents. Sur petit écran, la photo remplit la surface sous la navigation avec un agrandissement limité à 1,02–1,07 pour préserver un cadrage naturel. Le diaporama respecte la préférence de réduction du mouvement.
+Les ajustements de présentation concernent les viewports de 900 px ou moins. Le hero des grands écrans conserve son cadrage, son texte et son animation précédents. Sur petit écran, la photographie complète dispose de son propre espace sous la navigation, au-dessus du texte. Son cadrage `contain` respecte les proportions et réserve la place nécessaire aux textes pour ne pas masquer le pagne. Le zoom progresse de 88 % à 100 % de la taille maximale qui tient dans ce cadre ; dès cette limite, le diaporama passe au pagne suivant. Aucune animation ne dépasse 100 %, y compris après un redimensionnement. Le diaporama respecte la préférence de réduction du mouvement.
 
 ## Consultation d’un pagne
 

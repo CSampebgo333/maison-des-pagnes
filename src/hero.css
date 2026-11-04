@@ -54,7 +54,7 @@
  .storefront .hero-signature {display:none;}
 }
 /* Medium screens retain the full hero but present the pagne horizontally. */
-@media(min-width:600px) and (max-width:900px){
+@media(min-width:480px) and (max-width:900px){
  .storefront .hero-photograph img {width:100cqh;height:100cqw;rotate:90deg;object-position:center;transform-origin:center;}
 }
 @keyframes hero-mobile-reveal {from{transform:scale(.9152);}to{transform:scale(1.04);}}

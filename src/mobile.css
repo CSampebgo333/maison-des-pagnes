@@ -18,15 +18,12 @@
 .collection-breadcrumb a {text-decoration:underline;text-underline-offset:4px;}
 .collection-full .catalogue-title {padding-top:28px;}
 .collection-full h1 {font:400 clamp(42px,5vw,68px)/1.06 var(--serif);color:var(--plum);margin-top:10px;}
-.collection-product-grid {display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:32px 24px;}
-.collection-product-grid>div {min-width:0;}
 .collection-more {display:flex;justify-content:center;padding:32px 0 42px;}
 .collection-carousel-heading {justify-content:flex-end;margin-bottom:8px;}
 .collection-carousel-footer {justify-content:center;padding:4px 0 16px;}
 .collection-row {margin-top:24px;}
 .collection-page .collection-row {margin-top:32px;}
 .header-actions a.collection-link[aria-current="page"] {text-decoration:underline;text-underline-offset:6px;}
-@media(max-width:1000px){.collection-product-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:28px 18px;}}
 @media(max-width:900px){
  /* Two compact rows with a real search field and touch targets >= 44px. */
  .storefront .storefront-header-container .site-header {--header-surface:#fff;--header-ink:#553747;--header-field:#f6f2f5;--header-border:#e7dfe5;--header-badge-ink:#fff;display:grid;grid-template-columns:minmax(0,1fr) 44px 44px 76px;gap:8px;padding:12px 16px;align-items:center;box-shadow:0 2px 14px #462f3b0b;}
@@ -75,7 +72,6 @@
  .collection-page {padding-top:calc(var(--storefront-header-height,120px) + 20px);}
  .collection-breadcrumb {padding:0 20px;font-size:15px;}
  .storefront .collection-full .catalogue-title {padding-top:20px;}
- .collection-product-grid {grid-template-columns:repeat(2,minmax(0,1fr));gap:26px 14px;}
  .collection-full h1 {font-size:44px;}
  .detail-story,.custom-request-banner,.delivery-info,.shopping-guide,.culture-note,.contact-section {margin-left:20px;margin-right:20px;}
  .custom-request-banner {padding:24px 18px;gap:20px;}
@@ -92,7 +88,7 @@
  .install-actions {gap:4px 12px;margin-top:12px;}
  .install-actions .primary-button {font-size:15px;}
 }
-@media(max-width:350px){.collection-product-grid{grid-template-columns:1fr;}.storefront .hero-copy h1{font-size:37px;}.storefront .storefront-header-container .site-header{gap:5px;padding:10px 12px;}}
+@media(max-width:350px){.storefront .hero-copy h1{font-size:37px;}.storefront .storefront-header-container .site-header{gap:5px;padding:10px 12px;}}
 @media(prefers-reduced-motion:reduce){.install-notice{animation:none;}}
 
 .storefront .collection-link {display:inline-flex;}
@@ -103,12 +99,14 @@
 /* Keep accessible labels inside the local clipping/scrolling context. */
 .product-details,.product-card,.bag-item-info,.favorite-option,.favorite-trigger {position:relative;}
 
-.mobile-featured-price,.mobile-gesture-hint {display:none;}
-@media(max-width:900px){
- /* Visually compact cards without losing their names/colours for readers. */
- .mobile-product-title,.storefront .product-color,.product-details .detail-colors {position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;clip-path:inset(50%)!important;white-space:nowrap!important;border:0!important;}
+/* Product names stay accessible without occupying visual space at any width. */
+.mobile-gesture-hint {display:none;}
+ .mobile-product-title {position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;clip-path:inset(50%)!important;white-space:nowrap!important;border:0!important;}
  .mobile-featured-price {display:inline;}
- .storefront .product-meta {justify-content:flex-end;min-height:44px;margin-top:8px;}
+ .storefront .product-meta {position:relative;min-height:0;height:0;margin:0;}
+ .storefront .product-meta .product-add {position:absolute;right:0;top:6px;}
+ .storefront .product-price {padding-right:52px;min-height:44px;}
+@media(max-width:900px){
  /* Edge-to-edge single-product view. Photos occupy the first screen;
     the details follow in the same natural vertical scrolling flow. */
  .product-dialog {left:0;top:0;transform:none;width:100%;max-height:100dvh;height:100dvh;border-radius:0;grid-template-columns:minmax(0,1fr);display:block;overflow-x:hidden;overflow-y:auto;overscroll-behavior-y:contain;}

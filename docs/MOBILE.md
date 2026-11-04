@@ -17,3 +17,7 @@ Les tests automatisés couvrent les déplacements simples, le pincement borné, 
 ## Continuité avec la navigation desktop
 
 Au-delà de 900 px, le fond du hero s’étend derrière la navigation. La teinte gris-taupe `#21171d` de l’ancienne navigation est utilisée à la fois pour le voile supérieur et le hero et sa transition se prolonge progressivement sous la barre. La ligne claire de séparation disparaît à l’entrée. Le survol et le focus conservent une surface translucide, avec des bordures de contrôle plus visibles au focus, au lieu de blanchir toute la barre. Le champ de recherche reprend une forme arrondie cohérente avec le sélecteur de langue. Après défilement et sur les pages de collection ou de produit, la navigation conserve son panneau blanc et ses textes prune. Les petits écrans restent inchangés.
+
+## Collection complète
+
+La page Collection et l’accueil utilisent le même carrousel par groupe : une seule rangée, trois pagnes visibles sur ordinateur portable et quatre à partir de 1 600 px. Le surplus reste accessible par glissement horizontal, par les flèches ou au clavier, sans retour à la ligne. La page Collection affiche tous les groupes ; l’accueil garde les trois premiers.

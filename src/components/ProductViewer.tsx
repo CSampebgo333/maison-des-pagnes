@@ -68,10 +68,9 @@ export default function ProductViewer({ product }: { product: Product }) {
   },[index,product.id]);
 
   useEffect(()=>{
-    if(!mobile())return;
     const strip=thumbnails.current,active=strip?.children[index] as HTMLElement|undefined;
     if(strip&&active)strip.scrollTo({left:Math.max(0,active.offsetLeft-(strip.clientWidth-active.offsetWidth)/2),behavior:'auto'});
-  },[index]);
+  },[index,product.id]);
 
   function previous() { setIndex((value) => (value - 1 + product.photos.length) % product.photos.length); }
   function next() { setIndex((value) => (value + 1) % product.photos.length); }

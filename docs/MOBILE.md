@@ -4,6 +4,8 @@ Les ajustements de présentation concernent les viewports de 900 px ou moins. Le
 
 ## Consultation d’un pagne
 
+Sur les écrans de plus de 900 px, la photo utilise toute la largeur du panneau gauche, sans colonne de miniatures ni marge intérieure. La vue rapide garde sa largeur et sa description à droite, et utilise davantage de hauteur disponible, dans la limite de 900 px avec une marge de 24 px au-dessus et en dessous. La photo est affichée à la plus grande taille compatible avec son cadre et ses proportions, sans découpage. Les miniatures restent sous la photo sur une seule ligne défilante, avec flèches et recentrage automatique de la miniature active. Le zoom, la molette, le double-clic et le pincement sur ordinateur tactile restent disponibles. Ces règles sont limitées au desktop.
+
 La vue rapide occupe tout l’écran. La photo et ses commandes sont regroupées dans la première hauteur d’écran, puis les informations du produit se lisent en faisant défiler. La fiche ouverte par son URL utilise la même visionneuse. L’image complète est conservée dans le cadre, sans étirement ni découpage forcé des motifs.
 
 Les miniatures forment une bande horizontale défilante, avec flèches et boutons accessibles. La miniature active reste visible lorsque les flèches changent la photo. Chaque nouvelle photo réinitialise le zoom.

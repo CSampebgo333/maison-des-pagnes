@@ -1,63 +1,43 @@
-# Référencement de la boutique
+# Référencement — Maison du Faso Dan Fani
 
-## Propriété Search Console et balise de vérification
+Le domaine commercial est `https://fasodanfani.shop`. La configuration publique exige `PUBLIC_SITE_URL` avec cette origine HTTPS. Les aperçus privés laissent cette valeur vide : robots bloqués, `noindex, nofollow`, pas de canoniques publiques ni d’entrées de sitemap. Le DNS de validation Search Console existant est conservé ; aucune fausse balise de vérification n’est ajoutée.
 
-La propriété de domaine `fasodanfani.shop` se vérifie dans le DNS Cloudflare avec le TXT fourni par Google. Dans Search Console, ouvrir Paramètres > Validation de la propriété pour retrouver la méthode utilisée. Conserver la vraie valeur `google-site-verification=…` fournie par Google ; un texte d’exemple ou des points de suspension ne remplacent pas le code réel. Le changement de code du site ne supprime pas ce record DNS.
+## Pages, langues et identité
 
-Pour cette propriété de domaine déjà vérifiée, aucune balise HTML supplémentaire n’est nécessaire et aucune valeur Google n’est inventée dans le dépôt. La vérification prouve la propriété du site ; elle ne garantit pas sa position dans les résultats.
+L’accueil, `/collection`, les fiches `/pagnes/{id}/{nom-descriptif}` et les trois pages `/faso-dan-fani`, `/notre-maison`, `/livraison-et-commandes` sont disponibles en français et en anglais. L’anglais conserve le chemin français avec `?lang=en`. Les URL existantes restent stables ; les anciennes adresses de fiche redirigent en 301 si leurs couleurs changent. Les variantes ont leur canonique propre et des hreflang FR/EN/x-default réciproques.
 
-La méthode « Balise HTML » concerne les propriétés de type préfixe d’URL, par exemple `https://fasodanfani.shop/`. Si elle est choisie pour une propriété distincte, copier la balise exacte depuis la procédure de vérification et la placer dans le `<head>` du fichier racine `index.html`, après la déclaration du jeu de caractères et avant `</head>`. Ne pas la mettre dans un composant React, le corps de page, la description ou `robots.txt`. Le générateur de pages conserve une balise de vérification existante. L’ajout d’un autre propriétaire nécessite son accord ; une balise fournie par un tiers ne doit pas être ajoutée sans comprendre à quel compte elle appartient.
+Le nom du WebSite et `og:site_name` est **Maison du Faso Dan Fani**, cohérent avec l’organisation et l’interface. Les variantes orthographiques du terme culturel ne sont plus déclarées comme noms alternatifs artificiels de la boutique. Le titre commercial principal et le design du hero validés restent conservés.
 
-## Contrôles du head
+Les métadonnées et données structurées sont partagées par le Worker et le navigateur. L’accueil utilise WebPage, la collection CollectionPage/ItemList, les fiches Product/Offer/BreadcrumbList et les pages éditoriales AboutPage ou WebPage avec fil d’Ariane. Le logo, les téléphones et les zones desservies sont réels ; aucune adresse, certification, note ou politique de retour complète n’est inventée.
 
-Les titres, descriptions, canoniques et hreflang identifient l’accueil et chaque fiche en français et en anglais. Le JSON-LD de l’accueil utilise « Faso Dan Fani » comme nom préféré du site (WebSite), avec « Fasodanfani », « Faso Dan-fani » et « Faso Danfani » comme noms alternatifs. Les balises og:site_name utilisent le même nom court. L’organisation éditrice reste « Maison du Faso Dan Fani ». Cette préférence de nom est commune aux versions française et anglaise ; elle ne garantit ni le nom retenu par Google ni un classement pour ces expressions. L’image de partage choisie conserve son adresse HTTPS, son texte alternatif, ses dimensions 800 × 800 et son format JPEG. Les fiches ne réutilisent pas à tort ces dimensions pour leurs autres photos. Les en-têtes HTTP de langue respectent la langue déclarée par la réponse HTML.
+## Catalogue réellement enregistré
 
-Avant un déploiement sur un Custom Domain public, le validateur exige `PUBLIC_SITE_URL` avec le domaine réellement configuré, des canoniques FR/EN cohérentes, des pages indexables et un robots.txt ouvert au crawl. Il arrête le déploiement plutôt que publier par erreur un build d’aperçu privé marqué noindex. Les aperçus privés sans route de domaine public restent non indexables. Aucune balise de mots-clés artificiels ni code de suivi publicitaire n’est ajouté.
+D1/R2 reste la source prioritaire des textes, prix et disponibilités. Une erreur de stockage sur les routes commerciales produit un 503 réessayable plutôt qu’un catalogue statique trompeur. Les pages éditoriales restent accessibles sans dépendre du stockage du catalogue.
 
-## Pages et catalogue
+Les douze descriptions ont été réécrites individuellement après contrôle des photographies. Les remplacements FR/EN et les textes précédents figurent dans [PRODUCT-COPY-REVIEW.md](PRODUCT-COPY-REVIEW.md). Le catalogue initial vient de `config/pagnes.json`, puis de `scripts/prepare-catalogue.mjs` : la génération conserve les disponibilités confirmées.
 
-L’accueil présente clairement la vente de pagnes dès son titre, son introduction et son bouton vers les modèles et les prix. Ces textes commerciaux sont partagés entre le HTML initial et la boutique interactive, en français et en anglais. Il ajoute aussi des conseils courts pour choisir, commander et se faire livrer. Chaque article publié dispose d’une fiche `/pagnes/{id}/{nom-descriptif}`. L’identifiant évite les collisions entre deux noms et permet une redirection 301 lorsqu’un nom change. L’anglais utilise le même chemin avec `?lang=en` ; le français et l’anglais ont chacun leur canonique, leurs balises hreflang, leur titre et leur description. Les anciennes adresses `/index.en` et `/index.en.html` redirigent vers `/?lang=en`.
+Pour un catalogue déjà enregistré, l’actualisation administrateur sauvegarde le document existant, compare sa révision et applique uniquement les champs correspondant à la référence connue. Une modification ultérieure par la gestion, une photo remplacée ou un prix différent ne sont pas écrasés. Voir [SEO-ROLLOUT.md](SEO-ROLLOUT.md). Les stocks précis de démonstration restent distincts de la disponibilité générale confirmée par le propriétaire.
 
-Le Worker lit le catalogue enregistré pour générer les fiches, les liens HTML de l’accueil et `/sitemap.xml`. Un ajout dans la gestion devient donc découvrable sans nouveau build. Les prix et disponibilités proviennent du même catalogue que la boutique. Un article masqué ou supprimé est retiré des liens et du sitemap et renvoie 404. Une indisponibilité temporaire du stockage renvoie 503 avec `Retry-After`, sans publier un ancien catalogue à la place.
+## Titres et photographies
 
-La réponse HTML contient le nom, les photos, le prix, la description et les caractéristiques renseignées avant le chargement de JavaScript. La boutique interactive garde le zoom, les favoris, la sélection et les demandes de commande. Les photos et les noms de la collection sont des liens HTML ; la vue rapide reste un bouton séparé.
+Les noms des pagnes restent masqués visuellement **sur tous les écrans**, tout en conservant les titres et liens nécessaires aux lecteurs d’écran. Les lignes de couleurs sous les photos restent retirées. Les couleurs alimentent toujours les filtres, les noms SEO et les URL, sans paragraphes invisibles de mots-clés.
 
-## Métadonnées
+Les alternatives des photos distinguent les vues vérifiées : plié de face, partiellement déplié, drapé, gros plan et autre angle. Les nouveaux articles utilisent les libellés fournis par la gestion. Les miniatures et versions scene/display demeurent versionnées, et les originaux restent disponibles pour le zoom. Les images d’archives sont locales, compressées et créditées : [EDITORIAL-IMAGE-CREDITS.md](EDITORIAL-IMAGE-CREDITS.md).
 
-Le domaine public doit être fourni au build avec `PUBLIC_SITE_URL=https://fasodanfani.shop`. Le build transmet cette origine au Worker. Les adresses de canonique, d’images sociales et du sitemap utilisent cette origine configurée, jamais un en-tête Host fourni par le visiteur. Les aperçus sans cette variable servent `noindex, nofollow`, bloquent les robots et ne publient aucun produit dans leur sitemap.
+Le hero ne monte que les photos courante et précédente ; une seule suivante peut être anticipée sur connexion adaptée. Des sources responsive et des priorités limitées évitent de charger toutes les photos du carrousel immédiatement. La réduction du mouvement est respectée. Les performances terrain nécessitent une mesure après publication, distincte des contrôles de build.
 
-Chaque fiche possède des données structurées Product et BreadcrumbList. Le prix en XOF est inclus seulement lorsqu’il est renseigné. Le stock est déclaré InStock ou OutOfStock uniquement pour une disponibilité explicitement confirmée ; le statut « à confirmer » ne devient pas une fausse promesse de stock. Aucun avis, note, fabricant, délai ou tarif de livraison n’est inventé. Les caractéristiques absentes restent absentes. L’éligibilité et l’affichage d’un résultat enrichi restent à la décision de Google.
+## HTML, sitemap et confidentialité
 
-L’accueil conserve la cinquième photo lavande choisie pour les aperçus sociaux. Les fiches produit utilisent la photo principale de l’article. Les commandes, PDF, API et outils de gestion ne figurent jamais dans le sitemap. Les données du catalogue sont échappées avant insertion dans le HTML et le JSON-LD.
+Le HTML initial contient les descriptions, les prix, les photos et les vrais liens vers les fiches, même si un carrousel n’affiche qu’une portion de sa rangée. Les pages éditoriales utilisent exactement le même générateur de contenu que React. Le contenu est échappé avant insertion HTML et JSON-LD.
 
-## Descriptions et images dans Google
+Le sitemap dynamique reprend tous les articles publiés, leurs photos et les nouvelles pages dans les deux langues : **34 URL pour les douze modèles initiaux**. Un ajout ou masquage dans le catalogue se reflète dans le sitemap. Les produits masqués/supprimés renvoient 404 ; une rupture temporaire conserve la fiche avec la disponibilité adéquate.
 
-Le titre français proposé est « Faso Dan Fani — Vente de pagnes au Burkina Faso ». La description invite à comparer les motifs, consulter les prix et préparer une commande, avec les villes de livraison réellement prises en charge. Les fiches indiquent le prix courant hors livraison et distinguent les articles indisponibles. Le paragraphe culturel reste visible, mais son conteneur porte `data-nosnippet` pour ne plus servir de description de résultat. Google choisit toutefois ses propres titres et extraits selon la requête ; une métadescription ne les impose pas.
+Les API et PDF privés portent des en-têtes `noindex` et `no-store`. Les pages de gestion sont non indexables, même lorsque le paramètre `gestion` n’est pas le premier de l’URL. L’aperçu reste exclu des moteurs. Aucun outil publicitaire ou suivi visiteur supplémentaire n’est ajouté.
 
-Le sitemap utilise l’extension image : chaque fiche liste ses photos publiques, et les accueils relient les photos principales du catalogue et l’image lavande choisie. Les données structurées ajoutent une CollectionPage et sa liste d’articles publiés, ainsi qu’un ImageObject représentatif ; les fiches relient leur image principale à leur WebPage. Les pages publiques autorisent `max-image-preview:large` pour Googlebot. Le favicon PNG carré complète le SVG. Le favicon, l’image de partage WhatsApp et la miniature de résultat Google remplissent des rôles différents ; aucune de ces balises ne garantit une miniature.
+## Suivi
 
-Le catalogue en ligne reste la source des images, des prix et des liens. Aucun stock, avis, réduction, service de paiement ou détail commercial absent n’est inventé pour obtenir un résultat enrichi.
+Le diagnostic initial, les seize points, la procédure de publication, les compléments attendus et le suivi Search Console sont documentés dans [SEO-ROLLOUT.md](SEO-ROLLOUT.md). Les textes de profils, idées de publications et vérifications GBP/Merchant Center sont dans [SEO-EXTERNAL-PRESENCE.md](SEO-EXTERNAL-PRESENCE.md).
 
-## Vérifier après fusion et déploiement
+Les objectifs LCP ≤ 2,5 s, INP ≤ 200 ms et CLS ≤ 0,1 ne sont pas déclarés atteints sans mesure. Ni le balisage, ni un sitemap, ni une réécriture ne garantissent un classement ou l’affichage d’un résultat enrichi.
 
-1. Ouvrir une fiche depuis la collection, recharger son adresse, changer de langue et vérifier le prix, les photos et l’ajout à la sélection.
-2. Ouvrir `https://fasodanfani.shop/sitemap.xml`. Pour les douze pagnes initiaux publiés, il contient vingt-huit adresses : deux accueils, deux pages Collection et vingt-quatre variantes de fiches. Le nombre évolue avec les articles publiés. Vérifier aussi les entrées `image:image` et l’accès public aux photos.
-3. Dans Search Console, inspecter l’accueil français, sa variante anglaise et quelques fiches représentatives puis lancer un test en direct. Vérifier le HTML rendu, l’accès Google, les variantes linguistiques et l’absence de blocage Cloudflare. Demander l’indexation des fiches représentatives et laisser Google traiter le sitemap existant.
-4. Valider les données produit avec le test des résultats enrichis de Google. Une propriété facultative absente n’autorise pas à inventer sa valeur.
-5. Suivre les impressions, requêtes, clics et positions dans Performances. Comparer les tendances sur plusieurs semaines, pas uniquement une recherche personnelle. Les changements ne garantissent pas une position ni une date d’apparition.
-
-Pour développer ensuite la visibilité, publier des informations utiles et vérifiables sur la boutique, les modèles, les dimensions et l’entretien. Utiliser naturellement « Faso Dan Fani » dans les descriptions plutôt que répéter artificiellement toutes ses variantes orthographiques. Ajouter le lien de la boutique aux profils sociaux et aux partenaires pertinents. Aucun achat de liens ni fausse recommandation n’est nécessaire.
-
-Références : [extraits Google](https://developers.google.com/search/docs/appearance/snippet), [images Google](https://developers.google.com/search/docs/appearance/google-images), [sitemaps d’images](https://developers.google.com/search/docs/crawling-indexing/sitemaps/image-sitemaps).
-
-## Page Collection
-
-`/collection` et `/collection?lang=en` affichent le catalogue complet, y compris les rangées au-delà des trois de l’accueil. Les liens de navigation, les retours des fiches, les canoniques, les alternatives linguistiques et le sitemap pointent vers cette page. Le HTML serveur contient les produits avant JavaScript ; la version interactive ajoute recherche, filtres et grille responsive. Les rangées supplémentaires sont conservées dans le champ existant `collectionRow`, sans migration SQL.
-
-### Noms discrets et URL par couleurs
-
-Le catalogue public utilise un nom descriptif généré : `Faso Dan Fani - Violet Blanc`, à partir des deux premières couleurs distinctes renseignées dans l’administration. L’ordre des couleurs doit donc refléter leur importance visuelle. Pour un pagne uni, une seule couleur suffit. Les anciens noms restent disponibles dans l’administration et dans l’index de recherche ; aucune donnée historique de commande n’est réécrite.
-
-Sur les écrans de 900 px ou moins, les titres ne prennent plus de place sur les cartes, fiches, choix à la une ou récapitulatifs de sélection. Les lignes de couleurs sous les cartes et dans les fiches sont retirées du rendu sur tous les écrans ; les données de couleurs restent disponibles aux filtres et aux métadonnées. Les photos, prix et descriptions restent visibles. Les grands écrans conservent leur présentation antérieure, dont les noms usuels des pagnes. Les lecteurs d’écran conservent des libellés explicites ; les fiches possèdent un H1 accessible mais visuellement masqué sur petit écran. Les métadonnées HTML et données Product utilisent les noms descriptifs, avec couleurs traduites en anglais ; les photos et commandes conservent des libellés accessibles.
-
-Les URL utilisent des tirets, par exemple `/pagnes/pagne1/faso-dan-fani-violet-blanc`. L’identifiant stable distingue les modèles qui partagent les mêmes couleurs. Les anciennes URL redirigent en HTTP 301 vers la version actuelle, sans perdre la langue. Le sitemap et les liens canoniques suivent automatiquement ces URL. Le référencement dépend aussi du contenu et des moteurs de recherche ; aucun classement n’est garanti.
+Références : [site names](https://developers.google.com/search/docs/appearance/site-names), [images](https://developers.google.com/search/docs/appearance/google-images), [produits](https://developers.google.com/search/docs/appearance/structured-data/product-snippet), [langues](https://developers.google.com/search/docs/specialty/international/localized-versions), [Core Web Vitals](https://developers.google.com/search/docs/appearance/core-web-vitals).

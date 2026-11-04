@@ -40,7 +40,7 @@ export async function dispatchNotifications(env,send=fetch,now=Date.now()){
  const identity=await send(endpoint+'?fields=display_phone_number',{headers,signal:AbortSignal.timeout(10000)});
  if(!identity.ok)throw Error('WhatsApp sender verification failed.');
  const number=(await identity.json()).display_phone_number;
- if(String(number??'').replace(/\D/g,'')!==senderNumber)throw Error('WhatsApp sender does not match the shop number.');
+ if(String(number??'').replace(/\D/g,'')!==String(env.WHATSAPP_SENDER_NUMBER??senderNumber).replace(/\D/g,''))throw Error('WhatsApp sender does not match the shop number.');
  await env.DB.prepare("UPDATE order_notifications SET state='uncertain',error_code='INTERRUPTED' WHERE state='sending' AND claimed_at<?").bind(now-120000).run();
  const pending=await env.DB.prepare("SELECT n.* FROM order_notifications n JOIN orders o ON o.id=n.order_id WHERE n.state='pending' AND n.available_at<=? AND o.whatsapp_opt_in=1 AND NOT EXISTS (SELECT 1 FROM order_notifications earlier WHERE earlier.order_id=n.order_id AND earlier.id<n.id AND earlier.state IN ('pending','sending')) ORDER BY n.id LIMIT 10").bind(now).all();
  for(const event of pending.results){

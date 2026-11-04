@@ -23,7 +23,7 @@ test('Les aperçus FR/EN exposent une image absolue, ses dimensions et un texte 
    assert.match(html,/<meta property="og:image:alt" content="(?:Rayures lavande|Lavender stripes)/);
    assert.match(html,/<meta name="robots" content="index, follow"/);
    assert.doesNotMatch(html,/3D|pagne-default\.png/);
-   assert.match(html,lang==='en'?/Shop fabrics from Burkina Faso/:/Vente de pagnes au Burkina Faso/);
+   assert.match(html,lang==='en'?/Faso Dan Fani from Burkina Faso/:/Faso Dan Fani au Burkina Faso/);
   }
  } finally { process.chdir(original);if(site===undefined)delete process.env.PUBLIC_SITE_URL;else process.env.PUBLIC_SITE_URL=site;await fs.rm(directory,{recursive:true,force:true}); }
 });

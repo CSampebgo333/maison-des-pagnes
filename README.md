@@ -207,3 +207,9 @@ L’accueil conserve les trois premières rangées avec navigation horizontale. 
 Sur téléphone et tablette étroite, la navigation devient compacte sur deux lignes, avec recherche et cibles tactiles adaptées. Le bandeau présente la photo entière au-dessus d’un texte court et du bouton de découverte. Les variantes d’image de 650 px sont utilisées jusqu’à 900 px de largeur. Les formats larges gardent leur présentation photographique.
 
 L’invitation d’installation est présentée au plus une fois par 24 heures sur le même navigateur, depuis sa dernière apparition réelle. Les visites intermédiaires ne changent pas cette heure. Voir [le guide d’installation](docs/INSTALLATION.md) pour les limites par navigateur et les instructions iOS.
+
+### Histoire, culture et parcours de commande
+
+Les pages `/notre-maison`, `/faso-dan-fani` et `/livraison-et-commandes` proposent des contenus partagés entre HTML initial et interface React, en français et en anglais. Le parcours de livraison est illustré et interactif ; le guide culturel cite ses sources et crédite ses archives. Le plan SEO et les étapes restant liées aux accès Google/Meta sont décrits dans [docs/SEO-ROLLOUT.md](docs/SEO-ROLLOUT.md).
+
+La révision des douze fiches est consultable dans [docs/PRODUCT-COPY-REVIEW.md](docs/PRODUCT-COPY-REVIEW.md). Un outil administrateur applique ces textes au catalogue enregistré avec sauvegarde et protection contre l’écrasement des modifications. Les alertes WhatsApp au propriétaire sont préparées séparément et désactivées par défaut.

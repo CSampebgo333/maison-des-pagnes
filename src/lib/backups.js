@@ -5,9 +5,11 @@ const json=(value,status=200)=>new Response(JSON.stringify(value),{status,header
 export async function createBackup(env,now=new Date()){
  if(!env.DB||!env.BUCKET)throw Error('Stockage de sauvegarde indisponible.');
  // One batch gives a coherent database snapshot. Never publish a truncated backup.
- const results=await env.DB.batch(TABLES.map(table=>env.DB.prepare(`SELECT * FROM ${table} LIMIT 10001`)));
+ const ownerTable=await env.DB.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name='owner_notifications'").bind().first();
+ const tablesToSave=ownerTable?[...TABLES,'owner_notifications']:TABLES;
+ const results=await env.DB.batch(tablesToSave.map(table=>env.DB.prepare(`SELECT * FROM ${table} LIMIT 10001`)));
  if(results.some(r=>r.results.length>10000))throw Error('La base dépasse la limite de sauvegarde intégrée : utiliser l’export D1 natif.');
- const tables=Object.fromEntries(TABLES.map((name,i)=>[name,results[i].results]));
+ const tables=Object.fromEntries(tablesToSave.map((name,i)=>[name,results[i].results]));
  const data=encoder.encode(JSON.stringify({format:1,createdAt:now.toISOString(),tables}));
  if(data.length>20*1024*1024)throw Error('Sauvegarde trop volumineuse : utiliser l’export D1 natif.');
  const digest=[...new Uint8Array(await crypto.subtle.digest('SHA-256',data))].map(n=>n.toString(16).padStart(2,'0')).join('');
@@ -24,7 +26,7 @@ export async function createBackup(env,now=new Date()){
    const backupKey=prefix+'/files/'+item.key;await env.BUCKET.put(backupKey,object.body,{httpMetadata:object.httpMetadata});objects.push({key:item.key,backupKey,size:item.size,etag:item.etag});files++;
   }cursor=page.truncated?page.cursor:undefined;}while(cursor);
  }
- const summary={format:1,key,prefix,createdAt:now.toISOString(),bytes:data.length,sha256:digest,rows:Object.fromEntries(TABLES.map(name=>[name,tables[name].length])),files,objects};
+ const summary={format:1,key,prefix,createdAt:now.toISOString(),bytes:data.length,sha256:digest,rows:Object.fromEntries(tablesToSave.map(name=>[name,tables[name].length])),files,objects};
  await env.BUCKET.put(prefix+'/manifest.json',JSON.stringify(summary),{httpMetadata:{contentType:'application/json'}});
  // Updated only after database verification AND all referenced file copies succeed.
  await env.BUCKET.put('backups/latest.json',JSON.stringify({...summary,objects:undefined}),{httpMetadata:{contentType:'application/json'}});

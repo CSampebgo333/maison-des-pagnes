@@ -1,12 +1,13 @@
+import {editorialMetadata,editorialStructuredData,editorialPath,type EditorialKind} from './editorial-pages.js';
 import {useEffect} from 'react';
 import {homeMetadata,collectionMetadata,collectionPath,productMetadata,productPath,pageStructuredData,SHOP_NAME,SITE_NAME} from './product-seo.js';
 import {imageVariant} from './images';
 import type {Product} from './types';
-export function usePageMetadata(product:Product|undefined,language:'fr'|'en',productPage:boolean,ready:boolean,products:Product[]=[],collectionPage=false){
+export function usePageMetadata(product:Product|undefined,language:'fr'|'en',productPage:boolean,ready:boolean,products:Product[]=[],collectionPage=false,editorial:EditorialKind|null=null){
  useEffect(()=>{
   if(productPage&&!product&&!ready)return;
   const variants=Object.fromEntries((product?[product]:products).flatMap(item=>item.photos.map(p=>[p.src,imageVariant(p.src)])));
-  const meta=product?productMetadata(product,variants,language):collectionPage?collectionMetadata(language):homeMetadata(language);
+  const meta=editorial?editorialMetadata(editorial,language):product?productMetadata(product,variants,language):collectionPage?collectionMetadata(language):homeMetadata(language);
   const canonical=document.querySelector<HTMLLinkElement>('link[rel="canonical"]');
   const origin=canonical?new URL(canonical.href).origin:null;
   document.title=productPage&&!product?(language==='en'?'Pagne unavailable':'Pagne indisponible')+' | '+SHOP_NAME:meta.title;
@@ -17,9 +18,9 @@ export function usePageMetadata(product:Product|undefined,language:'fr'|'en',pro
    tag('googlebot','max-image-preview:large');
    canonical.href=origin+meta.path;tag('og:url',origin+meta.path,true);tag('og:image',origin+meta.image,true);tag('og:image:secure_url',origin+meta.image,true);tag('og:image:alt',meta.imageAlt,true);tag('twitter:image',origin+meta.image);tag('twitter:image:alt',meta.imageAlt);
    for(const [key,value] of [['og:image:width',meta.imageWidth],['og:image:height',meta.imageHeight],['og:image:type',meta.imageType]] as const){if(value)tag(key,String(value),true);else document.querySelector(`meta[property="${key}"]`)?.remove();}
-   for(const link of document.querySelectorAll<HTMLLinkElement>('link[rel="alternate"][hreflang]'))link.href=origin+(product?productPath(product,link.hreflang==='en'?'en':'fr'):collectionPage?collectionPath(link.hreflang==='en'?'en':'fr'):link.hreflang==='en'?'/?lang=en':'/');
+   for(const link of document.querySelectorAll<HTMLLinkElement>('link[rel="alternate"][hreflang]'))link.href=origin+(editorial?editorialPath(editorial,link.hreflang==='en'?'en':'fr'):product?productPath(product,link.hreflang==='en'?'en':'fr'):collectionPage?collectionPath(link.hreflang==='en'?'en':'fr'):link.hreflang==='en'?'/?lang=en':'/');
    let data=document.querySelector<HTMLScriptElement>('#shop-structured-data');if(!data){data=document.createElement('script');data.type='application/ld+json';data.id='shop-structured-data';document.head.append(data);}
-   data.textContent=JSON.stringify(pageStructuredData(product,variants,origin,language,products,collectionPage));
+   data.textContent=JSON.stringify(editorial?[...pageStructuredData(undefined,{},origin,language).filter(x=>['Organization','WebSite'].includes(String(x['@type']))),...editorialStructuredData(editorial,origin,language)]:pageStructuredData(product,variants,origin,language,products,collectionPage));
   }
- },[product,language,productPage,ready,products,collectionPage]);
+ },[product,language,productPage,ready,products,collectionPage,editorial]);
 }

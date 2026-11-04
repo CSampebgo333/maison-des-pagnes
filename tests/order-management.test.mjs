@@ -5,7 +5,7 @@ import {readFileSync} from 'node:fs';
 import {ordersRoute} from '../src/lib/orders-service.js';
 import {isAdmin} from '../src/lib/admin-auth.js';
 import seed from '../src/lib/catalogue-seed.js';
-function database(){const sql=new DatabaseSync(':memory:');for(const name of ['0000_orders.sql','0001_security.sql','0002_order_language.sql','0003_whatsapp_notifications.sql'])sql.exec(readFileSync(new URL('../drizzle/'+name,import.meta.url),'utf8'));const prepare=q=>({async first(){return sql.prepare(q).get()??null;},async all(){return {results:sql.prepare(q).all()};},bind(...args){return {async first(){return sql.prepare(q).get(...args)??null;},async all(){return {results:sql.prepare(q).all(...args)};},async run(){return {meta:{changes:Number(sql.prepare(q).run(...args).changes)}};},q,args};}});return {sql,prepare,async batch(statements){sql.exec('BEGIN');try{const result=[];for(const s of statements){const r=sql.prepare(s.q).run(...s.args);result.push({meta:{changes:Number(r.changes)}});}sql.exec('COMMIT');return result;}catch(e){sql.exec('ROLLBACK');throw e;}}};}
+function database(){const sql=new DatabaseSync(':memory:');for(const name of ['0000_orders.sql','0001_security.sql','0002_order_language.sql','0003_whatsapp_notifications.sql','0004_owner_notifications.sql'])sql.exec(readFileSync(new URL('../drizzle/'+name,import.meta.url),'utf8'));const prepare=q=>({async first(){return sql.prepare(q).get()??null;},async all(){return {results:sql.prepare(q).all()};},bind(...args){return {async first(){return sql.prepare(q).get(...args)??null;},async all(){return {results:sql.prepare(q).all(...args)};},async run(){return {meta:{changes:Number(sql.prepare(q).run(...args).changes)}};},q,args};}});return {sql,prepare,async batch(statements){sql.exec('BEGIN');try{const result=[];for(const s of statements){const r=sql.prepare(s.q).run(...s.args);result.push({meta:{changes:Number(r.changes)}});}sql.exec('COMMIT');return result;}catch(e){sql.exec('ROLLBACK');throw e;}}};}
 function setup(){const DB=database();DB.sql.prepare('INSERT INTO catalogue_documents(id,revision,document) VALUES(1,?,?)').run('initial',JSON.stringify(seed));return {DB,BUCKET:{async get(){return null;},async put(){}},CATALOGUE_ADMIN_EMAIL:'owner@example.test'};}
 const req=(path,method='GET',body,admin=false)=>new Request('https://shop.test'+path,{method,headers:{Origin:'https://shop.test','Content-Type':'application/json',...(admin?{'oai-authenticated-user-email':'owner@example.test'}:{})},body:body?JSON.stringify(body):undefined});
 const requestData=()=>({requestKey:crypto.randomUUID(),token:crypto.randomUUID().replaceAll('-','')+crypto.randomUUID().replaceAll('-',''),details:{name:'Client test',phone:'+22670000000',city:'Bobo-Dioulasso',address:'Quartier test',notes:'',mode:'livraison',deadline:'2099-01-01'},items:[{id:seed.products[0].id,quantity:2,expectedPrice:seed.products[0].price}]});
@@ -93,4 +93,29 @@ test('WhatsApp : arrêt accessible à travers la protection HTTP du Worker ; cro
  assert.equal((await worker.fetch(r,e)).status,200);
  assert.equal(e.DB.sql.prepare('SELECT whatsapp_opt_in FROM orders').get().whatsapp_opt_in,0);
  const pending=[];await worker.scheduled({cron:'*/5 * * * *'},{BACKUP_CRON_ENABLED:'1',WHATSAPP_ENABLED:'0'},{waitUntil:p=>pending.push(p)});await Promise.all(pending);
+});
+
+import {dispatchOwnerNotifications,ownerRecipient} from '../src/lib/owner-notifications.js';
+test('Owner alerts are queued once atomically, independent of customer WhatsApp consent',async()=>{
+ const e={...setup(),WHATSAPP_ADMIN_ENABLED:'1'},b=requestData(),{order}=await create(e,b);
+ assert.equal(e.DB.sql.prepare('SELECT count(*) n FROM order_notifications').get().n,0);
+ assert.equal(e.DB.sql.prepare('SELECT reference FROM owner_notifications WHERE order_id=?').get(order.id).reference,order.reference);
+ assert.equal((await ordersRoute(req('/api/orders','POST',b),e)).status,200);assert.equal(e.DB.sql.prepare('SELECT count(*) n FROM owner_notifications').get().n,1);
+ const off=setup();await create(off);assert.equal(off.DB.sql.prepare('SELECT count(*) n FROM owner_notifications').get().n,0);
+});
+test('Owner dispatch targets the Ghana number, keeps customer details private and handles ambiguous delivery',async()=>{
+ const e={...setup(),WHATSAPP_ADMIN_ENABLED:'1',WHATSAPP_ACCESS_TOKEN:'test-only',WHATSAPP_PHONE_NUMBER_ID:'123',WHATSAPP_API_VERSION:'v99.0',WHATSAPP_ADMIN_TEMPLATE:'owner_order_fr',WHATSAPP_ADMIN_RECIPIENT:'233200000000'};
+ const {order}=await create(e);let sends=0;
+ const send=async(url,options)=>{if(!url.endsWith('/messages'))return Response.json({display_phone_number:'+22677540792'});sends++;const p=JSON.parse(options.body);assert.equal(p.to,ownerRecipient(e));assert.equal(p.template.components[0].parameters[0].text,order.reference);assert.ok(!options.body.includes('Client test'));assert.ok(!options.body.includes('Quartier test'));return Response.json({messages:[{id:'owner-message'}]});};
+ await Promise.all([dispatchOwnerNotifications(e,send),dispatchOwnerNotifications(e,send)]);assert.equal(sends,1);assert.equal(e.DB.sql.prepare('SELECT state FROM owner_notifications').get().state,'submitted');
+ const second=await create(e);await dispatchOwnerNotifications(e,async url=>{if(!url.endsWith('/messages'))return Response.json({display_phone_number:'+22677540792'});throw Error('network');});assert.equal(e.DB.sql.prepare('SELECT state FROM owner_notifications WHERE order_id=?').get(second.order.id).state,'uncertain');
+ const wrong={...e,WHATSAPP_SENDER_NUMBER:ownerRecipient(e)};await assert.rejects(dispatchOwnerNotifications(wrong,async()=>Response.json({display_phone_number:'+'+ownerRecipient(e)})));
+});
+test('Catalogue editorial refresh backs up the actual document and rejects stale or unauthorised writes',async()=>{
+ const {catalogueRoute}=await import('../src/lib/catalogue-service.js'),patches=(await import('../src/lib/catalogue-editorial-data.js')).default;
+ const e=setup(),doc=structuredClone(seed);for(const p of doc.products){const patch=patches.find(x=>x.id===p.id);p.description=patch.before.description;p.translations.en.description=patch.before.description_en;delete p.availability;}
+ e.DB.sql.prepare('UPDATE catalogue_documents SET document=? WHERE id=1').run(JSON.stringify(doc));const saved=[];e.BUCKET.put=async(...args)=>{saved.push(args);};
+ assert.equal((await catalogueRoute(req('/api/admin/catalogue/editorial-refresh','POST',{revision:'initial'}),e)).status,403);
+ assert.equal((await catalogueRoute(req('/api/admin/catalogue/editorial-refresh','POST',{revision:'stale'},true),e)).status,409);
+ const r=await catalogueRoute(req('/api/admin/catalogue/editorial-refresh','POST',{revision:'initial'},true),e);assert.equal(r.status,200);const next=await r.json();assert.equal(saved[0][0],'catalogue/history/initial.json');assert.deepEqual(JSON.parse(saved[0][1]),doc);assert.equal(next.products[0].description,seed.products[0].description);assert.equal(next.products[0].availability,'available');
 });

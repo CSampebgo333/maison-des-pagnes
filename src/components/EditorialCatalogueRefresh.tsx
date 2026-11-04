@@ -1,0 +1,11 @@
+import {useEffect,useState} from 'react';
+import {shopFetch,useLanguage} from '../lib/i18n';
+import type {CatalogueDocument} from '../lib/catalogue-client';
+export default function EditorialCatalogueRefresh({blocked,onSaved}:{blocked:boolean;onSaved:(d:CatalogueDocument)=>void}){
+ const language=useLanguage(),en=language==='en';
+ const [review,setReview]=useState<{revision:string;changes:{id:string;fields:string[]}[]}|null>(null),[busy,setBusy]=useState(false),[message,setMessage]=useState('');
+ useEffect(()=>{let alive=true;void shopFetch('/api/admin/catalogue/editorial-refresh',{cache:'no-store'}).then(r=>r.ok?r.json():null).then(x=>{if(alive)setReview(x);}).catch(()=>{});return()=>{alive=false;};},[]);
+ async function apply(){if(!review)return;setBusy(true);setMessage('');try{const r=await shopFetch('/api/admin/catalogue/editorial-refresh',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({revision:review.revision})});const result=await r.json();if(!r.ok)throw Error(result.error);onSaved(result);setReview(null);setMessage(en?'Reviewed copy saved. The previous catalogue was backed up.':'Textes relus enregistrés. Le catalogue précédent a été sauvegardé.');}catch(e){setMessage((e as Error).message);}finally{setBusy(false);}}
+ if(!review?.changes.length&&!message)return null;
+ return <section className="management-card editorial-refresh"><h2>{en?'Reviewed product descriptions':'Descriptions des pagnes relues'}</h2>{review&&<><p>{en?'Apply the reviewed French and English descriptions and confirmed availability to eligible original models. Prices, photos and exact stock quantities are preserved. Later edits are protected.':'Appliquez les descriptions françaises et anglaises relues et la disponibilité confirmée aux modèles d’origine concernés. Les prix, photos et quantités exactes restent conservés. Les modifications ultérieures sont protégées.'}</p><details><summary>{en?'Review affected models':'Voir les modèles concernés'}</summary><ul>{review.changes.map(c=><li key={c.id}>{c.id} · {c.fields.join(', ')}</li>)}</ul></details><button className="primary-button" disabled={blocked||busy} onClick={()=>void apply()}>{busy?(en?'Saving…':'Enregistrement…'):(en?'Apply reviewed descriptions':'Appliquer les descriptions relues')}</button></>}<p role="status">{message}</p></section>;
+}

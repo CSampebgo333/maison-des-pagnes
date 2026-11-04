@@ -87,3 +87,9 @@ Le domaine racine `fasodanfani.shop` est déclaré comme Custom Domain dans `wra
 La boutique publique doit être accessible sans connexion. Conserver la protection Access des API de gestion et vérifier en navigation privée que les pages de la boutique restent publiques tandis que la gestion exige le compte autorisé. Le domaine `workers.dev` conserve sa protection existante.
 
 Le domaine public utilise `PUBLIC_SITE_URL=https://fasodanfani.shop`. Pour un essai strictement privé, utiliser l’aperçu Sites ou une configuration séparée sans route Custom Domain publique, avec `PUBLIC_SITE_URL` vide ; ne pas publier ce build privé sur le domaine de la boutique. Le sous-domaine `www` nécessite son propre DNS et une redirection ; il n’est pas inclus dans la route du domaine racine.
+
+## Pages éditoriales et alertes au propriétaire
+
+Le guide culturel, l’histoire familiale et le parcours illustré de commande partagent leurs contenus FR/EN avec le HTML initial. Consulter [le plan de réalisation SEO](../../docs/SEO-ROLLOUT.md) et [les crédits des archives](../../docs/EDITORIAL-IMAGE-CREDITS.md).
+
+Pour les alertes de nouvelles demandes au propriétaire, appliquer également `0004_owner_notifications.sql` avant activation de `WHATSAPP_ADMIN_ENABLED`. Les variables supplémentaires de build sont `WHATSAPP_ADMIN_ENABLED`, `WHATSAPP_ADMIN_TEMPLATE` et `WHATSAPP_SENDER_NUMBER`. Le jeton reste un secret runtime. Cette fonction est indépendante des mises à jour destinées aux clients, désactivée sans configuration et ne réexpédie pas les anciennes commandes. L’activation ne fait pas partie du déploiement d’aperçu.

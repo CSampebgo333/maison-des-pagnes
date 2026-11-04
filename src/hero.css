@@ -59,3 +59,6 @@
 }
 @keyframes hero-mobile-reveal {from{transform:scale(.9152);}to{transform:scale(1.04);}}
 @media(prefers-reduced-motion:reduce){.storefront .hero-slide.is-current img{animation:none;}}
+
+/* Continue the light backdrop behind the navigation without a colour seam. */
+@media(min-width:901px){.storefront .storefront-hero::before{top:0;}}

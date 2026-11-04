@@ -16,7 +16,7 @@ Les tests automatisés couvrent les déplacements simples, le pincement borné, 
 
 ## Navigation et hero desktop
 
-Au-delà de 900 px, le hero retrouve le fond clair et les textes prune de la présentation de référence. La navigation blanche se détache sur son voile gris-taupe supérieur, avec son séparateur discret et le champ de recherche légèrement arrondi d’origine. Le panneau blanc revient au survol, au focus et après défilement. Les présentations du hero sur téléphone et tablette restent conservées.
+Au-delà de 900 px, le hero retrouve le fond clair et les textes prune de la présentation de référence. La navigation blanche se détache sur son voile gris-taupe supérieur. À l’entrée, sa bordure inférieure et son ombre disparaissent ; le voile se dissipe progressivement sur 74 px sous la barre et le fond clair se prolonge derrière elle pour éviter une rupture de couleur. Le champ de recherche conserve ses angles légèrement arrondis d’origine. Le panneau blanc revient au survol, au focus et après défilement. Les présentations du hero sur téléphone et tablette restent conservées.
 
 ## Collection complète
 

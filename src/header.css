@@ -51,12 +51,12 @@
  .storefront .storefront-header-container .site-header * { transition:none; }
 }
 
-/* The desktop navigation and hero share one continuous plum backdrop.
+/* The desktop navigation and hero share one continuous warm charcoal backdrop.
    At the top, interactions stay translucent; scrolling keeps the solid
    navigation surface used elsewhere in the shop. */
 @media(min-width:901px){
  .storefront .storefront-hero::after {
-  background:linear-gradient(180deg,rgba(33,22,37,.7) 0%,rgba(33,22,37,.64) calc(var(--storefront-header-height,110px) - 8px),transparent calc(var(--storefront-header-height,110px) + 100px));
+  background:linear-gradient(180deg,rgba(33,23,29,.7) 0%,rgba(33,23,29,.64) calc(var(--storefront-header-height,110px) - 8px),transparent calc(var(--storefront-header-height,110px) + 100px));
  }
  .storefront:not(.has-product-page) .storefront-header-container:not(.is-solid) .site-header,
  .storefront:not(.has-product-page) .storefront-header-container:not(.is-solid) .site-header:hover,

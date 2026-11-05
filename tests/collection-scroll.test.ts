@@ -4,12 +4,24 @@ import { collectionPosition, collectionPageTarget, collectionDrag } from '../src
 
 const regular = { left: 0, viewport: 948, card: 300, gap: 24, count: 12 };
 
-test('La collection affiche trois pagnes par groupe, quatre sur grand écran et deux sur téléphone', () => {
+test('La collection calcule une, deux, trois ou quatre places selon la largeur réelle des cartes', () => {
   assert.deepEqual([collectionPosition(regular).capacity, collectionPosition({ ...regular, viewport: 1272 }).capacity, collectionPosition({ ...regular, viewport: 312, card: 150, gap: 12 }).capacity], [3, 4, 2]);
   const start = collectionPosition(regular);
   assert.deepEqual([start.first, start.last, start.pages, start.previous, start.next], [1, 3, 4, false, true]);
   const next = collectionPosition({ ...regular, left: start.stride });
   assert.deepEqual([next.first, next.last, next.previous, next.next], [2, 4, true, true]);
+});
+
+test('Un téléphone parcourt un seul pagne par page jusqu’au dernier, sans perte au redimensionnement',()=>{
+ for(const viewport of [280,350,416,600]){
+  const layout={left:0,viewport,card:viewport,gap:14,count:4};
+  const first=collectionPosition(layout);assert.equal(first.capacity,1);assert.equal(first.pages,4);
+  for(let page=0;page<4;page++){
+   const position=collectionPosition({...layout,left:collectionPageTarget(page,layout)});
+   assert.equal(position.first,page+1);assert.equal(position.last,page+1);assert.equal(position.page,page);
+   assert.equal(position.next,page<3);
+  }
+ }
 });
 
 test('Le dernier groupe incomplet atteint tous les pagnes sans déborder et garde son point actif', () => {

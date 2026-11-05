@@ -11,14 +11,27 @@ export function noticeDue(value:string|null,now=Date.now()){
 export function claimInstallNotice(store:Store,now=Date.now()){
  try{if(store.getItem(INSTALL_KNOWN_KEY)==='1'||!noticeDue(store.getItem(INSTALL_NOTICE_KEY),now))return false;store.setItem(INSTALL_NOTICE_KEY,String(now));return true;}catch{return false;}
 }
-export function installationPlatform(userAgent:string,platform:string,touchPoints:number){
- if(/iPad|iPhone|iPod/i.test(userAgent)||platform==='MacIntel'&&touchPoints>1)return 'ios';
- if(/Mac/i.test(platform)&&/Safari/i.test(userAgent)&&!/Chrome|Chromium|Edg/i.test(userAgent))return 'mac-safari';
- return 'other';
-}
-
 export type InstallPromptEvent=Event&{prompt:()=>Promise<void>;userChoice:Promise<{outcome:'accepted'|'dismissed'}>};
 let pendingInstall:InstallPromptEvent|null=null;
+const subscribers=new Set<()=>void>();
+function changed(){for(const subscriber of subscribers)subscriber();}
 export const getInstallPrompt=()=>pendingInstall;
-export const clearInstallPrompt=()=>{pendingInstall=null;};
-export function captureInstallPrompt(){window.addEventListener('beforeinstallprompt',event=>{event.preventDefault();pendingInstall=event as InstallPromptEvent;});}
+export const subscribeInstallPrompt=(subscriber:()=>void)=>{subscribers.add(subscriber);return()=>{subscribers.delete(subscriber);};};
+export const clearInstallPrompt=()=>{if(pendingInstall){pendingInstall=null;changed();}};
+export function captureInstallPrompt(target:EventTarget=window){
+ const ready=(event:Event)=>{
+  const candidate=event as InstallPromptEvent;
+  if(typeof candidate.prompt!=='function'||!candidate.userChoice)return;
+  event.preventDefault();pendingInstall=candidate;changed();
+ };
+ target.addEventListener('beforeinstallprompt',ready);
+ target.addEventListener('appinstalled',clearInstallPrompt);
+ return()=>{target.removeEventListener('beforeinstallprompt',ready);target.removeEventListener('appinstalled',clearInstallPrompt);};
+}
+export async function promptInstallation():Promise<'accepted'|'dismissed'|'unavailable'|'failed'>{
+ const event=pendingInstall;
+ if(!event)return 'unavailable';
+ // Consume once, before any await. prompt() must run in the actual click gesture.
+ clearInstallPrompt();
+ try{await event.prompt();return (await event.userChoice).outcome;}catch{return 'failed';}
+}

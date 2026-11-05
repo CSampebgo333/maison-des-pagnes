@@ -43,7 +43,13 @@
  .collection-carousel-footer { justify-content:center; text-align:center; }
  .collection-pagination { width:100%; }
 }
-@media(max-width:350px) { .collection-carousel { --collection-columns:1; } }
+/* Give a phone's full available width to one pagne, including larger phones. */
+@media(max-width:640px) {
+ .collection-carousel { --collection-columns:1; }
+ .collection-slide { scroll-snap-stop:always; }
+ .storefront .collection-track .product-image { aspect-ratio:auto; height:clamp(280px,min(110vw,65svh),520px); }
+ .storefront .collection-track .product-image > img { object-fit:contain; }
+}
 
 .collection-row { margin-top:34px; padding-top:22px; border-top:1px solid #e7e0e4; }
 .collection-row h3 { margin:0 0 14px; color:#553747; font:400 clamp(28px,3vw,38px)/1.15 var(--serif); }

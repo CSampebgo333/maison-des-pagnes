@@ -840,5 +840,6 @@
   "Un fichier de la sauvegarde a changé.": "A backup file changed during copying.",
   "La copie d’un fichier n’a pas pu être vérifiée.": "A backup file copy could not be verified.",
   "Trop de fichiers pour la sauvegarde intégrée : prévoir un export complet R2.": "Too many files for the integrated backup: a complete R2 export is needed.",
-  "Coûts à renseigner": "Costs to record"
+  "Coûts à renseigner": "Costs to record",
+  "L’installation n’a pas pu démarrer. Réessayez plus tard.": "Installation could not start. Please try again later."
 }

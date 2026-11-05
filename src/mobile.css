@@ -10,7 +10,7 @@
 .install-actions {display:flex;align-items:center;flex-wrap:wrap;gap:8px 14px;margin-top:16px;}
 .install-actions .primary-button {min-height:44px;padding:10px 14px;font-size:15px;gap:8px;border-radius:6px;}
 .install-actions .text-button {min-height:44px;font-size:15px;}
-.install-copy .install-instructions {margin-top:14px!important;padding-top:12px;border-top:1px solid #e9dfe5;font-size:15px!important;}
+.install-copy .install-error {margin-top:14px!important;font-size:15px!important;}
 @keyframes notice-in {from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:none;}}
 .hero-intro-mobile {display:none;}
 .collection-page {padding-top:calc(var(--storefront-header-height,110px) + 26px);padding-bottom:50px;}

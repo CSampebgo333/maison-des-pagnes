@@ -10,6 +10,7 @@ import './header.css';
 import './hero.css';
 import './product-pages.css';
 import './mobile.css';
+import './editorial.css';
 
 captureInstallPrompt();
 await initializeLanguage();

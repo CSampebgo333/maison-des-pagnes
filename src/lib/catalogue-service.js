@@ -1,3 +1,4 @@
+import {reviewEditorialUpdate} from './catalogue-editorial.js';
 import {isAdmin} from './admin-auth.js';
 import seed from './catalogue-seed.js';
 import {productCollectionRow} from './collection-rows.js';
@@ -55,6 +56,18 @@ export async function catalogueRoute(request,env) {
   if((path==='/api/catalogue'||path==='/api/admin/catalogue')&&request.method==='GET'){
    const {document}=await getCatalogue(env);const enriched={...document,products:document.products.map(p=>({...p,collectionRow:productCollectionRow(p),translations:{en:englishFor(p)}}))};return json(path==='/api/catalogue'?{...enriched,products:enriched.products.filter(p=>p.published!==false)}:enriched);
   }
+  if(path==='/api/admin/catalogue/editorial-refresh'&&['GET','POST'].includes(request.method)){
+   const {document,etag}=await getCatalogue(env),review=reviewEditorialUpdate(document);
+   if(request.method==='GET')return json({revision:document.revision,changes:review.changes});
+   const body=JSON.parse(new TextDecoder().decode(await bounded(request,4096)));
+   if(body.revision!==document.revision)return json({error:'Une autre modification vient d’être enregistrée. Rechargez la collection.'},409);
+   if(!review.changes.length)return json(document);
+   const next={...review.document,revision:crypto.randomUUID(),updatedAt:new Date().toISOString()};
+   await env.BUCKET.put('catalogue/history/'+document.revision+'.json',JSON.stringify(document));
+   const saved=env.DB?(await env.DB.prepare('UPDATE catalogue_documents SET revision=?,document=? WHERE id=1 AND revision=?').bind(next.revision,JSON.stringify(next),document.revision).run()).meta.changes>0:await env.BUCKET.put(KEY,JSON.stringify(next),{onlyIf:etag?{etagMatches:etag}:{etagDoesNotMatch:'*'},httpMetadata:{contentType:'application/json'}});
+   if(!saved)return json({error:'Une autre modification vient d’être enregistrée. Rechargez la collection.'},409);
+   return json(next);
+  }
   if(path==='/api/admin/photos'&&request.method==='POST'){
    const data=await bounded(request,LIMIT);const form=await new Response(data,{headers:{'Content-Type':request.headers.get('Content-Type')??''}}).formData();
    const original=form.get('original');if(!original||typeof original==='string'||original.size>6*1024*1024)throw Error('Photo originale : 6 Mo maximum.');
@@ -93,7 +106,7 @@ export async function catalogueRoute(request,env) {
     const english=englishFor(p);const translations={en:english?Object.fromEntries(Object.entries({name:100,description:1000,pattern:100,unit:80,composition:120,dimensions:120}).map(([key,max])=>[key,text(english[key]??'',max)])):undefined};
     products.push({collectionRow:p.collectionRow??productCollectionRow(document.products.find(old=>old.id===p.id)??p),translations,id:p.id,number:p.number,name:text(p.name,100,true),description:text(p.description,1000,true),colors:p.colors.map(c=>text(c,30,true)),pattern:text(p.pattern,100),accent:/^#[a-f0-9]{6}$/i.test(p.accent)?p.accent:'#aaa0c7',price:p.price,unit:text(p.unit,80),composition:text(p.composition,120),dimensions:text(p.dimensions,120),availability:p.availability,occasions:[...new Set(p.occasions)],published:p.published!==false,photos});
    }
-   const next={products,variants,revision:crypto.randomUUID(),updatedAt:new Date().toISOString()};
+   const next={...(document.editorialRevisions?{editorialRevisions:document.editorialRevisions}:{}),products,variants,revision:crypto.randomUUID(),updatedAt:new Date().toISOString()};
    // Keep recoverable snapshots; optimistic concurrency prevents overwriting another edit.
    await env.BUCKET.put('catalogue/history/'+document.revision+'.json',JSON.stringify(document));
    const saved=env.DB?(await env.DB.prepare('UPDATE catalogue_documents SET revision=?,document=? WHERE id=1 AND revision=?').bind(next.revision,JSON.stringify(next),document.revision).run()).meta.changes>0:await env.BUCKET.put(KEY,JSON.stringify(next),{onlyIf:etag?{etagMatches:etag}:{etagDoesNotMatch:'*'},httpMetadata:{contentType:'application/json'}});

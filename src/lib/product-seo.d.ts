@@ -23,3 +23,5 @@ export function metadataMarkup(meta:Metadata,origin:string|null,language?:string
 export function catalogueSitemap(document:{products:Product[]},origin:string|null):string;
 
 export function pageStructuredData(product:Product|undefined,variants:Record<string,any>,origin:string|null,language?:string,products?:Product[],collectionPage?:boolean):Record<string,unknown>[];
+
+export function photoAlt(product:Product,photo:Product['photos'][number],language?:string):string;

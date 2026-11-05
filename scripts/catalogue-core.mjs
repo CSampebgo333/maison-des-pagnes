@@ -27,6 +27,7 @@ export function makeCatalogue(groups, metadata) {
     }
     return {
       translations: details.translations ?? {},
+      ...(details.availability?{availability:details.availability}:{}),
       id, number, name: details.name || `Pagne ${String(number).padStart(2, '0')}`,
       description: details.description || 'Explorez les différentes vues de ce pagne pour découvrir son motif et son tombé.',
       colors: details.colors ?? [], pattern: details.pattern ?? '', accent: details.accent || '#9c7e8c',

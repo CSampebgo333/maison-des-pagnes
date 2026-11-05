@@ -1,7 +1,7 @@
 {
   "pagne1": {
     "name": "Rayures lavande",
-    "description": "Faso Dan Fani · Des bandes lavande et blanches, traversées de dessins aux contours nuancés. Un pagne au contraste délicat qui met le motif en valeur. Une belle idée pour une tenue de mariage traditionnel ou une fête en famille.",
+    "description": "Ce pagne Faso Dan Fani violet et blanc alterne des bandes lavande et des dessins aux contours nuancés. Les zones claires adoucissent le contraste, tandis que le détail du tissage révèle le rythme du motif. Une inspiration pour un mariage traditionnel ou une fête en famille.",
     "colors": [
       "Violet",
       "Blanc"
@@ -15,17 +15,18 @@
     "translations": {
       "en": {
         "name": "Lavender stripes",
-        "description": "Faso Dan Fani · Lavender and white bands crossed by softly outlined motifs. A gentle contrast that highlights the design. A lovely idea for a traditional wedding outfit or family celebration.",
+        "description": "This purple and white Faso Dan Fani pagne alternates lavender bands with softly outlined designs. Pale areas soften the contrast, while the close-up reveals the rhythm of the weave. An idea for a traditional wedding or a family celebration.",
         "pattern": "Bands with softly outlined motifs",
         "composition": "",
         "dimensions": "",
         "unit": ""
       }
-    }
+    },
+    "availability": "available"
   },
   "pagne2": {
     "name": "Lignes bleu profond",
-    "description": "Faso Dan Fani · Un bleu profond souligné de fines lignes blanches et de petits traits horizontaux. Un dessin régulier pour une allure soignée. À envisager pour une cérémonie, une rencontre professionnelle ou une tenue de fête.",
+    "description": "Ce Faso Dan Fani bleu profond est parcouru de fines lignes blanches et de petits traits transversaux. Leur répétition dessine un motif régulier, bien visible sur les vues dépliées. Une palette à envisager pour une cérémonie ou une tenue professionnelle soignée.",
     "colors": [
       "Bleu",
       "Blanc"
@@ -39,17 +40,18 @@
     "translations": {
       "en": {
         "name": "Deep blue lines",
-        "description": "Faso Dan Fani · Deep blue accented by fine white lines and small horizontal dashes. A regular pattern for a polished look. Consider it for a ceremony, a business occasion or a celebration.",
+        "description": "This deep blue Faso Dan Fani features fine white lines and short crosswise strokes. Their repetition creates a regular pattern, clearly visible in the unfolded views. A palette to consider for a ceremony or a carefully tailored professional outfit.",
         "pattern": "Stripes and small dashes",
         "composition": "",
         "dimensions": "",
         "unit": ""
       }
-    }
+    },
+    "availability": "available"
   },
   "pagne3": {
     "name": "Rayures jaune et bleu",
-    "description": "Faso Dan Fani · Des bandes jaunes, bleues et blanches alternent avec des zones au tissage bien visible. Une association lumineuse, facile à remarquer. Superbe pour imaginer une tenue de mariage traditionnel ou de célébration culturelle.",
+    "description": "Des bandes jaunes, bleues et blanches structurent ce pagne Faso Dan Fani. Le jaune apporte de la lumière entre les lignes plus sombres ; les vues rapprochées permettent d’observer leur texture. Une proposition colorée pour un mariage traditionnel ou une célébration culturelle.",
     "colors": [
       "Jaune",
       "Bleu",
@@ -64,17 +66,18 @@
     "translations": {
       "en": {
         "name": "Yellow and blue stripes",
-        "description": "Faso Dan Fani · Yellow, blue and white bands alternate with areas where the weave stands out. A bright combination that catches the eye. Beautiful for a traditional wedding outfit or cultural celebration.",
+        "description": "Yellow, blue and white bands give this Faso Dan Fani pagne its structure. Yellow brings brightness between the darker lines; close-up views reveal their texture. A colourful idea for a traditional wedding or cultural celebration.",
         "pattern": "Multicoloured bands",
         "composition": "",
         "dimensions": "",
         "unit": ""
       }
-    }
+    },
+    "availability": "available"
   },
   "pagne4": {
     "name": "Rayures bleu, noir et blanc",
-    "description": "Faso Dan Fani · De larges espaces blancs séparent des groupes de rayures bleues et noires. Un motif équilibré, à la fois sobre et marqué. Une belle option pour un baptême, une cérémonie familiale ou une tenue habillée.",
+    "description": "Ce Faso Dan Fani associe des rayures bleues et noires à de larges bandes blanches. L’alternance des espacements donne de la structure au motif et laisse respirer les couleurs. Une idée pour une cérémonie familiale ou une tenue de réception.",
     "colors": [
       "Bleu",
       "Noir",
@@ -89,17 +92,18 @@
     "translations": {
       "en": {
         "name": "Blue, black and white stripes",
-        "description": "Faso Dan Fani · Wide white spaces separate groups of blue and black stripes. A balanced pattern, both understated and distinctive. A lovely option for a christening, family ceremony or dressy outfit.",
+        "description": "This Faso Dan Fani combines blue and black stripes with broad white bands. The changing spaces give structure to the design and room for its colours. An idea for a family ceremony or a reception outfit.",
         "pattern": "Groups of stripes",
         "composition": "",
         "dimensions": "",
         "unit": ""
       }
-    }
+    },
+    "availability": "available"
   },
   "pagne5": {
     "name": "Fines rayures noir et blanc",
-    "description": "Faso Dan Fani · Des rayures noires et blanches très fines se répètent sur tout le pagne. Le contraste net donne au modèle une élégance discrète. À choisir pour une réception, un rendez-vous professionnel ou une tenue de cérémonie sobre.",
+    "description": "De fines rayures noires et blanches se répètent sur ce pagne Faso Dan Fani. Le dessin paraît discret de loin et se précise lorsqu’on regarde les photos de détail. Ce contraste sobre peut accompagner une tenue professionnelle ou une cérémonie.",
     "colors": [
       "Noir",
       "Blanc"
@@ -113,17 +117,18 @@
     "translations": {
       "en": {
         "name": "Fine black and white stripes",
-        "description": "Faso Dan Fani · Very fine black and white stripes repeat across the pagne. The crisp contrast gives this design a quiet elegance. Consider it for a reception, business occasion or understated ceremonial outfit.",
+        "description": "Fine black and white stripes repeat across this Faso Dan Fani pagne. The design looks understated from a distance and becomes clearer in the detail photographs. Its restrained contrast could suit a professional outfit or a ceremony.",
         "pattern": "Fine stripes",
         "composition": "",
         "dimensions": "",
         "unit": ""
       }
-    }
+    },
+    "availability": "available"
   },
   "pagne6": {
     "name": "Rayures vert et violet",
-    "description": "Faso Dan Fani · Des bandes vert vif, violettes, bleues et noires composent un motif plein de couleur. Un modèle qui apporte du caractère à la tenue. Une suggestion pour une fête, une sortie culturelle ou une tenue originale lors d’un mariage.",
+    "description": "Ce pagne Faso Dan Fani réunit des bandes vert vif, violettes, bleues et noires. L’alternance de couleurs franches lui donne une présence marquée, que l’on peut apprécier sur la vue drapée. Une inspiration pour une fête ou une tenue de mariage pleine de caractère.",
     "colors": [
       "Vert",
       "Violet",
@@ -139,17 +144,18 @@
     "translations": {
       "en": {
         "name": "Green and purple stripes",
-        "description": "Faso Dan Fani · Bright green, purple, blue and black bands create a lively pattern. A design that adds character to an outfit. An idea for a party, cultural outing or a distinctive wedding look.",
+        "description": "This Faso Dan Fani pagne brings together bright green, purple, blue and black bands. The alternating bold colours create a strong presence, visible in the draped view. An idea for a celebration or a wedding outfit with character.",
         "pattern": "Multicoloured stripes",
         "composition": "",
         "dimensions": "",
         "unit": ""
       }
-    }
+    },
+    "availability": "available"
   },
   "pagne7": {
     "name": "Bandes bleu et gris",
-    "description": "Faso Dan Fani · Des bandes bleu profond alternent avec des dessins gris et noirs, encadrés de lignes blanches. Le détail du motif mérite d’être regardé de près. Une belle base pour une tenue de cérémonie ou une célébration en famille.",
+    "description": "Des bandes bleu profond alternent avec des zones grises et noires aux dessins serrés, soulignées de blanc. Ce Faso Dan Fani joue sur le contraste entre lignes nettes et texture du motif. Une belle piste pour une cérémonie ou une célébration en famille.",
     "colors": [
       "Bleu",
       "Gris",
@@ -165,17 +171,18 @@
     "translations": {
       "en": {
         "name": "Blue and grey bands",
-        "description": "Faso Dan Fani · Deep blue bands alternate with grey and black motifs framed by white lines. The pattern deserves a closer look. A lovely starting point for a ceremonial outfit or family celebration.",
+        "description": "Deep blue bands alternate with closely patterned grey and black areas, outlined in white. This Faso Dan Fani contrasts crisp lines with the texture of its design. An idea for a ceremony or a family celebration.",
         "pattern": "Bands with contrasting motifs",
         "composition": "",
         "dimensions": "",
         "unit": ""
       }
-    }
+    },
+    "availability": "available"
   },
   "pagne8": {
     "name": "Fines rayures bleu et jaune",
-    "description": "Faso Dan Fani · De fines lignes bleues, jaunes et claires donnent au pagne un rythme serré et régulier. Un motif discret à distance, riche en détails de près. À envisager pour une chemise de sortie, une tenue professionnelle ou une cérémonie.",
+    "description": "Ce Faso Dan Fani présente de fines rayures bleues, jaunes et claires, rapprochées sur toute la surface. La palette paraît douce à distance et révèle ses nuances en gros plan. Une suggestion pour une chemise, une tenue professionnelle ou une sortie habillée.",
     "colors": [
       "Bleu",
       "Jaune",
@@ -190,17 +197,18 @@
     "translations": {
       "en": {
         "name": "Fine blue and yellow stripes",
-        "description": "Faso Dan Fani · Fine blue, yellow and pale lines give this pagne a close, regular rhythm. Subtle from a distance and rich in detail up close. Consider it for a smart shirt, a professional outfit or a ceremony.",
+        "description": "This Faso Dan Fani has fine blue, yellow and pale stripes running closely across its surface. The palette looks soft from a distance and reveals its shades in close-up. A suggestion for a shirt, a professional outfit or a dressy occasion.",
         "pattern": "Fine multicoloured stripes",
         "composition": "",
         "dimensions": "",
         "unit": ""
       }
-    }
+    },
+    "availability": "available"
   },
   "pagne9": {
     "name": "Nuances turquoise",
-    "description": "Faso Dan Fani · Un fond turquoise accueille des dessins blancs aux contours irréguliers. Le jeu de nuances apporte de la fraîcheur au pagne. Une belle idée pour une fête en journée, une cérémonie familiale ou une tenue de mariage colorée.",
+    "description": "Le turquoise et le blanc composent ce pagne Faso Dan Fani aux dessins irréguliers et aux transitions nuancées. La vue dépliée permet de suivre le motif, tandis que le gros plan en révèle les détails. Une inspiration pour une fête en journée ou un mariage coloré.",
     "colors": [
       "Turquoise",
       "Blanc"
@@ -214,17 +222,18 @@
     "translations": {
       "en": {
         "name": "Turquoise shades",
-        "description": "Faso Dan Fani · A turquoise background carries white motifs with irregular outlines. The changing shades bring a fresh feel. A lovely idea for a daytime celebration, family ceremony or colourful wedding outfit.",
+        "description": "Turquoise and white form the irregular designs and subtle transitions of this Faso Dan Fani pagne. The unfolded view lets you follow the pattern, while the close-up reveals its details. An idea for a daytime celebration or a colourful wedding outfit.",
         "pattern": "Softly outlined motifs",
         "composition": "",
         "dimensions": "",
         "unit": ""
       }
-    }
+    },
+    "availability": "available"
   },
   "pagne10": {
     "name": "Éclat orangé",
-    "description": "Faso Dan Fani · Une teinte orangée lumineuse, ponctuée de fines lignes claires. Un modèle presque uni à distance, dont les détails apparaissent de près. À envisager pour un anniversaire, une fête en famille ou une célébration culturelle.",
+    "description": "Ce pagne Faso Dan Fani orangé présente de fines lignes claires sur une surface lumineuse. Presque uni de loin, il dévoile davantage de détails lorsque l’on s’approche. Une couleur chaleureuse à envisager pour un anniversaire ou une fête en famille.",
     "colors": [
       "Orange",
       "Blanc"
@@ -238,17 +247,18 @@
     "translations": {
       "en": {
         "name": "Orange glow",
-        "description": "Faso Dan Fani · A bright orange shade dotted with fine pale lines. Almost plain from a distance, with details that emerge up close. Consider it for a birthday, family party or cultural celebration.",
+        "description": "This orange Faso Dan Fani pagne features fine pale lines across a bright surface. Almost plain from a distance, it reveals more detail up close. A warm colour to consider for a birthday or a family celebration.",
         "pattern": "Fine pale lines",
         "composition": "",
         "dimensions": "",
         "unit": ""
       }
-    }
+    },
+    "availability": "available"
   },
   "pagne11": {
     "name": "Rayures brun et blanc",
-    "description": "Faso Dan Fani · Des lignes brunes, foncées et blanches se mêlent dans un motif serré, au relief visuel marqué. Une palette chaleureuse et sobre. Une belle option pour une tenue de mariage traditionnel, une cérémonie ou une sortie habillée.",
+    "description": "Des lignes brunes, noires et blanches composent le motif serré de ce Faso Dan Fani. Leur succession crée un relief visuel et une palette chaleureuse, visibles sous plusieurs angles dans la galerie. Une idée pour un mariage traditionnel ou une réception.",
     "colors": [
       "Marron",
       "Noir",
@@ -263,17 +273,18 @@
     "translations": {
       "en": {
         "name": "Brown and white stripes",
-        "description": "Faso Dan Fani · Brown, dark and white lines blend into a close pattern with striking visual depth. A warm, understated palette. A lovely option for a traditional wedding outfit, a ceremony or a dressy outing.",
+        "description": "Brown, black and white lines make up the tightly repeated design of this Faso Dan Fani. Their sequence creates visual texture and a warm palette, shown from several angles in the gallery. An idea for a traditional wedding or reception.",
         "pattern": "Stripes with visual depth",
         "composition": "",
         "dimensions": "",
         "unit": ""
       }
-    }
+    },
+    "availability": "available"
   },
   "pagne12": {
     "name": "Blanc sobre",
-    "description": "Faso Dan Fani · Un pagne blanc au dessin discret, qui laisse voir la finesse des lignes et du tissage. Une base épurée pour mettre la coupe de votre tenue en valeur. À envisager pour un baptême, une cérémonie ou un mariage, selon la tenue et les usages de la famille.",
+    "description": "Ce Faso Dan Fani blanc laisse apparaître de fines lignes et une texture discrète dans les photos rapprochées. Sa sobriété permet de mettre en valeur la coupe et les détails de la future tenue. Une inspiration pour une cérémonie, un baptême ou un mariage, selon vos préférences et les usages de votre famille.",
     "colors": [
       "Blanc"
     ],
@@ -286,12 +297,13 @@
     "translations": {
       "en": {
         "name": "Understated white",
-        "description": "Faso Dan Fani · A white pagne with a subtle design that reveals fine lines and weaving. A clean base that highlights the cut of your outfit. Consider it for a christening, ceremony or wedding, depending on the outfit and family customs.",
+        "description": "This white Faso Dan Fani reveals fine lines and a subtle texture in the close-up photographs. Its simplicity can highlight the cut and details of the outfit you choose to have made. An idea for a ceremony, christening or wedding, according to your preferences and family customs.",
         "pattern": "Plain with subtle lines",
         "composition": "",
         "dimensions": "",
         "unit": ""
       }
-    }
+    },
+    "availability": "available"
   }
 }

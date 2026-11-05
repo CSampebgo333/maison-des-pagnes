@@ -19,17 +19,17 @@ test('A direct product request contains readable product information and crawlab
  const p=seed.products[0],r=await get(productPath(p));assert.equal(r.status,200);const html=await r.text();
  assert.match(html,/<h1 class="mobile-product-title">Rayures lavande<\/h1>/);assert.ok(html.includes(p.description));assert.match(html,/12[\s\u202f]000 CFA/);assert.match(html,/href="\/collection"/);assert.match(html,/<img[^>]+src="\/media\//);assert.equal((html.match(/<title>/g)||[]).length,1);assert.equal((html.match(/name="description"/g)||[]).length,1);assert.equal((html.match(/id="root"/g)||[]).length,1);
  assert.match(html,/rel="canonical" href="https:\/\/fasodanfani.shop\/pagnes\/pagne1\/faso-dan-fani-violet-blanc"/);assert.doesNotMatch(html,/content="noindex/);
- const graph=JSON.parse(html.match(/<script id="shop-structured-data"[^>]*>(.*?)<\/script>/s)[1]);assert.equal(graph[0].name,productSeoName(p));assert.equal(graph[0].offers.price,12000);assert.equal(graph[0].offers.priceCurrency,'XOF');assert.equal(graph[0].offers.availability,undefined);assert.equal(graph[0].aggregateRating,undefined);
+ const graph=JSON.parse(html.match(/<script id="shop-structured-data"[^>]*>(.*?)<\/script>/s)[1]);assert.equal(graph[0].name,productSeoName(p));assert.equal(graph[0].offers.price,12000);assert.equal(graph[0].offers.priceCurrency,'XOF');assert.equal(graph[0].offers.availability,'https://schema.org/InStock');assert.equal(graph[0].aggregateRating,undefined);
 });
 test('English metadata, page content and alternate links describe the same product',async()=>{
  const p=seed.products[0],r=await get(productPath(p,'en'));const html=await r.text();assert.equal(r.headers.get('Content-Language'),'en');assert.match(html,/<html lang="en"/);assert.match(html,/<h1 class="mobile-product-title">Lavender stripes<\/h1>/);assert.ok(html.includes(p.translations.en.description));assert.match(html,/hreflang="fr" href="https:\/\/fasodanfani.shop\/pagnes\/pagne1\/faso-dan-fani-violet-blanc"/);assert.match(html,/canonical" href="https:\/\/fasodanfani.shop\/pagnes\/pagne1\/faso-dan-fani-violet-blanc\?lang=en"/);assert.doesNotMatch(html,/>Faso Dan Fani · Purple · White</);
 });
 test('Public homepage contains links to all products and useful ordering information without requiring button clicks',async()=>{
- const html=await (await get('/')).text();for(const p of seed.products)assert.ok(html.includes('href="'+productPath(p)+'"'));assert.match(html,/Commander un pagne Faso Dan Fani/);assert.match(html,/Livraison à Bobo-Dioulasso et Ouagadougou/);
+ const html=await (await get('/')).text();for(const p of seed.products)assert.ok(html.includes('href="'+productPath(p)+'"'));assert.match(html,/Commandes et livraison/);assert.match(html,/Livraison à Bobo-Dioulasso/);
 });
 test('Sitemap automatically includes a newly published product, both languages, and excludes hidden and private data',async()=>{
  const doc=structuredClone(seed),newP={...doc.products[0],id:'pagne-new',number:13,name:'Étoile dorée'};doc.products.push(newP);doc.products[1].published=false;
- const r=await get('/sitemap.xml',environment(doc)),xml=await r.text();assert.equal(r.status,200);assert.equal((xml.match(/<loc>/g)||[]).length,28);assert.ok(xml.includes(origin+productPath(newP)));assert.ok(xml.includes(origin+productPath(newP,'en')));assert.ok(!xml.includes(productPath(doc.products[1])));assert.doesNotMatch(xml,/gestion|orders|tracking|order-pdfs|admin/);
+ const r=await get('/sitemap.xml',environment(doc)),xml=await r.text();assert.equal(r.status,200);assert.equal((xml.match(/<loc>/g)||[]).length,34);assert.ok(xml.includes(origin+productPath(newP)));assert.ok(xml.includes(origin+productPath(newP,'en')));assert.ok(!xml.includes(productPath(doc.products[1])));assert.doesNotMatch(xml,/gestion|orders|tracking|order-pdfs|admin/);
  const page=await get(productPath(newP),environment(doc));assert.equal(page.status,200);assert.match(await page.text(),/<h1 class="mobile-product-title">Étoile dorée<\/h1>/);
 });
 test('Unpublishing or removing a product returns a real 404 and removes links from homepage and sitemap',async()=>{
@@ -94,11 +94,11 @@ test('Legacy named links redirect directly to the new colour URL in either langu
   assert.equal(r.status,301);assert.equal(r.headers.get('Location'),origin+productPath(seed.products[0],language));
  }
 });
-test('Product headings remain available to desktop and can be visually hidden on mobile',async()=>{
+test('Product headings stay accessible while hidden at every screen width',async()=>{
  const html=await (await get('/collection')).text();
  assert.doesNotMatch(html,/<h3>Rayures lavande/);
- assert.match(html,/alt="Faso Dan Fani - Violet Blanc"/);
+ assert.match(html,/alt="Faso Dan Fani - Violet Blanc — pagne plié, vue de face"/);
  const detail=await (await get(productPath(seed.products[0]))).text();
  assert.match(detail,/<h1 class="mobile-product-title">/);
- assert.match(detail,/<title>Faso Dan Fani - Violet Blanc/);
+ assert.match(detail,/<title>Faso Dan Fani — Violet Blanc/);
 });

@@ -1,10 +1,11 @@
+import {editorialRoutes,editorialKind,editorialMetadata} from './editorial-pages.js';
 import {productCollectionRow} from './collection-rows.js';
 import {commerceCopy} from './commerce-copy.js';
 // Shared by the public Worker and the browser: one URL and one description per product.
 export const SHOP_NAME='Maison du Faso Dan Fani';
-export const SITE_NAME='Faso Dan Fani';
-export const SITE_ALTERNATE_NAMES=['Fasodanfani','Faso Dan-fani','Faso Danfani'];
-export function websiteStructuredData(origin){return {'@context':'https://schema.org','@type':'WebSite','@id':origin+'/#website',url:origin+'/',name:SITE_NAME,alternateName:[...SITE_ALTERNATE_NAMES],inLanguage:['fr','en'],publisher:{'@id':origin+'/#organization'}};}
+export const SITE_NAME=SHOP_NAME;
+export const SITE_ALTERNATE_NAMES=[];
+export function websiteStructuredData(origin){return {'@context':'https://schema.org','@type':'WebSite','@id':origin+'/#website',url:origin+'/',name:SITE_NAME,...(SITE_ALTERNATE_NAMES.length?{alternateName:[...SITE_ALTERNATE_NAMES]}:{}),inLanguage:['fr','en'],publisher:{'@id':origin+'/#organization'}};}
 export function publicOrigin(value){
  if(!value)return null;
  const url=new URL(value);
@@ -41,13 +42,13 @@ export function homeMetadata(language='fr'){
 }
 export const collectionPath=(language='fr')=>'/collection'+(language==='en'?'?lang=en':'');
 export function collectionMetadata(language='fr'){
- const en=language==='en';return {...homeMetadata(language),title:en?'The collection — Faso Dan Fani':'La collection — Faso Dan Fani',description:en?'Explore our Faso Dan Fani fabrics, compare colours and patterns, and prepare your selection. Delivery in Burkina Faso.':'Explorez nos pagnes Faso Dan Fani, comparez les couleurs et les motifs, et préparez votre sélection. Livraison au Burkina Faso.',path:collectionPath(language)};
+ const en=language==='en';return {...homeMetadata(language),title:en?'Faso Dan Fani pagnes: designs and prices — Our collection':'Pagnes Faso Dan Fani : modèles et prix — Notre collection',description:en?'Compare our Faso Dan Fani pagnes, their photographs, patterns and prices. Prepare an order request with our family shop in Bobo-Dioulasso.':'Comparez nos pagnes Faso Dan Fani, leurs photos, motifs et prix. Préparez votre demande de commande auprès de notre boutique familiale à Bobo-Dioulasso.',path:collectionPath(language)};
 }
 export function productMetadata(product,variants={},language='fr'){
  const p=translatedProduct(product,language),en=language==='en',unavailable=product.availability==='unavailable';
  const priced=Number.isFinite(product.price)?new Intl.NumberFormat(en?'en-GB':'fr-BF').format(product.price)+' CFA'+(en?' excluding delivery.':' hors livraison.'):(en?' Price on request.':' Prix sur demande.');
  const action=unavailable?(en?'Currently unavailable.':'Indisponible pour le moment.'):(en?'Browse the photos and prepare your order. Availability confirmed by the shop.':'Consultez les photos et préparez votre commande. Disponibilité confirmée par la boutique.');
- return {title:p.name,description:`${p.name}. ${priced} ${action}`,path:productPath(product,language),image:productImage(product,variants),imageAlt:p.name,type:'product'};
+ return {title:p.name.replace(' - ',' — ')+' | '+SHOP_NAME,description:`${p.name}. ${p.pattern?p.pattern+'. ':''}${priced} ${action}`,path:productPath(product,language),image:productImage(product,variants),imageAlt:p.name,type:'product'};
 }
 export function structuredProduct(product,variants,origin,language='fr'){
  const p=translatedProduct(product,language),url=origin+productPath(product,language);
@@ -59,20 +60,29 @@ export function pageStructuredData(product,variants,origin,language='fr',product
  if(!origin)return [];
  if(!product){
   const meta=collectionPage?collectionMetadata(language):homeMetadata(language),imageId=origin+'/#primaryimage';
-  return [{'@context':'https://schema.org','@type':'Organization','@id':origin+'/#organization',name:SHOP_NAME,url:origin+'/',telephone:'+22667196556',areaServed:[{'@type':'City',name:'Bobo-Dioulasso'},{'@type':'City',name:'Ouagadougou'}]},websiteStructuredData(origin),{'@context':'https://schema.org','@type':'CollectionPage','@id':origin+meta.path+'#webpage',url:origin+meta.path,name:meta.title,description:meta.description,inLanguage:language,isPartOf:{'@id':origin+'/#website'},primaryImageOfPage:{'@id':imageId},mainEntity:{'@type':'ItemList',itemListElement:publicProducts({products}).filter(p=>collectionPage||productCollectionRow(p)<=3).map((p,i)=>({'@type':'ListItem',position:i+1,name:translatedProduct(p,language).name,url:origin+productPath(p,language),image:origin+productImage(p,variants)}))}},{'@context':'https://schema.org','@type':'ImageObject','@id':imageId,url:origin+meta.image,contentUrl:origin+meta.image,width:800,height:800,caption:meta.imageAlt}];
+  return [{'@context':'https://schema.org','@type':'Organization','@id':origin+'/#organization',name:SHOP_NAME,url:origin+'/',telephone:'+22667196556',logo:{'@type':'ImageObject',url:origin+'/icons/app-512.png'},contactPoint:[{'@type':'ContactPoint',telephone:'+22667196556',contactType:'customer service',availableLanguage:['fr','en']},{'@type':'ContactPoint',telephone:'+22674387624',contactType:'customer service',availableLanguage:['fr','en']}],areaServed:[{'@type':'City',name:'Bobo-Dioulasso'},{'@type':'City',name:'Ouagadougou'}]},websiteStructuredData(origin),{'@context':'https://schema.org','@type':collectionPage?'CollectionPage':'WebPage','@id':origin+meta.path+'#webpage',url:origin+meta.path,name:meta.title,description:meta.description,inLanguage:language,isPartOf:{'@id':origin+'/#website'},primaryImageOfPage:{'@id':imageId},mainEntity:{'@type':'ItemList',itemListElement:publicProducts({products}).filter(p=>collectionPage||productCollectionRow(p)<=3).map((p,i)=>({'@type':'ListItem',position:i+1,name:translatedProduct(p,language).name,url:origin+productPath(p,language),image:origin+productImage(p,variants)}))}},{'@context':'https://schema.org','@type':'ImageObject','@id':imageId,url:origin+meta.image,contentUrl:origin+meta.image,width:800,height:800,caption:meta.imageAlt}];
  }
- return [structuredProduct(product,variants,origin,language),{'@context':'https://schema.org','@type':'BreadcrumbList',itemListElement:[{'@type':'ListItem',position:1,name:language==='en'?'The collection':'La collection',item:origin+collectionPath(language)},{'@type':'ListItem',position:2,name:translatedProduct(product,language).name,item:origin+productPath(product,language)}]},{'@context':'https://schema.org','@type':'WebPage','@id':origin+productPath(product,language)+'#webpage',url:origin+productPath(product,language),inLanguage:language,mainEntity:{'@id':origin+productPath(product,language)+'#product'},primaryImageOfPage:{'@type':'ImageObject',contentUrl:origin+productImage(product,variants),caption:translatedProduct(product,language).name}}];
+ return [structuredProduct(product,variants,origin,language),websiteStructuredData(origin),{'@context':'https://schema.org','@type':'Organization','@id':origin+'/#organization',name:SHOP_NAME,url:origin+'/',telephone:'+22667196556'},{'@context':'https://schema.org','@type':'BreadcrumbList',itemListElement:[{'@type':'ListItem',position:1,name:language==='en'?'The collection':'La collection',item:origin+collectionPath(language)},{'@type':'ListItem',position:2,name:translatedProduct(product,language).name,item:origin+productPath(product,language)}]},{'@context':'https://schema.org','@type':'WebPage','@id':origin+productPath(product,language)+'#webpage',url:origin+productPath(product,language),inLanguage:language,mainEntity:{'@id':origin+productPath(product,language)+'#product'},primaryImageOfPage:{'@type':'ImageObject',contentUrl:origin+productImage(product,variants),caption:translatedProduct(product,language).name}}];
 }
 export const htmlEscape=value=>String(value??'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#39;');
 export const jsonForHtml=value=>JSON.stringify(value).replaceAll('<','\\u003c').replaceAll('>','\\u003e').replaceAll('&','\\u0026');
 export function metadataMarkup(meta,origin,language='fr',product){
  const e=htmlEscape,canonical=origin?origin+meta.path:null;
  const collection=meta.path.startsWith('/collection');
- const frPath=product?productPath(product):collection?collectionPath():'/',enPath=product?productPath(product,'en'):collection?collectionPath('en'):'/?lang=en';
+ const kind=editorialKind(meta.path);
+ const frPath=product?productPath(product):collection?collectionPath():kind?editorialMetadata(kind).path:'/',enPath=product?productPath(product,'en'):collection?collectionPath('en'):kind?editorialMetadata(kind,'en').path:'/?lang=en';
  return `<title>${e(meta.title)}</title>\n<meta name="description" content="${e(meta.description)}" />\n<meta name="robots" content="${origin?'index, follow':'noindex, nofollow'}" />${origin?'\n<meta name="googlebot" content="max-image-preview:large" />':''}\n<meta property="og:title" content="${e(meta.title)}" />\n<meta property="og:description" content="${e(meta.description)}" />\n<meta property="og:site_name" content="${e(SITE_NAME)}" />\n<meta property="og:type" content="${meta.type}" />\n<meta property="og:locale" content="${language==='en'?'en_GB':'fr_BF'}" />\n<meta property="og:image:alt" content="${e(meta.imageAlt)}" />\n<meta name="twitter:title" content="${e(meta.title)}" />\n<meta name="twitter:description" content="${e(meta.description)}" />`+(origin?`\n<link rel="canonical" href="${e(canonical)}" />\n<link rel="alternate" hreflang="fr" href="${e(origin+frPath)}" />\n<link rel="alternate" hreflang="en" href="${e(origin+enPath)}" />\n<link rel="alternate" hreflang="x-default" href="${e(origin+frPath)}" />\n<meta property="og:url" content="${e(canonical)}" />\n<meta property="og:image" content="${e(origin+meta.image)}" />\n<meta property="og:image:secure_url" content="${e(origin+meta.image)}" />\n<meta name="twitter:image" content="${e(origin+meta.image)}" />\n<meta name="twitter:image:alt" content="${e(meta.imageAlt)}" />${meta.imageWidth&&meta.imageHeight?`\n<meta property="og:image:width" content="${meta.imageWidth}" />\n<meta property="og:image:height" content="${meta.imageHeight}" />`:""}${meta.imageType?`\n<meta property="og:image:type" content="${e(meta.imageType)}" />`:""}`:'');
 }
 export function catalogueSitemap(document,origin){
  if(!origin)return '<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" />';
- const e=htmlEscape,items=publicProducts(document),entries=[{paths:['/','/?lang=en'],images:['/social/rayures-lavande-v3.jpg',...items.map(p=>productImage(p,document.variants))]},{paths:[collectionPath(),collectionPath('en')],images:items.map(p=>productImage(p,document.variants))},...items.map(p=>({paths:[productPath(p),productPath(p,'en')],images:p.photos.map(photo=>'/'+(document.variants?.[photo.src]?.display??photo.src).replace(/^\//,''))}))];
+ const e=htmlEscape,items=publicProducts(document),entries=[{paths:['/','/?lang=en'],images:['/social/rayures-lavande-v3.jpg',...items.map(p=>productImage(p,document.variants))]},{paths:[collectionPath(),collectionPath('en')],images:items.map(p=>productImage(p,document.variants))},...editorialRoutes.map(path=>({paths:[path,path+'?lang=en'],images:path==='/faso-dan-fani'?['/editorial/pagnes-ouagadougou-2019.webp','/editorial/thomas-sankara-archive-1987.webp']:[]})),...items.map(p=>({paths:[productPath(p),productPath(p,'en')],images:p.photos.map(photo=>'/'+(document.variants?.[photo.src]?.display??photo.src).replace(/^\//,''))}))];
  return '<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">'+entries.flatMap(({paths,images})=>paths.map(path=>`<url><loc>${e(origin+path)}</loc><xhtml:link rel="alternate" hreflang="fr" href="${e(origin+paths[0])}" /><xhtml:link rel="alternate" hreflang="en" href="${e(origin+paths[1])}" />${[...new Set(images)].map(image=>`<image:image><image:loc>${e(origin+image)}</image:loc></image:image>`).join('')}</url>`)).join('')+'</urlset>';
+}
+
+// Existing catalogue views have been checked visually. Uploaded views use their own labels.
+export function photoAlt(product,photo,language='fr'){
+ const en=language==='en',name=productSeoName(product,language);
+ const legacy=/^pagnes\/pagne\d+-[1-5]\.webp$/.test(photo.src);
+ const views=en?['folded pagne, front view','partially unfolded pagne','draped pagne','close-up of the weave and pattern','folded pagne, another angle']:['pagne plié, vue de face','pagne partiellement déplié','pagne drapé','gros plan du tissage et du motif','pagne plié, autre angle'];
+ return name+' — '+(legacy?views[(photo.view??1)-1]??photo.label:photo.label|| (en?'product photograph':'photo du pagne'));
 }

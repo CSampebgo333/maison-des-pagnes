@@ -58,3 +58,21 @@ Les détails de gestion affichent les derniers états des notifications. **Soumi
 Une réponse 429 est réessayée avec temporisation, cinq tentatives au maximum. Un rejet définitif est conservé en échec. Un délai dépassé, une réponse ambiguë ou un traitement interrompu reste à vérifier, sans répétition automatique qui risquerait un doublon. Vérifier ces cas dans Meta avant toute intervention manuelle. Un envoi exactement unique ne peut pas être garanti si la connexion est interrompue après acceptation par le fournisseur.
 
 Pour suspendre les envois, remettre WHATSAPP_ENABLED=0 dans le build et redéployer. Les événements en attente sont conservés ; vérifier leur pertinence avant réactivation.
+
+## Alertes au propriétaire — nouvelle demande
+
+La destination privée des alertes est définie par le secret runtime `WHATSAPP_ADMIN_RECIPIENT`, au format international. Elle ne figure pas dans le dépôt public et ne remplace pas les contacts publics de la boutique. Les notifications de suivi aux clients restent indépendantes.
+
+1. Appliquer `drizzle/0004_owner_notifications.sql` avant d’activer cette fonction. Renseigner le numéro destinataire communiqué par le propriétaire dans le secret runtime `WHATSAPP_ADMIN_RECIPIENT`, sans le placer dans GitHub ni dans les variables de build.
+2. Connecter un expéditeur WhatsApp Business Platform / Cloud API et renseigner le secret serveur `WHATSAPP_ACCESS_TOKEN`, son `WHATSAPP_PHONE_NUMBER_ID`, la version `WHATSAPP_API_VERSION` et son numéro international `WHATSAPP_SENDER_NUMBER`. Un compte dans l’application WhatsApp Business ne renseigne pas automatiquement ces identifiants. L’expéditeur doit être différent du numéro destinataire : le contrôle serveur refuse un envoi à soi-même.
+3. Faire approuver un modèle Utility français, par exemple `nouvelle_demande_maison_fr`, avec **un paramètre de corps** :
+
+   > Maison du Faso Dan Fani — Nouvelle demande {{1}} à confirmer. Consultez votre gestion sécurisée : https://fasodanfani.shop/?gestion=1
+
+4. Définir `WHATSAPP_ADMIN_TEMPLATE` avec le nom approuvé, puis `WHATSAPP_ADMIN_ENABLED=1` après test. L’aperçu conserve cette fonction désactivée ; aucun envoi réel ne fait partie des tests automatisés.
+
+La demande et l’alerte sont enregistrées dans la même transaction D1. Une nouvelle soumission de la même demande ne crée pas une deuxième alerte. Seules les nouvelles demandes reçues après activation sont concernées ; aucune ancienne commande n’est envoyée rétroactivement. L’alerte transmet sa référence, sans adresse, téléphone client, PDF public ou secret de suivi. Les détails sont accessibles dans la gestion authentifiée.
+
+Le traitement reprend également au cron existant toutes les cinq minutes. Les limites 429 sont réessayées avec temporisation ; les échecs ambigus restent à vérifier pour éviter les doublons. `submitted` signifie soumis à Meta, pas livré au téléphone. Le webhook d’accusé de livraison n’est pas encore intégré. La table entre dans les sauvegardes dès qu’elle existe ; les installations antérieures restent compatibles tant que les alertes sont désactivées.
+
+Documentation Meta : https://developers.facebook.com/docs/whatsapp/cloud-api/get-started

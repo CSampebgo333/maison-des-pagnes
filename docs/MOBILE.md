@@ -23,3 +23,5 @@ Au-delà de 900 px, le hero retrouve le fond clair et les textes prune de la pr�
 ## Collection complète
 
 La page Collection et l’accueil utilisent le même carrousel par groupe : une seule rangée, trois pagnes visibles sur ordinateur portable et quatre à partir de 1 600 px. Le surplus reste accessible par glissement horizontal, par les flèches ou au clavier, sans retour à la ligne. La page Collection affiche tous les groupes ; l’accueil garde les trois premiers.
+
+Jusqu’à 640 px inclus, chaque rangée affiche un seul pagne sur toute sa largeur disponible. Le défilement horizontal s’arrête sur les cartes ; les flèches, le clavier et les points de pagination restent utilisables. La photo conserve son intégralité, avec une hauteur adaptée au petit écran. De 641 à 760 px, deux cartes restent visibles. Les réglages des écrans plus larges sont conservés.

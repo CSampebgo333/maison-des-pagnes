@@ -6,13 +6,14 @@ export async function requestGuard(request,env){
  if(!['GET','HEAD'].includes(request.method)&&request.headers.get('Origin')!==url.origin)return deny('Origine non autorisée.',403);
  const write=!['GET','HEAD'].includes(request.method);
  const anonymous=path==='/api/orders'||path==='/api/order-pdfs';
- const category=write&&anonymous?'create':path.startsWith('/api/orders/')?'tracking':null;
+ const upload=request.method==='PUT'&&/^\/api\/orders\/[a-f0-9-]{36}\/(pdf|photo)$/.test(path);
+ const category=upload?'upload':write&&anonymous?'create':path.startsWith('/api/orders/')?'tracking':null;
  if(!category)return null;
  const address=request.headers.get('CF-Connecting-IP');
  // Independent public hosting fails closed if its abuse protection is not configured.
  if(env.AUTH_MODE==='cloudflare'&&(!env.SECURITY_SALT||!env.DB||!address))return deny('Le service est en cours de sécurisation. Réessayez plus tard.',503);
  if(!address||!env.DB||!env.SECURITY_SALT)return null;
- const period=category==='create'?3600:60,limit=category==='create'?30:90,window=Math.floor(Date.now()/1000/period);
+ const period=category==='tracking'?60:3600,limit=category==='create'?30:category==='upload'?20:90,window=Math.floor(Date.now()/1000/period);
  const digest=await crypto.subtle.digest('SHA-256',encoder.encode(env.SECURITY_SALT+'\0'+address));
  const key=category+':'+window+':'+[...new Uint8Array(digest)].map(n=>n.toString(16).padStart(2,'0')).join('');
  const row=await env.DB.prepare('INSERT INTO request_limits(key,attempts,expires_at) VALUES(?,1,?) ON CONFLICT(key) DO UPDATE SET attempts=attempts+1 RETURNING attempts').bind(key,(window+1)*period).first();

@@ -70,5 +70,5 @@ export default {
   catch{return secureResponse(json({error:'Le service est temporairement indisponible. Réessayez.'},503),request,env);}
  },
  async scheduled(controller,env,ctx){if(controller.cron==='*/5 * * * *')ctx.waitUntil(Promise.allSettled([dispatchNotifications(env),dispatchOwnerNotifications(env)]).then(results=>{if(results.some(r=>r.status==='rejected'))console.error('WhatsApp dispatch requires configuration review.');}));
-  else ctx.waitUntil(scheduledBackup(env));}
+  else if(controller.cron==='0 3 * * *'&&env.BACKUP_CRON_ENABLED==='1')ctx.waitUntil(scheduledBackup(env));}
 };

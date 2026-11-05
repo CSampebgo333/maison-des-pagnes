@@ -2,33 +2,49 @@ import {isAdmin} from './admin-auth.js';
 const TABLES=['catalogue_documents','inventory','orders','order_lines','order_events','order_notifications'];
 const encoder=new TextEncoder();
 const json=(value,status=200)=>new Response(JSON.stringify(value),{status,headers:{'Content-Type':'application/json','Cache-Control':'private, no-store','X-Robots-Tag':'noindex'}});
-export async function createBackup(env,now=new Date()){
+const hex=bytes=>[...new Uint8Array(bytes)].map(n=>n.toString(16).padStart(2,'0')).join('');
+async function saveDatabase(env,now,prefix){
  if(!env.DB||!env.BUCKET)throw Error('Stockage de sauvegarde indisponible.');
  // One batch gives a coherent database snapshot. Never publish a truncated backup.
  const ownerTable=await env.DB.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name='owner_notifications'").bind().first();
- const tablesToSave=ownerTable?[...TABLES,'owner_notifications']:TABLES;
+ const costsTable=await env.DB.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name='order_costs'").bind().first();
+ const tablesToSave=[...TABLES,...(ownerTable?['owner_notifications']:[]),...(costsTable?['order_costs']:[])];
  const results=await env.DB.batch(tablesToSave.map(table=>env.DB.prepare(`SELECT * FROM ${table} LIMIT 10001`)));
  if(results.some(r=>r.results.length>10000))throw Error('La base dépasse la limite de sauvegarde intégrée : utiliser l’export D1 natif.');
  const tables=Object.fromEntries(tablesToSave.map((name,i)=>[name,results[i].results]));
  const data=encoder.encode(JSON.stringify({format:1,createdAt:now.toISOString(),tables}));
  if(data.length>20*1024*1024)throw Error('Sauvegarde trop volumineuse : utiliser l’export D1 natif.');
  const digest=[...new Uint8Array(await crypto.subtle.digest('SHA-256',data))].map(n=>n.toString(16).padStart(2,'0')).join('');
- const prefix='backups/'+now.toISOString().slice(0,10)+'/'+crypto.randomUUID(),key=prefix+'/database.json';
+ const key=prefix+'/database.json';
  await env.BUCKET.put(key,data,{httpMetadata:{contentType:'application/json'}});
  const check=await env.BUCKET.get(key);if(!check)throw Error('La sauvegarde n’a pas pu être relue.');
  const stored=new Uint8Array(await check.arrayBuffer());const verify=[...new Uint8Array(await crypto.subtle.digest('SHA-256',stored))].map(n=>n.toString(16).padStart(2,'0')).join('');if(verify!==digest)throw Error('La vérification de la sauvegarde a échoué.');
- // Immutable original uploads are copied separately, including every page of the listing.
+ return {key,bytes:data.length,sha256:digest,rows:Object.fromEntries(tablesToSave.map(name=>[name,tables[name].length]))};
+}
+async function copyFile(env,item,prefix){
+ const object=await env.BUCKET.get(item.key);
+ if(!object||object.etag&&object.etag!==item.etag)throw Error('Un fichier de la sauvegarde a changé.');
+ const bytes=new Uint8Array(await object.arrayBuffer());
+ if(bytes.length!==item.size)throw Error('La taille d’un fichier de sauvegarde est incohérente.');
+ const sha256=hex(await crypto.subtle.digest('SHA-256',bytes)),backupKey=prefix+'/files/'+item.key;
+ await env.BUCKET.put(backupKey,bytes,{httpMetadata:object.httpMetadata});
+ const copied=await env.BUCKET.get(backupKey);
+ if(!copied||hex(await crypto.subtle.digest('SHA-256',await copied.arrayBuffer()))!==sha256)throw Error('La copie d’un fichier n’a pas pu être vérifiée.');
+ return {key:item.key,backupKey,size:bytes.length,etag:item.etag,sha256};
+}
+export async function createBackup(env,now=new Date()){
+ if(!env.DB||!env.BUCKET)throw Error('Stockage de sauvegarde indisponible.');
+ const prefix='backups/'+now.toISOString().slice(0,10)+'/'+crypto.randomUUID();
+ const database=await saveDatabase(env,now,prefix);
  let cursor,files=0;const objects=[];
  for(const sourcePrefix of ['catalogue-assets/','catalogue/photos/','managed-orders/']){
   do{const page=await env.BUCKET.list({prefix:sourcePrefix,limit:100,cursor});for(const item of page.objects){
-   if(files>=400)throw Error('Trop de fichiers pour la sauvegarde intégrée.');
-   const object=await env.BUCKET.get(item.key);if(!object)throw Error('Un fichier de la sauvegarde a disparu.');
-   const backupKey=prefix+'/files/'+item.key;await env.BUCKET.put(backupKey,object.body,{httpMetadata:object.httpMetadata});objects.push({key:item.key,backupKey,size:item.size,etag:item.etag});files++;
+   if(files>=400)throw Error('Trop de fichiers pour la sauvegarde intégrée : prévoir un export complet R2.');
+   objects.push(await copyFile(env,item,prefix));files++;
   }cursor=page.truncated?page.cursor:undefined;}while(cursor);
  }
- const summary={format:1,key,prefix,createdAt:now.toISOString(),bytes:data.length,sha256:digest,rows:Object.fromEntries(tablesToSave.map(name=>[name,tables[name].length])),files,objects};
+ const summary={format:1,...database,prefix,createdAt:now.toISOString(),files,filesVerified:true,objects};
  await env.BUCKET.put(prefix+'/manifest.json',JSON.stringify(summary),{httpMetadata:{contentType:'application/json'}});
- // Updated only after database verification AND all referenced file copies succeed.
  await env.BUCKET.put('backups/latest.json',JSON.stringify({...summary,objects:undefined}),{httpMetadata:{contentType:'application/json'}});
  await env.BUCKET.delete('backups/last-error.json');return {...summary,objects:undefined};
 }
@@ -47,11 +63,14 @@ export async function backupRoute(request,env){
  if(!await isAdmin(request,env))return json({error:'Accès réservé à la gestion.'},403);
  if(!env.BUCKET)return json({error:'Stockage indisponible.'},503);
  if(url.pathname==='/api/admin/backups'&&request.method==='GET'){
-  const latest=await env.BUCKET.get('backups/latest.json'),failure=await env.BUCKET.get('backups/last-error.json');return json({latest:latest?await latest.json():null,error:failure?await failure.json():null,schedule:env.BACKUP_CRON_ENABLED==='1'?'Tous les jours à 03:00 UTC':'Planification non activée sur cet hébergement'});
+  const latest=await env.BUCKET.get('backups/latest.json'),failure=await env.BUCKET.get('backups/last-error.json');return json({latest:latest?await latest.json():null,error:failure?await failure.json():null,schedule:env.BACKUP_CRON_ENABLED==='1'?'Planification déclarée : tous les jours à 03:00 UTC':'Planification non activée sur cet hébergement'});
  }
  if(url.pathname==='/api/admin/backups'&&request.method==='POST'){
   if(request.headers.get('Origin')!==url.origin)return json({error:'Origine non autorisée.'},403);
   try{return json(await scheduledBackup(env),201);}catch{return json({error:'La sauvegarde n’a pas abouti. Consultez son état et réessayez.'},503);}
+ }
+ if(url.pathname==='/api/admin/backups/manifest'&&request.method==='GET'){
+  const pointer=await env.BUCKET.get('backups/latest.json');if(!pointer)return json({error:'Aucune sauvegarde disponible.'},404);const latest=await pointer.json(),manifest=await env.BUCKET.get(latest.prefix+'/manifest.json');if(!manifest)return json({error:'Manifeste introuvable.'},404);return new Response(manifest.body,{headers:{'Content-Type':'application/json','Content-Disposition':'attachment; filename="manifeste-sauvegarde.json"','Cache-Control':'private, no-store'}});
  }
  if(url.pathname==='/api/admin/backups/download'&&request.method==='GET'){
   const pointer=await env.BUCKET.get('backups/latest.json');if(!pointer)return json({error:'Aucune sauvegarde disponible.'},404);const latest=await pointer.json(),data=await env.BUCKET.get(latest.key);if(!data)return json({error:'Sauvegarde introuvable.'},404);return new Response(data.body,{headers:{'Content-Type':'application/json','Content-Disposition':'attachment; filename="sauvegarde-boutique.json"','Cache-Control':'private, no-store'}});

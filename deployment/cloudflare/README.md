@@ -11,7 +11,7 @@ Le site privé Sites utilise déjà les bindings DB et BUCKET. Le futur héberge
 5. **Transférer les données réelles**, pas seulement le code : exporter le document catalogue courant, l’inventaire, les commandes et événements depuis la base Sites ; importer dans la nouvelle D1. Copier les objets R2 `catalogue-assets/`, `catalogue/photos/`, `catalogue/history/`, `managed-orders/` et les PDF temporaires encore valides si nécessaire. Les nouvelles photos ajoutées par l’administration ne sont pas dans GitHub. Suspendre les écritures pendant le transfert final et contrôler comptages et échantillons.
 6. Remplacer tous les stocks de démonstration par un inventaire réel. Vérifier le parcours client et les contrôles Access avant ouverture. Choisir le domaine, configurer PUBLIC_SITE_URL au build et vérifier le référencement séparément.
 
-Le catalogue migre automatiquement du document R2 vers D1 si la table `catalogue_documents` est vide. Les stocks initiaux aléatoires sont des données de démonstration : ils se chargent uniquement dans les lignes absentes à l’ouverture de la rubrique Stock. Aucun stock existant n’est remplacé. Les nouveaux modèles restent à renseigner.
+Le catalogue migre automatiquement du document R2 vers D1 si la table `catalogue_documents` est vide. Les stocks initiaux aléatoires sont des données de démonstration : ils ne sont ajoutés aux lignes absentes que par le bouton explicite de démonstration ; consulter Stock ne crée aucune quantité. Aucun stock existant n’est remplacé. Les nouveaux modèles restent à renseigner.
 
 ## Sauvegarde et restauration
 
@@ -93,3 +93,9 @@ Le domaine public utilise `PUBLIC_SITE_URL=https://fasodanfani.shop`. Pour un es
 Le guide culturel, l’histoire familiale et le parcours illustré de commande partagent leurs contenus FR/EN avec le HTML initial. Consulter [le plan de réalisation SEO](../../docs/SEO-ROLLOUT.md) et [les crédits des archives](../../docs/EDITORIAL-IMAGE-CREDITS.md).
 
 Pour les alertes de nouvelles demandes au propriétaire, appliquer également `0004_owner_notifications.sql` avant activation de `WHATSAPP_ADMIN_ENABLED`. Les variables supplémentaires de build sont `WHATSAPP_ADMIN_ENABLED`, `WHATSAPP_ADMIN_TEMPLATE` et `WHATSAPP_SENDER_NUMBER`. Le jeton reste un secret runtime. Cette fonction est indépendante des mises à jour destinées aux clients, désactivée sans configuration et ne réexpédie pas les anciennes commandes. L’activation ne fait pas partie du déploiement d’aperçu.
+
+## Gestion quotidienne et migration des coûts
+
+Appliquer `drizzle/0005_order_costs.sql` pour activer les coûts internes et les marges indicatives. Le code détecte une base non migrée et conserve les autres fonctions opérationnelles. Les coûts ne changent aucun prix client ni encaissement ; les vrais montants sont saisis par la gestion.
+
+Les sauvegardes incluent cette table lorsqu’elle existe et vérifient aussi chaque copie R2. Le manifeste téléchargeable permet une vérification complète hors ligne ; voir [le bilan opérationnel](../../docs/OPERATIONS-READINESS.md). La configuration publique prévoit déjà le cron quotidien, distinct de l’aperçu privé non planifié. Vérifier une exécution réelle plutôt que déduire son succès du fichier de configuration.

@@ -21,7 +21,7 @@ async function bounded(request,limit){
  for(;;){const {done,value}=await reader.read();if(done)break;size+=value.length;if(size>limit){await reader.cancel();throw Error('Fichier trop volumineux.');}chunks.push(value);}
  const result=new Uint8Array(size);let offset=0;for(const chunk of chunks){result.set(chunk,offset);offset+=chunk.length;}return result;
 }
-function sourceDimensions(bytes,type){
+export function sourceDimensions(bytes,type){
  const view=new DataView(bytes.buffer,bytes.byteOffset,bytes.byteLength);
  if(type==='image/png'&&bytes.length>=33&&bytes[0]===137&&new TextDecoder().decode(bytes.slice(1,4))==='PNG'&&new TextDecoder().decode(bytes.slice(12,16))==='IHDR')return [view.getUint32(16),view.getUint32(20)];
  if(type==='image/jpeg'&&bytes[0]===255&&bytes[1]===216){let offset=2;while(offset+4<bytes.length){if(bytes[offset++]!==255)break;while(bytes[offset]===255)offset++;const marker=bytes[offset++];if(marker===217||marker===218)break;if(marker===1||marker>=208&&marker<=215)continue;const size=view.getUint16(offset);if(size<2||offset+size>bytes.length)break;if([192,193,194,195,197,198,199,201,202,203,205,206,207].includes(marker)&&size>=8)return [view.getUint16(offset+5),view.getUint16(offset+3)];offset+=size;}}
@@ -54,7 +54,7 @@ export async function catalogueRoute(request,env) {
  if(!['GET','HEAD'].includes(request.method)&&request.headers.get('Origin')!==url.origin)return json({error:'Origine non autorisée.'},403);
  try {
   if((path==='/api/catalogue'||path==='/api/admin/catalogue')&&request.method==='GET'){
-   const {document}=await getCatalogue(env);const enriched={...document,products:document.products.map(p=>({...p,collectionRow:productCollectionRow(p),translations:{en:englishFor(p)}}))};return json(path==='/api/catalogue'?{...enriched,products:enriched.products.filter(p=>p.published!==false)}:enriched);
+   const {document}=await getCatalogue(env);const enriched={...document,products:document.products.map(p=>({...p,collectionRow:productCollectionRow(p),translations:{en:englishFor(p)}}))};return json(path==='/api/catalogue'?{...enriched,products:enriched.products.filter(p=>p.published!==false).map(({lowStockThreshold,...product})=>product)}:enriched);
   }
   if(path==='/api/admin/catalogue/editorial-refresh'&&['GET','POST'].includes(request.method)){
    const {document,etag}=await getCatalogue(env),review=reviewEditorialUpdate(document);
@@ -92,6 +92,7 @@ export async function catalogueRoute(request,env) {
    const products=[];
    for(const p of body.products){
     if(!p||typeof p.id!=='string'||!/^[a-zA-Z0-9-]{1,80}$/.test(p.id)||ids.has(p.id)||!Number.isInteger(p.number)||p.number<1||numbers.has(p.number))throw Error('Identifiant de pagne invalide.');ids.add(p.id);numbers.add(p.number);
+    if(p.lowStockThreshold!==undefined&&(!Number.isInteger(p.lowStockThreshold)||p.lowStockThreshold<0||p.lowStockThreshold>100000))throw Error('Vérifiez le seuil de stock faible.');
     if(p.collectionRow!==undefined&&(!Number.isInteger(p.collectionRow)||p.collectionRow<1||p.collectionRow>50))throw Error('Choisissez une rangée de la collection valide.');
     if(!Number.isInteger(p.price)||p.price<1||p.price>10000000)throw Error('Indiquez un prix positif en CFA.');
     if(!STATES.includes(p.availability)||!Array.isArray(p.occasions)||p.occasions.some(o=>!OCCASIONS.includes(o))||p.occasions.length>6)throw Error('Choisissez la disponibilité et les occasions.');
@@ -104,7 +105,7 @@ export async function catalogueRoute(request,env) {
     }
     if(!Array.isArray(p.colors)||p.colors.length>8)throw Error('Vérifiez les couleurs.');
     const english=englishFor(p);const translations={en:english?Object.fromEntries(Object.entries({name:100,description:1000,pattern:100,unit:80,composition:120,dimensions:120}).map(([key,max])=>[key,text(english[key]??'',max)])):undefined};
-    products.push({collectionRow:p.collectionRow??productCollectionRow(document.products.find(old=>old.id===p.id)??p),translations,id:p.id,number:p.number,name:text(p.name,100,true),description:text(p.description,1000,true),colors:p.colors.map(c=>text(c,30,true)),pattern:text(p.pattern,100),accent:/^#[a-f0-9]{6}$/i.test(p.accent)?p.accent:'#aaa0c7',price:p.price,unit:text(p.unit,80),composition:text(p.composition,120),dimensions:text(p.dimensions,120),availability:p.availability,occasions:[...new Set(p.occasions)],published:p.published!==false,photos});
+    products.push({...(p.lowStockThreshold===undefined?{}:{lowStockThreshold:p.lowStockThreshold}),collectionRow:p.collectionRow??productCollectionRow(document.products.find(old=>old.id===p.id)??p),translations,id:p.id,number:p.number,name:text(p.name,100,true),description:text(p.description,1000,true),colors:p.colors.map(c=>text(c,30,true)),pattern:text(p.pattern,100),accent:/^#[a-f0-9]{6}$/i.test(p.accent)?p.accent:'#aaa0c7',price:p.price,unit:text(p.unit,80),composition:text(p.composition,120),dimensions:text(p.dimensions,120),availability:p.availability,occasions:[...new Set(p.occasions)],published:p.published!==false,photos});
    }
    const next={...(document.editorialRevisions?{editorialRevisions:document.editorialRevisions}:{}),products,variants,revision:crypto.randomUUID(),updatedAt:new Date().toISOString()};
    // Keep recoverable snapshots; optimistic concurrency prevents overwriting another edit.

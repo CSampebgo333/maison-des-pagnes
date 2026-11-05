@@ -1,3 +1,4 @@
+import {LOOM_VIEWBOX,LOOM_MARKUP} from './lib/brand-mark';
 import EditorialPage from './components/EditorialPage';
 import {editorialKind,editorialLinks,editorialPath} from './lib/editorial-pages.js';
 import {commercePolicy,deliveryPath} from './lib/commerce-policy.js';
@@ -42,7 +43,7 @@ const priceLabel = (product: Product) => product.price === null ? t("Prix sur de
 function loadBag() { try { return readBag(localStorage.getItem(BAG_KEY)); } catch { return []; } }
 
 function Brand({ small = false }: { small?: boolean }) {
-  return <span className={`brand ${small ? 'brand-small' : ''}`}><svg viewBox="0 0 48 48" aria-hidden="true"><path d="M9 34V13l15 18 15-18v21M14 10l10 12 10-12" /></svg><span>{shop.name}<small>{t(shop.tagline)}</small></span></span>;
+  return <span className={`brand ${small ? 'brand-small' : ''}`}><svg className="brand-emblem" viewBox={LOOM_VIEWBOX} aria-hidden="true" focusable="false" dangerouslySetInnerHTML={{__html:LOOM_MARKUP}} /><span>{shop.name}<small>{t(shop.tagline)}</small></span></span>;
 }
 
 export default function App() {

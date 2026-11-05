@@ -10,3 +10,6 @@ coverage/
 
 /tmp/
 /deployment/cloudflare/wrangler.local.jsonc
+
+# Local preview tooling cache
+.sites-runtime/

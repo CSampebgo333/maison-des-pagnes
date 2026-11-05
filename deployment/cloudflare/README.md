@@ -39,7 +39,7 @@ La sauvegarde logique des six tables métier est lue dans une seule transaction 
 
 Ce mécanisme est volontairement borné : 10 000 lignes par table, 20 Mo de données et 400 fichiers par exécution. Il refuse de marquer une sauvegarde tronquée comme complète. Au-delà, passer à l’export D1 natif et à un mécanisme de copie incrémentale. Les sauvegardes sont dans le même compte R2 : ce n’est pas une protection contre la perte du compte ou la suppression du bucket. Garder une copie indépendante est nécessaire avant un usage critique. Le téléchargement de l’administration contient uniquement les données JSON ; les fichiers sont sous le préfixe du manifeste dans R2.
 
-Vérification de restauration, sans toucher à la production : `python scripts/verify-backup.py /chemin/sauvegarde.json`. Pour produire un export SQL à importer dans une NOUVELLE base vide : ajouter `--sql-output /chemin/prive/restauration.sql`. Le script refuse de remplacer un fichier existant. Valider les comptages, recopier les fichiers du manifeste vers leurs clés originales et tester le site de recette avant toute bascule. Aucun outil de restauration destructrice n’est exposé dans le tableau de bord.
+Vérification de restauration, sans toucher à la production : `node scripts/verify-backup.mjs /chemin/sauvegarde.json`. Pour produire un export SQL à importer dans une NOUVELLE base vide : ajouter `--sql-output /chemin/prive/restauration.sql`. Le script refuse de remplacer un fichier existant. Valider les comptages, recopier les fichiers du manifeste vers leurs clés originales et tester le site de recette avant toute bascule. Aucun outil de restauration destructrice n’est exposé dans le tableau de bord.
 
 Avant déploiement indépendant, ajouter un secret SECURITY_SALT aléatoire (32 octets minimum) dans les secrets du Worker. Ne pas le mettre dans Git. Les créations de demandes/liens sont limitées à 30 tentatives par heure et par IP ; le suivi et ses uploads à 90 par minute. D1 assure le compteur atomique. Seule une empreinte salée temporaire est stockée, jamais l’IP brute. Le cron nettoie les compteurs expirés. En mode Cloudflare, les opérations publiques concernées refusent de fonctionner si cette configuration manque.
 
@@ -95,6 +95,8 @@ Le guide culturel, l’histoire familiale et le parcours illustré de commande p
 Pour les alertes de nouvelles demandes au propriétaire, appliquer également `0004_owner_notifications.sql` avant activation de `WHATSAPP_ADMIN_ENABLED`. Les variables supplémentaires de build sont `WHATSAPP_ADMIN_ENABLED`, `WHATSAPP_ADMIN_TEMPLATE` et `WHATSAPP_SENDER_NUMBER`. Le jeton reste un secret runtime. Cette fonction est indépendante des mises à jour destinées aux clients, désactivée sans configuration et ne réexpédie pas les anciennes commandes. L’activation ne fait pas partie du déploiement d’aperçu.
 
 ## Gestion quotidienne et migration des coûts
+
+Le build `pnpm ci:build` vérifie la restauration avec SQLite intégré à Node.js ; il ne dépend pas du module Python `_sqlite3` de l’image Cloudflare. La commande historique `scripts/verify-backup.py` délègue au même outil Node. Conserver Node.js >=22.18 dans l’environnement de construction.
 
 Appliquer `drizzle/0005_order_costs.sql` pour activer les coûts internes et les marges indicatives. Le code détecte une base non migrée et conserve les autres fonctions opérationnelles. Les coûts ne changent aucun prix client ni encaissement ; les vrais montants sont saisis par la gestion.
 

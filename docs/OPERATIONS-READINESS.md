@@ -52,8 +52,10 @@ Les requêtes de cet environnement vers le domaine commercial ont reçu HTTP 403
 
 ## Restaurer une sauvegarde hors production
 
+L’outil utilise SQLite intégré à Node.js (>=22.18, comme le projet). Les tests du build ne nécessitent aucun Python ni module `_sqlite3`. L’ancienne commande Python reste un point d’entrée de compatibilité vers le même outil Node. Un test restaure réellement le SQL avec les clés étrangères actives, alors qu’aucun Python n’est accessible dans son environnement.
+
 1. Télécharger les données et le manifeste depuis Gestion > Sauvegardes, puis les objets R2 référencés par le manifeste dans un dossier privé.
-2. Exécuter `python3 scripts/verify-backup.py sauvegarde-boutique.json --manifest manifeste-sauvegarde.json --files-root /chemin/prive/export-r2 --sql-output /chemin/prive/restauration.sql`.
+2. Exécuter `node scripts/verify-backup.mjs sauvegarde-boutique.json --manifest manifeste-sauvegarde.json --files-root /chemin/prive/export-r2 --sql-output /chemin/prive/restauration.sql`.
 3. Importer le SQL UNIQUEMENT dans une nouvelle base vide ; recopier les fichiers vers leurs clés `key` d’origine sur un bucket de staging distinct. Le script vérifie l’arbre de sauvegarde, mais ne modifie pas un bucket distant.
 4. Laisser les envois WhatsApp désactivés et examiner les files restaurées. Vérifier catalogue, documents privés, stock et suivi. Aucun client ne doit recevoir de message de test.
 

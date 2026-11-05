@@ -4,13 +4,13 @@
 
 Contrôle HTTP public du 4 novembre 2026 depuis l’exécuteur : accueil, `/robots.txt`, `/sitemap.xml` et `/api/catalogue` répondent **200**. L’accueil possède `index, follow`, sa canonique HTTPS et des alternatives FR/EN. Le sitemap contient 28 URL. Le fichier robots publié combine les règles Cloudflare (dont les choix concernant les robots d’IA) et celles de l’application, avec la déclaration correcte du sitemap. Aucun changement Cloudflare n’a été effectué. L’outil de recherche web ne parvient pas à lire certaines de ces URL ; cela ne constitue pas une preuve de blocage Googlebot.
 
-La propriété Search Console est documentée comme vérifiée. Son accès, ses exports et un test d’URL en direct restent nécessaires : les réponses HTTP ne prouvent pas l’indexation ni le classement.
+Le propriétaire a confirmé le 5 novembre 2026 que Search Console fonctionne et que Google accède à la plateforme et à toutes ses pages. Le contrôle d’accès est effectué. Les rapports d’indexation et de performance restent utiles pour suivre les résultats ; accessibilité ne signifie ni indexation de chaque page ni classement garanti.
 
 ## État des seize points
 
 | Point | Réalisation / suite nécessaire |
 | --- | --- |
-| 1. Accès et indexation | Diagnostic HTTP ci-dessus ; aucun assouplissement de sécurité. Contrôle Googlebot via Search Console à effectuer avec l’accès propriétaire. |
+| 1. Accès et indexation | Diagnostic HTTP ci-dessus ; aucun assouplissement de sécurité. Accès de Google confirmé par le propriétaire le 5 novembre 2026 ; suivre désormais indexation et performance. |
 | 2. Rôle des pages | Accueil commercial, collection comparative, fiche précise, guide culturel, récit familial et parcours de commande distincts. |
 | 3. Accueil | Introductions déjà validées conservées ; introduction de collection précisée, frais et liens internes partagés. Design du hero préservé. |
 | 4. Métadonnées | Titres et descriptions FR/EN propres à chaque page ; identité de la maison cohérente ; prix produit lu au moment de la requête. |

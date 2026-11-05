@@ -1,0 +1,26 @@
+/* Practical management controls share the storefront's quiet, readable palette. */
+.operations-panel {margin:0 0 28px;}
+.operations-heading {display:flex;justify-content:space-between;gap:20px;align-items:start;}
+.operations-heading p:not(.eyebrow) {margin-top:8px;color:var(--muted);}
+.operations-counts {display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin:24px 0;}
+.operations-counts button {padding:16px 12px;border:1px solid var(--line);border-radius:10px;text-align:left;background:#faf7fc;}
+.operations-counts button.is-active {border-color:#76508a;background:#eee5f4;box-shadow:inset 0 0 0 1px #76508a;}
+.operations-counts strong {display:block;font-size:28px;color:#654074;}
+.operations-counts span {display:block;font-size:16px;line-height:1.25;margin-top:6px;}
+.operations-columns {display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:28px;}
+.operations-list,.stock-alert-list {list-style:none;padding:0;margin:12px 0;}
+.operations-list li+li {border-top:1px solid var(--line);}
+.operations-list button {width:100%;display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px 0;text-align:left;}
+.operations-list button>span:last-child {text-align:right;flex-shrink:0;}
+.operations-list small,.stock-alert-list small {display:block;color:var(--muted);font-size:14px;margin-top:4px;}
+.stock-alert-list li {display:flex;align-items:center;gap:12px;padding:8px 0;}
+.stock-alert-list img {object-fit:contain;background:#f7f2f9;border-radius:5px;}
+.operations-finance {display:grid;gap:6px;margin-top:22px;padding:18px;border-radius:10px;background:#f7f2f9;}
+.operations-finance strong {font-size:27px;color:#654074;}
+.operations-finance small {color:var(--muted);}
+.order-tools {margin:20px 0;border:1px solid var(--line);border-radius:10px;padding:16px;}
+.order-tools summary {cursor:pointer;font-size:20px;color:#654074;font-weight:600;}
+.order-tools>p {margin-top:12px;}
+.order-tools>textarea {display:block;width:100%;min-height:280px;margin:15px 0;padding:14px;border:1px solid var(--line);border-radius:8px;background:#fcfafc;color:var(--plum);font-size:17px;line-height:1.45;resize:vertical;}
+.order-tools .order-form {margin-top:18px;}
+@media(max-width:760px){.operations-counts{grid-template-columns:repeat(2,minmax(0,1fr));}.operations-columns{grid-template-columns:1fr;gap:24px;}.operations-heading{gap:10px;}.operations-list button{align-items:start;}.operations-panel{padding:18px;}.operations-heading h2{font-size:26px;}.order-tools{padding:12px;}.management-toolbar input{max-width:100%;}}

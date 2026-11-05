@@ -1,6 +1,7 @@
 export type Photo = { src: string; thumbnail: string; view: number; label: string };
 export type Product = {
   collectionRow?: number;
+  lowStockThreshold?: number;
   translations?: {en?: Partial<Pick<Product,'name'|'description'|'pattern'|'composition'|'dimensions'|'unit'>>};
   sourceText?: string;
   published?: boolean;

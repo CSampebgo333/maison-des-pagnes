@@ -1,9 +1,10 @@
+import {operationsSnapshot,hasCosts,saveOrderCosts} from './operations.js';
+import {orderFilters,csvCell} from './order-filters.js';
 import {whatsappConfigured,recipientNumber} from './whatsapp.js';
 import english from '../locales/en.json' with {type:'json'};
 import {tr,normalLanguage,installEnglish} from './i18n-core.js';
-import initialStock from './initial-stock.js';
 import {isAdmin} from './admin-auth.js';
-import {getCatalogue,englishFor} from './catalogue-service.js';
+import {getCatalogue,englishFor,sourceDimensions} from './catalogue-service.js';
 import {customerDetails,validateUpdate,totalOf,orderStatuses} from './order-management.js';
 installEnglish(english);
 const json=(v,status=200)=>new Response(JSON.stringify(v),{status,headers:{'Content-Type':'application/json','Cache-Control':'private, no-store','X-Robots-Tag':'noindex, nofollow','Referrer-Policy':'no-referrer'}});
@@ -14,12 +15,13 @@ async function readJson(request,max=20000){if(Number(request.headers.get('Conten
 const validId=s=>/^[a-f0-9-]{36}$/.test(s??'');
 export async function ordersRoute(request,env){
  const url=new URL(request.url),p=url.pathname;
- if(!p.startsWith('/api/orders')&&!p.startsWith('/api/admin/orders')&&!p.startsWith('/api/admin/inventory'))return null;
+ if(!p.startsWith('/api/orders')&&!p.startsWith('/api/admin/orders')&&!p.startsWith('/api/admin/inventory')&&p!=='/api/admin/operations')return null;
  const admin=p.startsWith('/api/admin/');
  if(admin&&!await isAdmin(request,env))return json({error:'Accès réservé à la gestion.'},403);
  if(!['GET','HEAD'].includes(request.method)&&request.headers.get('Origin')!==url.origin)return json({error:'Origine non autorisée.'},403);
  if(!env.DB)return json({error:'Le service de commandes est en cours de configuration.'},503);
  try{
+  if(p==='/api/admin/operations'&&request.method==='GET')return json(await operationsSnapshot(env,(await getCatalogue(env)).document));
   if(p==='/api/orders/notification-settings'&&request.method==='GET')return json({enabled:whatsappConfigured(env)});
   if(p==='/api/orders'&&request.method==='POST'){
    const b=await readJson(request),details=customerDetails(b.details);const language=b.language==='en'?'en':'fr';if(!/^[a-f0-9-]{36}$/.test(b.requestKey??'')||!/^[a-f0-9]{64}$/.test(b.token??''))throw Error('Identifiant de demande invalide.');
@@ -46,13 +48,14 @@ export async function ordersRoute(request,env){
     if(row.status!=='pending')return json({error:'Cette demande est déjà traitée.'},409);
     const role=match[2],limit=role==='pdf'?24*1024*1024:6*1024*1024,type=request.headers.get('Content-Type');if(role==='pdf'?type!=='application/pdf':!['image/jpeg','image/png'].includes(type))throw Error('Format de fichier invalide.');
     const reader=request.body?.getReader();if(!reader)throw Error('Fichier manquant.');const chunks=[];let length=0;for(;;){const r=await reader.read();if(r.done)break;length+=r.value.length;if(length>limit){await reader.cancel();throw Error('Fichier trop volumineux.');}chunks.push(r.value);}const bytes=new Uint8Array(length);let offset=0;for(const c of chunks){bytes.set(c,offset);offset+=c.length;}
-    if(role==='pdf'&&!new TextDecoder().decode(bytes.slice(0,5)).startsWith('%PDF-'))throw Error('PDF invalide.');
+    if(role==='pdf'&&(bytes.length<20||!new TextDecoder().decode(bytes.slice(0,5)).startsWith('%PDF-')||!new TextDecoder().decode(bytes.slice(-1024)).includes('%%EOF')))throw Error('PDF invalide.');
     if(role==='photo'&&!(type==='image/jpeg'&&bytes[0]===255&&bytes[1]===216||type==='image/png'&&bytes[0]===137&&bytes[1]===80&&bytes[2]===78&&bytes[3]===71))throw Error('Photo invalide.');
+    if(role==='photo'){const [w,h]=sourceDimensions(bytes,type);if(!w||!h||w*h>24000000)throw Error('Photo originale : 24 mégapixels maximum.');}
     if(!env.BUCKET)return json({error:'Stockage indisponible.'},503);
-    const key='managed-orders/'+row.id+'/'+role;await env.BUCKET.put(key,bytes,{httpMetadata:{contentType:type}});await env.DB.prepare(`UPDATE orders SET ${role==='pdf'?'pdf_key':'photo_key'}=? WHERE id=?`).bind(key,row.id).run();return json({saved:true});
+    const key='managed-orders/'+row.id+'/'+role+'-'+crypto.randomUUID();await env.BUCKET.put(key,bytes,{httpMetadata:{contentType:type}});const saved=await env.DB.prepare(`UPDATE orders SET ${role==='pdf'?'pdf_key':'photo_key'}=? WHERE id=? AND status='pending' AND version=?`).bind(key,row.id,row.version).run();if(!saved.meta.changes){await env.BUCKET.delete(key);return json({error:'Cette demande est déjà traitée.'},409);}return json({saved:true});
    }
   }
-  if(p==='/api/admin/inventory'&&request.method==='GET'){await env.DB.batch(Object.entries(initialStock).map(([id,q])=>env.DB.prepare('INSERT OR IGNORE INTO inventory(product_id,quantity,demo) VALUES(?,?,1)').bind(id,q)));const r=await env.DB.prepare('SELECT * FROM inventory').all();return json(r.results);}
+  if(p==='/api/admin/inventory'&&request.method==='GET'){const r=await env.DB.prepare('SELECT * FROM inventory').all();return json(r.results);}
   if(p==='/api/admin/inventory/demo'&&request.method==='POST'){
    const {document}=await getCatalogue(env);await env.DB.batch(document.products.map(product=>env.DB.prepare('INSERT OR IGNORE INTO inventory(product_id,quantity,demo) VALUES(?,?,1)').bind(product.id,2+crypto.getRandomValues(new Uint8Array(1))[0]%4)));return json({saved:true});
   }
@@ -60,9 +63,8 @@ export async function ordersRoute(request,env){
    const b=await readJson(request);if(typeof b.product_id!=='string'||!Number.isInteger(b.quantity)||b.quantity<0||b.quantity>100000)throw Error('Quantité invalide.');const {document}=await getCatalogue(env);if(!document.products.some(x=>x.id===b.product_id))throw Error('Pagne inconnu.');await env.DB.prepare('INSERT INTO inventory(product_id,quantity,demo) VALUES(?,?,0) ON CONFLICT(product_id) DO UPDATE SET quantity=excluded.quantity,demo=0').bind(b.product_id,b.quantity).run();return json({saved:true});
   }
   if(p==='/api/admin/orders'&&request.method==='GET'){
-   const page=Math.max(0,Math.min(100000,Number(url.searchParams.get('page'))||0));const status=url.searchParams.get('status')||'';if(status&&!Object.hasOwn(orderStatuses,status))throw Error('Statut invalide.');
-   const query=(url.searchParams.get('q')||'').slice(0,100);const where=' WHERE (?=\'\' OR status=?) AND (?=\'\' OR reference LIKE ? OR customer LIKE ?)';
-   const args=[status,status,query,'%'+query+'%','%'+query+'%'];const rows=await env.DB.prepare('SELECT * FROM orders'+where+' ORDER BY created_at DESC LIMIT 50 OFFSET ?').bind(...args,page*50).all();const count=await env.DB.prepare('SELECT count(*) AS count FROM orders'+where).bind(...args).first();return json({orders:rows.results.map(adminOrder),count:count.count});
+   const page=Math.floor(Math.max(0,Math.min(100000,Number(url.searchParams.get('page'))||0))),{where,args}=orderFilters(url,orderStatuses);
+   const rows=await env.DB.prepare('SELECT * FROM orders'+where+' ORDER BY created_at DESC LIMIT 50 OFFSET ?').bind(...args,page*50).all();const count=await env.DB.prepare('SELECT count(*) AS count FROM orders'+where).bind(...args).first();return json({orders:rows.results.map(adminOrder),count:count.count});
   }
   if(p==='/api/admin/orders/metrics'&&request.method==='GET'){
    const days=[7,30,90].includes(Number(url.searchParams.get('days')))?Number(url.searchParams.get('days')):30,now=new Date(Date.now()+1),start=new Date(now.getTime()-days*86400000).toISOString(),previous=new Date(now.getTime()-2*days*86400000).toISOString();
@@ -75,15 +77,16 @@ export async function ordersRoute(request,env){
    return json({days,current:{...current,sales},previous:prior,attention:attention.results,overdue:needs.overdue,outstanding,topProducts:[...products.values()].sort((a,b)=>b.quantity-a.quantity).slice(0,5),cities:[...cities].map(([name,count])=>({name,count})),daily:[...daily].map(([date,count])=>({date,count})),definition:'Périodes calculées selon la date de création des demandes ; encaissements cumulés actuels de ces demandes.'});
   }
   if(p==='/api/admin/orders/export'&&request.method==='GET'){
-   const language=normalLanguage(url.searchParams.get('lang')??request.headers.get('X-Shop-Language'));const rows=await env.DB.prepare('SELECT * FROM orders ORDER BY created_at DESC LIMIT 10001').all();if(rows.results.length>10000)return json({error:'Export limité à 10 000 demandes. Contactez la maintenance pour un export complet.'},400);
-   const cell=v=>'"'+String(v??'').replace(/^[=+@\-\t\r]/,"'$&").replaceAll('"','""')+'"';
+   const language=normalLanguage(url.searchParams.get('lang')??request.headers.get('X-Shop-Language'));const {where,args}=orderFilters(url,orderStatuses);const rows=await env.DB.prepare('SELECT * FROM orders'+where+' ORDER BY created_at DESC LIMIT 10001').bind(...args).all();if(rows.results.length>10000)return json({error:'Export limité à 10 000 demandes. Contactez la maintenance pour un export complet.'},400);
+   const cell=csvCell;
    const csv=[['Référence','Date','Statut','Client','Téléphone','Ville','Mode','Date souhaitée','Date convenue','Total CFA','Encaissé CFA','Paiement'].map(v=>tr(v,language)),...rows.results.map(r=>{const d=JSON.parse(r.customer);return [r.reference,r.created_at,tr(orderStatuses[r.status],language),d.name,d.phone,d.city,tr(d.mode,language),d.deadline,r.agreed_date,totalOf(r),r.paid_amount,r.payment_method];})].map(row=>row.map(cell).join(';')).join('\r\n');return new Response('\uFEFF'+csv,{headers:{'Content-Type':'text/csv;charset=utf-8','Content-Disposition':'attachment; filename="commandes.csv"','Cache-Control':'private, no-store'}});
   }
-  const detail=p.match(/^\/api\/admin\/orders\/([a-f0-9-]{36})(?:\/(pdf|photo|notifications))?$/);
+  const detail=p.match(/^\/api\/admin\/orders\/([a-f0-9-]{36})(?:\/(pdf|photo|notifications|costs))?$/);
   if(detail){const row=await env.DB.prepare('SELECT * FROM orders WHERE id=?').bind(detail[1]).first();if(!row)return json({error:'Commande introuvable.'},404);
+   if(detail[2]==='costs'&&request.method==='PUT'){const result=await saveOrderCosts(env,row,await readJson(request));return json(result.error?{error:result.error}:result.costs,result.status);}
    if(detail[2]==='notifications'&&request.method==='POST'){await env.DB.prepare('UPDATE orders SET whatsapp_opt_in=0 WHERE id=?').bind(row.id).run();return json({saved:true});}
    if(['pdf','photo'].includes(detail[2])&&request.method==='GET'){const key=detail[2]==='pdf'?row.pdf_key:row.photo_key;if(!key)return json({error:'Document non joint.'},404);const o=await env.BUCKET.get(key);if(!o)return json({error:'Document introuvable.'},404);return new Response(o.body,{headers:{'Content-Type':o.httpMetadata.contentType,'Cache-Control':'private, no-store','X-Robots-Tag':'noindex','X-Content-Type-Options':'nosniff'}});}
-   if(request.method==='GET'){const notifications=await env.DB.prepare('SELECT id,created_at,state,error_code FROM order_notifications WHERE order_id=? ORDER BY id DESC LIMIT 30').bind(row.id).all();const history=await env.DB.prepare('SELECT created_at,actor,summary FROM order_events WHERE order_id=? ORDER BY id DESC').bind(row.id).all();return json({...adminOrder(row),notifications:notifications.results,history:history.results,has_pdf:!!row.pdf_key,has_photo:!!row.photo_key});}
+   if(request.method==='GET'){const notifications=await env.DB.prepare('SELECT id,created_at,state,error_code FROM order_notifications WHERE order_id=? ORDER BY id DESC LIMIT 30').bind(row.id).all();const history=await env.DB.prepare('SELECT created_at,actor,summary FROM order_events WHERE order_id=? ORDER BY id DESC').bind(row.id).all();return json({...adminOrder(row),notifications:notifications.results,history:history.results,has_pdf:!!row.pdf_key,has_photo:!!row.photo_key,costsAvailable:await hasCosts(env.DB),costs:await hasCosts(env.DB)?await env.DB.prepare('SELECT * FROM order_costs WHERE order_id=?').bind(row.id).first():null});}
    if(request.method==='PATCH'){
     const b=await readJson(request);if(b.version!==row.version)return json({error:'La commande a changé. Rechargez-la.'},409);
     const patch={};for(const k of ['status','delivery_fee','custom_price','agreed_date','customer_agreed','internal_note','cancellation_reason','paid_amount','payment_method'])if(Object.hasOwn(b,k))patch[k]=b[k];

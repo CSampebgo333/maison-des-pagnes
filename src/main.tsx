@@ -12,6 +12,7 @@ import './product-pages.css';
 import './mobile.css';
 import './editorial.css';
 import './branding.css';
+import './operations.css';
 
 captureInstallPrompt();
 await initializeLanguage();

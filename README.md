@@ -87,7 +87,7 @@ Les commandes et les encaissements saisis manuellement sont désormais enregistr
 
 Exécuter `pnpm ci:build` pour contrôler TypeScript, lancer les tests et construire le site ainsi que le Worker. Les tests couvrent le catalogue, les photos, les commandes, la gestion protégée, les sauvegardes, les langues et les métadonnées de partage.
 
-La navigation WebGL et le comportement tactile n’ont pas été vérifiés visuellement dans un navigateur ici. L’aperçu autonome permet cette revue sur les appareils qui serviront à la boutique.
+Les contrôles visuels récents couvrent le rendu responsive dans Chromium. Des essais sur de vrais appareils, notamment Safari/iOS, complètent ces vérifications. Les tests de gestion utilisent des données isolées, sans créer de fausse commande commerciale.
 
 ### Images et performances
 
@@ -102,8 +102,7 @@ risquer d'afficher une ancienne photo après une mise à jour.
 Les fiches affichent un aperçu pendant le chargement, anticipent seulement les
 vues voisines et chargent l'original lorsque le visiteur zoome. L'anticipation
 est désactivée si le navigateur annonce une économie de données ou un réseau
-2G. La scène conserve ses textures lors des filtres et ne se redessine que si
-la caméra ou son contenu change. Les bons de commande restent hors du cache.
+2G. Les fonctionnalités de gestion et la génération des PDF restent chargées à la demande. Les bons de commande restent hors du cache.
 
 Un service worker conserve localement jusqu'à 96 variantes versionnées déjà
 consultées. Il évite leur revalidation réseau dans les aperçus dont l'hébergement
@@ -213,3 +212,9 @@ L’invitation d’installation est présentée au plus une fois par 24 heures s
 Les pages `/notre-maison`, `/faso-dan-fani` et `/livraison-et-commandes` proposent des contenus partagés entre HTML initial et interface React, en français et en anglais. Le parcours de livraison est illustré et interactif ; le guide culturel cite ses sources et crédite ses archives. Le plan SEO et les étapes restant liées aux accès Google/Meta sont décrits dans [docs/SEO-ROLLOUT.md](docs/SEO-ROLLOUT.md).
 
 La révision des douze fiches est consultable dans [docs/PRODUCT-COPY-REVIEW.md](docs/PRODUCT-COPY-REVIEW.md). Un outil administrateur applique ces textes au catalogue enregistré avec sauvegarde et protection contre l’écrasement des modifications. Les alertes WhatsApp au propriétaire sont préparées séparément et désactivées par défaut.
+
+## Gestion quotidienne et fiabilité
+
+La gestion propose des listes d’actions, des seuils de stock faible par pagne, des filtres de période/ville et leur export CSV, des brouillons de réponse FR/EN et des coûts internes facultatifs. Les coûts ne sont jamais publiés dans le suivi client. La migration `0005_order_costs.sql` active cette rubrique sans changer les ventes existantes.
+
+La CI vérifie types, tests, build et dépendances de production. Les sauvegardes complètes et leurs fichiers sont vérifiés ; le script de restauration accepte les anciens formats et les tables récentes sans déclencher de nouveaux messages. Voir [le bilan opérationnel](docs/OPERATIONS-READINESS.md) pour les résultats, limites et actions nécessitant les informations ou accès du propriétaire.

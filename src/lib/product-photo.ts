@@ -1,8 +1,11 @@
-import { readOrderPhoto } from './custom-photo';
+import {inspectPhoto,MAX_PHOTO_BYTES} from './custom-photo';
 export async function prepareProductPhoto(file: File) {
  // Same verified file formats, size/pixel limits and orientation handling as custom orders.
- await readOrderPhoto(file);
- const bitmap=await createImageBitmap(file,{imageOrientation:'from-image'});
+ if(file.size>MAX_PHOTO_BYTES)throw Error('Choisissez une photo de 6 Mo maximum.');
+ const photo=inspectPhoto(new Uint8Array(await file.arrayBuffer()),file.name);
+ const rotated=photo.orientation>=5,width=rotated?photo.height:photo.width,height=rotated?photo.width:photo.height,decodeScale=Math.min(1,1000/Math.max(width,height));
+ // Decode only the pixels needed by the largest derivative. Keep the original file intact.
+ const bitmap=await createImageBitmap(file,{imageOrientation:'from-image',resizeWidth:Math.max(1,Math.round(width*decodeScale)),resizeHeight:Math.max(1,Math.round(height*decodeScale)),resizeQuality:'high'}).catch(()=>{throw Error('Cette photo est endommagée ou illisible. Choisissez une autre image.');});
  const form=new FormData(); form.append('original',file);
  try {
   for(const [role,side,quality,budget] of [['thumbnail',200,.72,100*1024],['scene',650,.78,300*1024],['display',1000,.82,600*1024]] as const){

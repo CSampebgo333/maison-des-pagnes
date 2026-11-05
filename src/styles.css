@@ -16,6 +16,7 @@
   --muted: #7d7274;
   --text-accent: #76508a;
   --line: #e7e3e6;
+  --header-control-radius: 6px;
   --sans: 'EB Garamond', Garamond, Georgia, serif;
   --serif: 'EB Garamond', Garamond, Georgia, serif;
 }
@@ -42,7 +43,7 @@ h1, h2, p { margin: 0; }
 .brand { display: inline-flex; align-items: center; gap: 10px; font-family: var(--serif); font-size: 22px; color: var(--plum); line-height: 1.15; }
 .brand svg { width: 42px; height: 42px; stroke: currentColor; fill: none; stroke-width: 1.5; }
 .brand small { display: block; margin-top: 5px; font-family: var(--sans); font-size: 12px; letter-spacing: .095em; color: #8a7780; }
-.header-search { margin: 0 auto; display: flex; align-items: center; gap: 11px; flex: 1; max-width: 370px; min-width: 100px; color: #87757b; background: #f5f3f5; padding: 0 16px; border-radius: 6px; border: 1px solid transparent; }
+.header-search { margin: 0 auto; display: flex; align-items: center; gap: 11px; flex: 1; max-width: 370px; min-width: 100px; color: #87757b; background: #f5f3f5; padding: 0 16px; border-radius: var(--header-control-radius); border: 1px solid transparent; }
 .header-search:focus-within { border-color: #b897a7; background: #ffffff; }
 .header-search input { width: 100%; padding: 13px 0; color: #46343d; background: transparent; border: 0; outline: 0; font-size: 15px; }
 .header-search input::placeholder { color: #8b7d80; }
@@ -631,7 +632,7 @@ html, body, #root { background: #ffffff; }
 
 /* Language belongs to the header, below the uninterrupted announcement bar. */
 .language-switcher{position:relative;display:inline-flex;align-items:center;gap:6px;flex-shrink:0;color:var(--plum);font-size:14px}
-.language-switcher select{font:inherit;font-weight:600;color:inherit;background:#faf8fb;border:1px solid #ddd1e1;border-radius:999px;padding:9px 24px 9px 12px;min-height:44px;max-width:120px;cursor:pointer}
+.language-switcher select{font:inherit;font-weight:600;color:inherit;background:#faf8fb;border:1px solid #e7e1e5;border-radius:var(--header-control-radius);padding:9px 24px 9px 12px;min-height:44px;max-width:120px;cursor:pointer}
 .language-switcher select:hover{background:#f2edf5;border-color:#b69ac5}
 .language-switcher select:focus-visible{outline:2px solid var(--plum);outline-offset:3px}
 .language-switcher [role="alert"]{position:absolute;right:0;top:100%;z-index:30;width:230px;padding:12px;background:#fff;border:1px solid var(--line);box-shadow:0 5px 20px #37213d15;border-radius:8px}

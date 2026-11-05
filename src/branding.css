@@ -1,0 +1,11 @@
+/* The emblem inherits the existing header ink: white on the hero, violet on white. */
+.brand .brand-emblem { width:44px; height:50px; flex-shrink:0; stroke:none; fill:none; }
+.brand-small .brand-emblem { width:36px; height:41px; }
+@media(max-width:760px) {
+ .storefront .site-header .brand .brand-emblem { display:block; width:29px; height:34px; }
+ .brand .brand-emblem { width:32px; height:37px; }
+}
+@media(max-width:380px) {
+ .storefront .site-header .brand { font-size:clamp(13px,4.2vw,16px); gap:6px; }
+ .storefront .site-header .brand .brand-emblem { display:block; width:25px; height:29px; }
+}

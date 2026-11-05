@@ -1,3 +1,4 @@
+import {brandMarkDataUrl} from './brand-mark.ts';
 import {tr,getLanguage,localeFor} from './i18n-core.js';
 import type { Product } from './types';
 import { availabilityLabel } from './catalogue-features.ts';
@@ -43,10 +44,11 @@ export function jpegPagesToPdf(pages: Uint8Array[], width = 1240, height = 1754)
   return new Blob(chunks as BlobPart[],{type:'application/pdf'});
 }
 export async function renderOrderPages(order: Order, photoUrl: (path: string) => string, canvasFactory = () => document.createElement('canvas'), imageLoader = (url: string): Promise<CanvasImageSource> => new Promise((resolve,reject)=>{const img=new Image();img.onload=()=>resolve(img);img.onerror=()=>reject(new Error('Une photo n’a pas pu être chargée. Réessayez.'));img.src=url;})) {
+  const logo=await imageLoader(brandMarkDataUrl('#ffffff'));
   const language=order.language??getLanguage();const translate=(value:string)=>tr(value,language);
   const canvases: HTMLCanvasElement[]=[]; let canvas!:HTMLCanvasElement; let ctx!:CanvasRenderingContext2D; let y=0;
   const text=(value:string,x:number,top:number,size=24,color='#603a53',bold=false)=>{ctx.fillStyle=color;ctx.font=`${bold?'bold ':''}${size}px Arial`;ctx.fillText(translate(value),x,top);};
-  const newPage=()=>{canvas=canvasFactory();canvas.width=1240;canvas.height=1754;ctx=canvas.getContext('2d')!;ctx.fillStyle='#fcf8f2';ctx.fillRect(0,0,1240,1754);ctx.fillStyle='#603a53';ctx.fillRect(0,0,1240,210);text('MAISON DU FASO DAN FANI',70,85,42,'#ffffff',true);text(order.custom?(order.items.length?'Demande de commande et de recherche':'Demande de pagne à rechercher'):'Demande de commande',70,140,28,'#ead6e0');text(order.reference,70,180,20,'#ead6e0');text(`Créée le ${new Date(order.created).toLocaleString(localeFor(language),{timeZone:'Africa/Ouagadougou'})}`,70,255,21);y=302;canvases.push(canvas);};
+  const newPage=()=>{canvas=canvasFactory();canvas.width=1240;canvas.height=1754;ctx=canvas.getContext('2d')!;ctx.fillStyle='#fcf8f2';ctx.fillRect(0,0,1240,1754);ctx.fillStyle='#603a53';ctx.fillRect(0,0,1240,210);ctx.drawImage(logo,70,39,86,97);text('MAISON DU FASO DAN FANI',180,85,42,'#ffffff',true);text(order.custom?(order.items.length?'Demande de commande et de recherche':'Demande de pagne à rechercher'):'Demande de commande',180,140,28,'#ead6e0');text(order.reference,180,180,20,'#ead6e0');text(`Créée le ${new Date(order.created).toLocaleString(localeFor(language),{timeZone:'Africa/Ouagadougou'})}`,70,255,21);y=302;canvases.push(canvas);};
   const ensure=(h:number)=>{if(y+h>1590)newPage();};
   const block=(label:string,value:string,translateValue=true)=>{label=translate(label);if(translateValue)value=translate(value);ctx.font='24px Arial';const lines:string[]=[];let line='';for(const word of value.trim().split(/\s+/)){if(ctx.measureText(line+word).width>1060&&line){lines.push(line.trim());line='';}let rest=word;while(ctx.measureText(rest).width>1060){let n=rest.length;while(n>1&&ctx.measureText(rest.slice(0,n)).width>1060)n--;if(line){lines.push(line.trim());line='';}lines.push(rest.slice(0,n));rest=rest.slice(n);}line+=rest+' ';}if(line.trim())lines.push(line.trim());ensure(55+lines.length*32);text(label.toUpperCase(),70,y,18,'#9c7187',true);y+=34;for(const l of lines){text(l,70,y);y+=32;}y+=22;};
   newPage();

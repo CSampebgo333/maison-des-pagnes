@@ -1,0 +1,10 @@
+// Lightweight vector adaptation of the approved “L’atelier” loom emblem.
+// Shared by the storefront, installed application artwork and order PDFs.
+export const LOOM_VIEWBOX = '0 0 80 90';
+export const LOOM_MARKUP = `<g fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"><path d="M8 82V40a32 32 0 0 1 64 0v42M5 84h70M18 31h44"/></g><g fill="currentColor"><path d="M19 25h5v55h-5zM29 32h5v48h-5zM39 32h5v48h-5zM49 32h5v48h-5zM59 25h5v55h-5z"/><path opacity=".62" d="M18 47q11-6 22-2t22 0v8q-11 4-22 0t-22 2zM18 60q11-6 22-2t22 0v8q-11 4-22 0t-22 2zM18 73q11-6 22-2t22 0v8q-11 4-22 0t-22 2z"/><path d="M29 43h5v13h-5zM49 44h5v11h-5zM19 57h5v12h-5zM39 57h5v12h-5zM59 57h5v12h-5zM29 70h5v10h-5zM49 71h5v9h-5z"/></g>`;
+export function brandMarkSvg(color = '#654074') {
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${LOOM_VIEWBOX}" color="${color}">${LOOM_MARKUP}</svg>`;
+}
+export function brandMarkDataUrl(color = '#654074') {
+  return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(brandMarkSvg(color));
+}

@@ -1,7 +1,9 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync,readdirSync} from 'node:fs';
-import ts from 'typescript';
+// TypeScript 7 provides the native CLI; the official compatibility package
+// retains the JavaScript compiler API used by this translation-coverage check.
+import ts from '@typescript/typescript6';
 import {chooseLanguage,setLanguage,tr,localeFor,installEnglish} from '../src/lib/i18n-core.js';
 import {localizeProduct} from '../src/lib/product-language.ts';
 import {findProducts} from '../src/lib/catalogue.ts';

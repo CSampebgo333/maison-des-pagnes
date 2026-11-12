@@ -21,7 +21,7 @@
     "deploy:cloudflare": "node scripts/validate-deployment.mjs && npx --yes wrangler@4.155.0 deploy --config dist/server/wrangler.json"
   },
   "dependencies": {
-    "lucide-react": "1.66.0",
+    "lucide-react": "1.70.0",
     "pdf-lib": "1.17.1",
     "radix-ui": "1.8.1",
     "react": "19.3.1",
